@@ -30,6 +30,85 @@
       </v-btn>-->
     </v-app-bar>
     <v-container>
+      <v-row>
+        <v-carousel
+          :show-arrows="false"
+          hide-delimiters
+          :height="carouselHeight"
+        >
+          <!-- <v-carousel-item v-for="(item,i) in items" :key="i" :src="item.src"></v-carousel-item> -->
+          <v-carousel-item>
+            <v-row
+              class="overflow-hidden"
+              :height="isCarouselOpen ? 0 : carouselHeight"
+            >
+              <v-col
+                cols="12"
+                sm="8"
+                class="px-5 serif"
+                style="padding-top: 3em;"
+              >
+                <div
+                  class="d-inline-block float-left"
+                  style="width: 4em; height: 100%;"
+                ></div>
+                <div class="ml-5 pt-5">
+                  <h1 class="align-self-end font-weight-medium">
+                    See Chromized livestream
+                  </h1>
+                  <p>see livestream that are chromized livestream</p>
+                  <v-btn
+                    class="ma-0"
+                    outlined
+                    color="white"
+                    @click="expandCarousel()"
+                    >Turn on livestream</v-btn
+                  >
+                </div>
+              </v-col>
+              <v-col cols="12" sm="4">
+                <img
+                  width="90%"
+                  height="250"
+                  src="https://picsum.photos/200/300?grayscale"
+                />
+                <!-- <input type="file" accept="video/*;capture=camcorder"> -->
+              </v-col>
+            </v-row>
+            <v-row
+              class="overflow-hidden"
+              :height="isCarouselOpen ? 0 : carouselHeight"
+            >
+              <div>
+                <!-- <video
+                  ref="video"
+                  id="video"
+                  width="640"
+                  height="480"
+                  autoplay
+                ></video> -->
+                <!-- <input type="file" accept="image/*;capture=camera"> -->
+                <!-- <input type="file" accept="video/*;capture=camcorder" /> -->
+                <video ref="video" id="video" autoplay></video>
+              </div>
+              <div>
+                <button id="snap" v-on:click="capture()">Snap Photo</button>
+              </div>
+              <canvas
+                ref="videoCanvas"
+                id="videoCanvas"
+                width="640"
+                height="480"
+              ></canvas>
+              <ul>
+                <li :key="c" v-for="c in videoCaptures">
+                  <img v-bind:src="c" height="50" />
+                </li>
+              </ul>
+            </v-row>
+          </v-carousel-item>
+        </v-carousel>
+      </v-row>
       <v-row class="bubble-box">
         <v-col cols="12" sm="4">
           <div id="category-box" max-height="50vh">
@@ -73,7 +152,7 @@
               <!-- <v-card-title>
           <v-icon large left>mdi-twitter</v-icon>
           <span class="title font-weight-light">Twitter</span>
-          </v-card-title>-->
+              </v-card-title>-->
 
               <v-card-text
                 class="keyword headline font-weight-bold"
@@ -86,9 +165,9 @@
                 }}
               </v-card-text>
 
-              <v-card-text class="headline font-weight-bold">
-                {{ content.description }}
-              </v-card-text>
+              <v-card-text class="headline font-weight-bold">{{
+                content.description
+              }}</v-card-text>
 
               <v-card-actions>
                 <v-list-item class="grow">
@@ -97,7 +176,7 @@
                 class="elevation-6"
                 src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"
               ></v-img>
-              </v-list-item-avatar>-->
+                  </v-list-item-avatar>-->
 
                   <v-list-item-content>
                     <v-list-item-title>2019-11-28</v-list-item-title>
@@ -122,6 +201,8 @@
 export default {
   name: "HelloWorld",
   data: () => ({
+    isCarouselOpen: false,
+    carouselHeight: 300,
     sortType: ["Recent", "Keywords", "Views"],
     categories: [
       "2019-04-21",
@@ -131,6 +212,10 @@ export default {
       "2019-08-02",
       "2019-09-17"
     ],
+    playVideo: false,
+    video: {},
+    videoCanvas: {},
+    videoCaptures: [],
     contents: [
       {
         id: "1",
@@ -211,9 +296,45 @@ export default {
       return this.$store.getters.getIsMain;
     }
   },
+  mounted() {
+    this.video = this.$refs.video;
+    // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    //   navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    //     console.log(stream);
+    //     // this.video.src = window.URL.createObjectURL(stream);
+    //     this.video.src = HTMLMediaElement.srcObject = stream;
+    //     // this.video.play();
+    //   });
+    // }
+
+    function hasGetUserMedia() {
+      return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+    }
+
+    if (hasGetUserMedia()) {
+      // Good to go!
+    } else {
+      alert("getUserMedia() is not supported by your browser");
+    }
+
+    navigator.mediaDevices
+      .getUserMedia({ video: this.playVideo })
+      .then(stream => {
+        console.log(stream, this.$refs.video);
+        this.video.srcObject = stream;
+      });
+  },
   methods: {
     expandTopic() {
       this.expand = !this.expand;
+    },
+    expandCarousel() {
+      this.isCarouselOpen = !this.isCarouselOpen;
+      if (this.isCarouselOpen) {
+        this.carouselHeight = 700;
+      } else {
+        this.carouselHeight = 250;
+      }
     },
     selectTopic(key) {
       this.selectedTopic = key;
@@ -225,7 +346,16 @@ export default {
     randomPosY() {
       var val = Math.floor(Math.random() * 50, 50) + 5;
       return val > 25 ? val + 35 : val;
-    }
+    },
+    capture() {
+      this.videoCanvas = this.$refs.videoCanvas;
+      var videoCanvas = this.videoCanvas
+        .getContext("2d")
+        .drawImage(this.video, 0, 0, 640, 480);
+      this.videoCaptures.push(videoCanvas.toDataURL("image/png"));
+      // this.videoCaptures.push(videoCanvas.toDataURL("image/webp"));
+    },
+    play() {}
   }
 };
 </script>
@@ -241,57 +371,63 @@ export default {
   }
 }
 
-.bubble-box {
-  padding-bottom: 0;
-  margin-bottom: 0;
-  &::after {
-    display: inline-block;
-    content: "";
-    clear: both;
-    width: 2em;
-    height: 2em;
-    margin-left: 3em;
-    border-bottom-left-radius: 2em;
-    border: 2px solid rgba(255, 255, 255, 0.12);
-    border-top: none;
-    border-right: none;
+.container {
+  .serif {
+    font-family: "Times New Roman", Times, serif !important;
   }
-
-  > div:first-child {
-    max-height: 55vh;
-    overflow: scroll;
+  .bubble-box {
     padding-bottom: 0;
-  }
-  .v-timeline {
-    min-width: 30vw;
-  }
-
-  #contents-box {
-    overflow: hidden;
-  }
-  .inspiration-card {
-    overflow: hidden;
-    transition: max-width 1s, max-height 1s, margin 1s;
-    text-overflow: ellipsis;
-    max-width: 20em;
-    max-height: 20em;
-    border-radius: 2rem !important;
-    align-self: center;
-    &.minimized {
-      text-align: center;
-      max-width: 12em;
-      max-height: 5em;
+    margin-bottom: 0;
+    &::after {
+      display: inline-block;
+      content: "";
+      clear: both;
+      width: 2em;
+      height: 2em;
+      margin-left: 3.7em;
+      margin-top: -0.9em;
+      border-bottom-left-radius: 2em;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-top: none;
+      border-right: none;
     }
-    .keyword {
+
+    > div:first-child {
+      max-height: 55vh;
+      overflow: scroll;
+      padding-bottom: 0;
+    }
+    .v-timeline {
+      min-width: 30vw;
+    }
+
+    #contents-box {
       overflow: hidden;
-      transition: max-width 1s, max-height 1s, padding 1s;
-      max-width: 0;
-      max-height: 0;
-      padding: 0;
+    }
+    .inspiration-card {
+      overflow: hidden;
+      transition: max-width 1s, max-height 1s, margin 1s;
+      text-overflow: ellipsis;
+      max-width: 20em;
+      max-height: 20em;
+      border-radius: 2rem !important;
+      align-self: center;
       &.minimized {
-        max-width: 20em;
-        max-height: 4em;
-        padding: 1em 1em;
+        text-align: center;
+        max-width: 12em;
+        max-height: 5em;
+      }
+      .keyword {
+        overflow: hidden;
+        transition: max-width 1s, max-height 1s, padding 1s;
+        max-width: 0;
+        max-height: 0;
+        padding: 0;
+        &.minimized {
+          max-width: 20em;
+          max-height: 4em;
+          padding: 1em 1em;
+        }
       }
     }
   }

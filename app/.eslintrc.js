@@ -1,17 +1,15 @@
 module.exports = {
-  root: true,
-  env: {
-    node: true
-  },
-  'extends': [
-    'plugin:vue/essential',
-    'eslint:recommended'
+  plugins: [
+    'graphql'
   ],
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-  },
-  parserOptions: {
-    parser: 'babel-eslint'
+    'graphql/template-strings': [
+      'error',
+      {
+        env: 'literal',
+        projectName: 'app',
+        schemaJsonFilepath: 'node_modules/.temp/graphql/schema.json'
+      }
+    ]
   }
 }
