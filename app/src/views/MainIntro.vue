@@ -1,17 +1,9 @@
 <template>
-  <v-parallax
-    id="title-parallax"
-    class="text-center px-5"
-    src="../../src/assets/bg_black.jpeg"
-  >
+  <v-parallax id="title-parallax" class="text-center px-5" src="../../src/assets/bg_black.jpeg">
     <div class="flexbox">
-      <h1 id="logo" class="logo mr-3 display-3 shadow" @click="expandTopic()">
-        Inspired by
-      </h1>
+      <h1 id="logo" class="logo mr-3 display-3 shadow" @click="expandTopic()">Inspired by</h1>
       <v-expand-transition class="d-inline-block">
-        <h1 :style="{ width: true ? '300' : '0' }" class="expansion logo">
-          {{ selectedTopic.title }}
-        </h1>
+        <h1 :style="{ width: true ? '300' : '0' }" class="expansion logo">{{ selectedTopic.title }}</h1>
         <!-- <h2 v-show="expand" id="expansion">{</h2> -->
       </v-expand-transition>
       <p>{{ selectedTopic.contents }}</p>
@@ -22,24 +14,36 @@
       outlined
       color="white"
       @click="goToTopicPage"
-      >Explore ></v-btn
-    >
+    >Explore ></v-btn>
     <h2
       v-bind:key="topic.title"
       class="topic shadow"
       v-for="topic in topics"
       :style="{ top: topic.top, left: topic.left }"
       @click="selectTopic(topic)"
-    >
-      {{ topic.title }}
-    </h2>
+    >{{ topic.title }}</h2>
   </v-parallax>
 </template>
 
 <script>
 export default {
   name: "HelloWorld",
+  apollo: {
+    sample: gql`
+      query {
+        viewer {
+          name
+          repositories(last: 3) {
+            nodes {
+              name
+            }
+          }
+        }
+      }
+    `
+  },
   data: () => ({
+    sample: null,
     expand: true,
     widthExpand: 0,
     selectedTopic: {},
@@ -67,30 +71,33 @@ export default {
       }
     ]
   }),
-  created() {
+  created () {
     for (let i in this.topics) {
       this.topics[i]["top"] = this.randomPosY() + "vh";
       this.topics[i]["left"] = this.randomPosX() + "vw";
     }
   },
   computed: {},
+  mounted () {
+    console.log(this.sample);
+  },
   methods: {
-    expandTopic() {
+    expandTopic () {
       this.expand = !this.expand;
     },
-    selectTopic(key) {
+    selectTopic (key) {
       this.selectedTopic = key;
       this.isTopicSelected = true;
       this.$store.dispatch("setTopic", { newTopic: key.title });
     },
-    randomPosX() {
+    randomPosX () {
       return Math.floor(Math.random() * 80, 80) + 10;
     },
-    randomPosY() {
+    randomPosY () {
       var val = Math.floor(Math.random() * 50, 50) + 5;
       return val > 25 ? val + 35 : val;
     },
-    goToTopicPage() {
+    goToTopicPage () {
       this.$store.commit("setIsMain", false);
       this.$router.push({ path: "/topic/" });
     }

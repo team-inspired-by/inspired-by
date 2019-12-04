@@ -5,17 +5,21 @@ import store from "./store";
 import "./registerServiceWorker";
 import vuetify from "./plugins/vuetify";
 import VueMarkdown from "vue-markdown";
-import axios from "axios";
-import { createProvider } from './vue-apollo'
+// import axios from "axios";
+import {
+  createProvider
+} from "./vue-apollo";
+import gql from "graphql-tag";
 
 Vue.config.productionTip = false;
 Vue.component("vue-markdown", VueMarkdown);
+Vue.use(gql);
 
 var AppInstance = new Vue({
   router,
   store,
   vuetify,
-  axios,
+  // axios,
   apolloProvider: createProvider(),
   render: h => h(App)
 }).$mount("#app");

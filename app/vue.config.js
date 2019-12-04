@@ -1,8 +1,8 @@
-module.exports = {
-  pluginOptions: {
-    apollo: {
-      enableMocks: false,
-      enableEngine: false
-    }
-  }
-}
+// module.exports = {
+//     pluginOptions: {
+//         apollo: {
+//             lintGQL: true,
+//             enableEngine: false
+//         }
+//     }
+// };
