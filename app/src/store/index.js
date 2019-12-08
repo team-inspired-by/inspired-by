@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     isMain: false,
-    topic: ''
+    topic: '',
+    posY: 0,
   },
   mutations: {
     setTopic(state, topic) {
@@ -15,6 +16,9 @@ export default new Vuex.Store({
     setIsMain(state, isMain) {
       console.log('isMain: ', isMain)
       state.isMain = isMain
+    },
+    setPosY(state, posY) {
+      state.posY = posY
     }
   },
   actions: {
@@ -24,6 +28,13 @@ export default new Vuex.Store({
       newTopic
     }) {
       commit('setTopic', newTopic)
+    },
+    setPosY({
+      commit
+    }, {
+      newPosY
+    }) {
+      commit('setPosY', newPosY)
     }
   },
   modules: {},
@@ -33,6 +44,9 @@ export default new Vuex.Store({
     },
     getIsMain(state) {
       return state.isMain
+    },
+    getPosY(state) {
+      return state.posY
     }
   }
 })

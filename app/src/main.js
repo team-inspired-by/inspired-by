@@ -9,11 +9,9 @@ import VueMarkdown from "vue-markdown";
 import {
   createProvider
 } from "./vue-apollo";
-import gql from "graphql-tag";
 
 Vue.config.productionTip = false;
 Vue.component("vue-markdown", VueMarkdown);
-Vue.use(gql);
 
 var AppInstance = new Vue({
   router,

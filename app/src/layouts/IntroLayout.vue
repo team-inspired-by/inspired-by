@@ -1,49 +1,47 @@
 <template>
-  <v-parallax id="title-parallax" class="text-center px-5" src="../../src/assets/bg_black.jpeg">
-    <div class="flexbox">
-      <h1 id="logo" class="logo mr-3 display-3 shadow" @click="expandTopic()">Inspired by</h1>
-      <v-expand-transition class="d-inline-block">
-        <h1 :style="{ width: true ? '300' : '0' }" class="expansion logo">{{ selectedTopic.title }}</h1>
-        <!-- <h2 v-show="expand" id="expansion">{</h2> -->
-      </v-expand-transition>
-      <p>{{ selectedTopic.contents }}</p>
-    </div>
-    <v-btn
-      v-show="isTopicSelected"
-      class="ma-2 flex-grow-0"
-      outlined
-      color="white"
-      @click="goToTopicPage"
-    >Explore ></v-btn>
-    <h2
-      v-bind:key="topic.title"
-      class="topic shadow"
-      v-for="topic in topics"
-      :style="{ top: topic.top, left: topic.left }"
-      @click="selectTopic(topic)"
-    >{{ topic.title }}</h2>
-  </v-parallax>
+  <transition name="page-move">
+    <v-parallax
+      v-if="show"
+      id="title-parallax"
+      class="text-center px-5"
+      src="../../src/assets/bg_black.jpeg"
+    >
+      <div class="flexbox">
+        <h1 id="logo" class="logo mr-3 display-3 shadow" @click="expandTopic()">Inspired by</h1>
+        <v-expand-transition class="d-inli2ne-block">
+          <h1
+            :style="{ width: true ? '300' : '0' }"
+            class="expansion logo"
+          >{{ selectedTopic.title }}</h1>
+          <!-- <h2 v-show="expand" id="expansion">{</h2> -->
+        </v-expand-transition>
+        <p>{{ selectedTopic.contents }}</p>
+      </div>
+      <v-btn
+        v-show="isTopicSelected"
+        class="ma-2 flex-grow-0"
+        outlined
+        color="white"
+        @click="goToTopicPage"
+      >Explore ></v-btn>
+      <h2
+        v-bind:key="topic.title"
+        class="topic shadow"
+        v-for="topic in topics"
+        :style="{ top: topic.top, left: topic.left }"
+        @click="selectTopic(topic)"
+      >{{ topic.title }}</h2>
+    </v-parallax>
+  </transition>
 </template>
 
 <script>
+import gql from "graphql-tag";
+
 export default {
   name: "HelloWorld",
-  apollo: {
-    sample: gql`
-      query {
-        viewer {
-          name
-          repositories(last: 3) {
-            nodes {
-              name
-            }
-          }
-        }
-      }
-    `
-  },
   data: () => ({
-    sample: null,
+    show: true,
     expand: true,
     widthExpand: 0,
     selectedTopic: {},
@@ -98,8 +96,11 @@ export default {
       return val > 25 ? val + 35 : val;
     },
     goToTopicPage () {
-      this.$store.commit("setIsMain", false);
-      this.$router.push({ path: "/topic/" });
+      this.show = false;
+      setTimeout(() => {
+        this.$store.commit("setIsMain", false);
+        this.$router.push('/' + this.selectedTopic.title);
+      }, 1000)
     }
   }
 };

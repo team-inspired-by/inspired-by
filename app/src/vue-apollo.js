@@ -42,7 +42,6 @@ const defaultOptions = {
   // Override the way the Authorization header is set
   getAuth: () => {
     const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN
-    alert(process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN)
     if (token) {
       return 'Bearer ' + token
     } else {
