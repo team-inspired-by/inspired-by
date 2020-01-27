@@ -1,61 +1,34 @@
 <template>
-  <transition name="page-move">
-    <v-parallax
-      v-if="show"
-      id="title-parallax"
-      class="text-center px-5"
-      src="../../src/assets/bg_black.jpeg"
-    >
-      <div class="flexbox">
-        <h1 id="logo" class="logo mr-3 display-3 shadow" @click="expandTopic()">Inspired by</h1>
-        <v-expand-transition class="d-inli2ne-block">
-          <h1
-            :style="{ width: true ? '300' : '0' }"
-            class="expansion logo"
-          >{{ selectedTopic.title }}</h1>
-          <!-- <h2 v-show="expand" id="expansion">{</h2> -->
-        </v-expand-transition>
-        <p>{{ selectedTopic.contents }}</p>
+  <div>
+    <custom-startitle :key="key" :topic="topic" v-for="(topic, key) in topics" />
+    <transition name="slide-fade">
+      <div v-if="!selectedTopic">
+        <div id="bg-container" :style="{'background-position-y':backPosY}"></div>
+        <div v-if="focusedTopic" id="descriptor">
+          <p>{{focusedTopic.description}}</p>
+          <v-btn class="ma-2" outlined color="grey">See this story ></v-btn>
+        </div>
       </div>
-      <v-btn
-        v-show="isTopicSelected"
-        class="ma-2 flex-grow-0"
-        outlined
-        color="white"
-        @click="goToTopicPage"
-      >Explore ></v-btn>
-      <h2
-        v-bind:key="topic.title"
-        class="topic shadow"
-        v-for="topic in topics"
-        :style="{ top: topic.top, left: topic.left }"
-        @click="selectTopic(topic)"
-      >{{ topic.title }}</h2>
-    </v-parallax>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 <script>
-import gql from "graphql-tag";
-
 export default {
-  name: "HelloWorld",
+  name: "IntroLayout",
   data: () => ({
-    show: true,
-    expand: true,
-    widthExpand: 0,
-    selectedTopic: {},
-    isTopicSelected: false,
+    showDescription: false,
     topics: [
       {
-        title: "OpenCV"
+        title: "OpenCV",
+        description: "Image processing with the representative framework, OpenCV"
       },
       {
         title: "ROS"
       },
       {
         title: "Philosophy",
-        contents:
+        description:
           "“Is man merely a mistake of God's? Or God merely a mistake of man's?” – Friedrich Nietzsche"
       },
       {
@@ -67,109 +40,74 @@ export default {
       {
         title: "English"
       }
-    ]
+    ],
+    backPosY: 0,
   }),
   created () {
     for (let i in this.topics) {
-      this.topics[i]["top"] = this.randomPosY() + "vh";
-      this.topics[i]["left"] = this.randomPosX() + "vw";
+      this.topics[i]["y"] = this.randomPosY() + "vh";
+      this.topics[i]["x"] = this.randomPosX() + "vw";
     }
+    this.$store.commit('focusTopic', '')
+    this.$store.commit('setTopic', '')
   },
-  computed: {},
   mounted () {
-    console.log(this.sample);
+    setTimeout(() => {
+      this.backPosY = 'bottom';
+    }, 500);
   },
   methods: {
-    expandTopic () {
-      this.expand = !this.expand;
-    },
-    selectTopic (key) {
-      this.selectedTopic = key;
-      this.isTopicSelected = true;
-      this.$store.dispatch("setTopic", { newTopic: key.title });
-    },
     randomPosX () {
-      return Math.floor(Math.random() * 80, 80) + 10;
+      return Math.floor(Math.random() * 90, 90) + 5;
     },
+    // randomPosY () {
+    //   var val = Math.floor(Math.random() * 50, 50) + 5;
+    //   return val > 25 ? val + 35 : val;
+    // },
     randomPosY () {
-      var val = Math.floor(Math.random() * 50, 50) + 5;
-      return val > 25 ? val + 35 : val;
-    },
-    goToTopicPage () {
-      this.show = false;
-      setTimeout(() => {
-        this.$store.commit("setIsMain", false);
-        this.$router.push('/' + this.selectedTopic.title);
-      }, 1000)
+      return Math.floor(Math.random() * 60, 60);
     }
-  }
-};
+  },
+  computed: {
+    focusedTopic () {
+      var title = this.$store.getters.getFocusedTopic
+      return this.topics.filter(obj => { return obj.title == title })[0]
+    },
+    selectedTopic () {
+      return this.$store.getters.getTopic;
+    },
+    isTopicSelected () {
+      return this.selectedTopic != ''
+    }
+  },
+}
 </script>
 
 <style lang="scss" scoped>
-#title-parallax {
-  background-color: #111;
-  font-family: "Times New Roman", Times, serif;
-  min-height: 100vh;
-  cursor: default;
-  .flexbox {
-    flex: 1;
-    display: flex;
-    // line-height: 30vw;
-    flex-wrap: wrap;
-    align-items: baseline;
-    align-content: center;
-    text-align: center;
-    align-self: center;
-    h1 {
-      display: inline-block;
-      // line-height: 100vh;
-      font-weight: 500;
-      font-family: "Times New Roman", Times, serif !important;
-      transition: width 1s;
-      overflow: hidden;
-      z-index: 10;
-    }
-    .expansion {
-      display: inline-block;
-      // line-height: 100vh;
-      font-size: 10vw;
-      color: #999;
-    }
-    p {
-      font-size: larger;
-    }
-  }
+#bg-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  background-color: #333;
+  background-image: url("../assets/bg_space.jpg");
+  background-size: cover;
+  transition: background-position 2s;
+  filter: brightness(0.5);
+  z-index: 0;
 }
-
-.topic {
+#descriptor {
+  position: fixed;
+  max-width: 50vw;
+  bottom: 2em;
+  right: 5.5rem;
   font-size: x-large;
-  color: #999;
-  position: absolute;
-  font-weight: 300;
-  top: 10vw;
-  left: 30vw;
-}
-
-.shadow {
-  text-shadow: 0 0 10px #111, 0 0 20px #111, 0 0 30px #222, 0 0 40px #222,
-    0 0 50px #222, 0 0 60px #222, 0 0 70px #222;
-}
-
-.glow {
-  -webkit-animation: glow 5s ease-in-out infinite alternate;
-  -moz-animation: glow 5s ease-in-out infinite alternate;
-  animation: glow 5s ease-in-out infinite alternate;
-}
-
-@-webkit-keyframes glow {
-  from {
-    text-shadow: 0 0 10px #111, 0 0 20px #111, 0 0 30px #222, 0 0 40px #222,
-      0 0 50px #222, 0 0 60px #222, 0 0 70px #222;
-  }
-  to {
-    text-shadow: 0 0 20px #fff, 0 0 30px #eee, 0 0 40px #eee, 0 0 50px #eee,
-      0 0 60px #eee, 0 0 70px #eee, 0 0 80px #eee;
+  color: #aaa;
+  text-align: right;
+  z-index: 5;
+  * {
+    font-family: "Times New Roman", Times, serif !important;
   }
 }
 </style>

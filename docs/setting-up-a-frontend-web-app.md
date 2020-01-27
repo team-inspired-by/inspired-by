@@ -102,3 +102,17 @@ npm install typescript --save
 ```bash
 npm run serve
 ```
+
+## Install video player
+
+> See: [a-hml5-video-player-vue-component](https://vuejsexamples.com/a-hml5-video-player-vue-component/)
+
+```bash
+npm i --save @algoz098/vue-player
+```
+
+## Install scroll-to
+
+```bash
+npm install --save vue-scrollto
+```

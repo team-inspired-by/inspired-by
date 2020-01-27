@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-app-bar v-show="!isMain" color="#303030aa" dark flat>
+    <v-app-bar color="transparent" dark flat>
       <!-- <template v-slot:img="{ props }">
         <v-img v-bind="props" gradient="to top right, rgba(100,115,201,.7), rgba(25,32,72,.7)"></v-img>
       </template>-->
@@ -21,7 +21,7 @@
         <v-icon>mdi-open-in-new</v-icon>
       </v-btn>-->
     </v-app-bar>
-    <v-content> </v-content>
+    <v-content></v-content>
     <v-layout
       id="card-contents"
       class="d-flex justify-space-between flex-wrap overflow-y-auto pa-3"
@@ -71,9 +71,7 @@
                 :input-value="data.selected"
                 :disabled="data.disabled"
                 @click:close="data.parent.selectItem(data.item)"
-              >
-                {{ data.item }}
-              </v-chip>
+              >{{ data.item }}</v-chip>
             </template>
           </v-combobox>
         </v-col>
@@ -134,17 +132,14 @@ export default {
       "OpenCV"
     ]
   }),
-  mounted() {},
+  mounted () { },
   computed: {
-    topic() {
+    topic () {
       return this.$store.getters.getTopic;
     },
-    isMain() {
-      return this.$store.getters.getIsMain;
-    }
   },
   methods: {
-    keymap(event) {
+    keymap (event) {
       console.log(event.path[0].selectionEnd);
     }
   }

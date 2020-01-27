@@ -12,6 +12,7 @@
     "apollo:start": "vue-cli-service apollo:start"
   },
   "dependencies": {
+    "@algoz098/vue-player": "^0.4.3",
     "axios": "^0.19.0",
     "core-js": "^3.3.2",
     "eslint-loader": "^3.0.2",
@@ -29,6 +30,7 @@
     "vue-custom-scrollbar": "^1.1.0",
     "vue-markdown": "^2.2.4",
     "vue-router": "^3.1.3",
+    "vue-scrollto": "^2.17.1",
     "vue-simplemde": "^1.0.0",
     "vuetify": "^2.1.0",
     "vuex": "^3.0.1"

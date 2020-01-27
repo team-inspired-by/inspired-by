@@ -11,7 +11,7 @@
           </v-card>
         </v-col>
         <v-col cols="6" md="6">
-          <vue-markdown>{{ content }} </vue-markdown>
+          <vue-markdown>{{ content }}</vue-markdown>
         </v-col>
       </v-row>
     </v-layout>
@@ -46,35 +46,18 @@ This document gives a way to make a frontend web application with Vue. The steps
 
         `
   }),
-  created() {
+  created () {
     for (let i in this.topics) {
       this.topics[i]["top"] = this.randomPosY() + "vh";
       this.topics[i]["left"] = this.randomPosX() + "vw";
     }
   },
   computed: {
-    topic() {
+    topic () {
       return this.$store.getters.getTopic;
     },
-    isMain() {
-      return this.$store.getters.getIsMain;
-    }
   },
   methods: {
-    expandTopic() {
-      this.expand = !this.expand;
-    },
-    selectTopic(key) {
-      this.selectedTopic = key;
-      this.isTopicSelected = true;
-    },
-    randomPosX() {
-      return Math.floor(Math.random() * 80, 80) + 10;
-    },
-    randomPosY() {
-      var val = Math.floor(Math.random() * 50, 50) + 5;
-      return val > 25 ? val + 35 : val;
-    }
   }
 };
 </script>
