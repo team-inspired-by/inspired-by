@@ -113,6 +113,7 @@ export default {
     width: 100vw;
     .v-toolbar__content {
       span {
+        text-shadow: 0 0 0.5em black;
         font-family: "Times New Roman", Times, serif !important;
         font-weight: 500;
       }

@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <v-container id="post-container" class="pt-0">
     <v-row class="issue-box pb-0">
-      <v-col class="py-0">
-        <v-item-group class="pa-5">
+      <v-col class="pa-0">
+        <v-item-group class="px-5 py-0">
           <v-card ref="post-card" class="mb-4">
-            <v-row class="px-5">
+            <v-row class="px-5 py-0">
               <v-col cols="12" sm="4">
                 <img width="100%" src="https://picsum.photos/200/300?grayscale" />
               </v-col>
@@ -61,7 +61,6 @@ This document gives a way to make a frontend web application with Vue. The steps
   }),
   mounted () {
     this.$scrollTo(this.$refs["post-card"].$el, 1, { easing: "linear" });
-    alert('hi')
   },
   updated () {
     this.$scrollTo(this.$refs["post-card"].$el, 1, { easing: "linear" });
@@ -72,14 +71,14 @@ This document gives a way to make a frontend web application with Vue. The steps
 </script>
 
 <style lang="scss" scoped>
-.v-container {
-  position: fixed;
-  top: 10vh;
+.issue-box {
+  padding-left: 1.5em;
   .v-card {
     margin-top: 100px;
     background-color: rgb(200, 200, 200);
     color: black;
     min-height: 80vh;
+    overflow: scroll;
     z-index: 10;
     .v-subheader {
       color: black;

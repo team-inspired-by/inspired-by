@@ -2,9 +2,6 @@
   <v-app>
     <v-content :class="{ blurred: isPoppedUp }">
       <router-view></router-view>
-      <transition name="fade" mode="out-in">
-        <router-view name="postcard"></router-view>
-      </transition>
     </v-content>
     <Login></Login>
     <Background></Background>
@@ -27,7 +24,7 @@ export default {
   methods: {
     popupLogin () {
       this.$store.commit("setPopupLogin", true);
-      console.log(this.$store.getters.getPopupLogin);
+      // console.log(this.$store.getters.getPopupLogin);
     }
   },
 
@@ -126,15 +123,20 @@ export default {
   transform: translateX(100vw);
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition-duration: 0.3s;
+// .post-fade-enter-active,
+// .post-fade-leave-active {
+
+// }
+
+.post-fade-enter-active {
+  transition-delay: 2s;
+  transition-duration: 0.5s;
   transition-property: opacity;
   transition-timing-function: ease;
 }
 
-.fade-enter,
-.fade-leave-active {
+.post-fade-enter,
+.post-fade-leave-active {
   opacity: 0;
 }
 

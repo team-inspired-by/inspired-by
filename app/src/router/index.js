@@ -81,7 +81,7 @@ const routes = [{
     },
     children: [{
       path: ":post",
-      name: "post",
+      name: 'postpage',
       component: Post
     }]
   },
@@ -93,7 +93,11 @@ const routes = [{
       name: "topic",
       component: Topic,
       children: [{
-        path: ":post"
+        path: ":post",
+        name: "post",
+        components: {
+          postcard: Post
+        }
       }]
     }]
   }
@@ -120,6 +124,11 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   console.log('beforeEach exeuted from: ', from.name)
   console.log('to', to.name)
+
+  if ((to.name == 'post') || (from.name == 'post') || (to.name == 'postpage') || (from.name == 'postpage')) {
+    next();
+    return;
+  }
   store.commit('movePage', to.name);
   window.scrollTo({
     top: 0,

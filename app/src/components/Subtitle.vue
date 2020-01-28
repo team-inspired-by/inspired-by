@@ -112,13 +112,7 @@ export default {
 
 <style lang="scss" scoped>
 @keyframes slideout {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
+  to {
     top: -4600px;
   }
 }
@@ -232,7 +226,6 @@ export default {
       position: relative;
       top: 45vh;
       // opacity: 0;
-      transition: opacity 0.5s;
       &.selected {
         animation-name: slideout;
         animation-delay: 1s;

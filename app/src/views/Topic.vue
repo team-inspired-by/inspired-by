@@ -166,11 +166,7 @@
 
                   <v-row>
                     <v-col cols="12">
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="routeTo('/project/inspired-by', 'git')"
-                      >More</v-btn>
+                      <v-btn text color="primary" @click="routeTo('/project/inspired-by')">More</v-btn>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -204,7 +200,7 @@
 
                   <v-row>
                     <v-col cols="12">
-                      <v-btn text color="primary" @click="routeTo('/post/inspired-by', 'post')">More</v-btn>
+                      <v-btn text color="primary" @click="routeTo('./inspired-by')">More</v-btn>
                       <v-btn text v-scroll-to="'#post-' + key" @click="openPost(key)">See detail</v-btn>
                     </v-col>
                   </v-row>
@@ -251,7 +247,12 @@
         </v-row>
       </v-lazy>
     </v-container>
-    <div id="scrim" v-if="isPostOpening" @scroll.prevent="alert('hi')" @click="openPost()" />
+    <transition name="post-fade" mode="out-in">
+      <div v-if="isPostOpening" id="post-card">
+        <router-view name="postcard"></router-view>
+      </div>
+    </transition>
+    <div id="scrim" v-if="isPostOpening" @click="openPost()" />
   </div>
 </template>
 
@@ -390,7 +391,7 @@ export default {
     },
     isLoggedIn () {
       return this.$store.getters.getLoginStatus;
-    }
+    },
   },
   mounted () {
     console.log(this.sample);
@@ -456,11 +457,12 @@ export default {
         });
     },
     openPost (key = null) {
-      if (!this.isLoggedIn) {
-        this.$store.commit("setPopupLogin", true);
-        return;
-      }
+      // if (!this.isLoggedIn) {
+      //   this.$store.commit("setPopupLogin", true);
+      //   return;
+      // }
       if (key) this.selectedPostRef = this.$refs["post-" + key][0];
+      // console.log('clientWidth:', this.selectedPostRef.$el.clientWidth)
 
       this.selectedPostRef.$el.classList.toggle("active");
       this.isPostOpening = !this.isPostOpening;
@@ -468,17 +470,17 @@ export default {
       if (this.isPostOpening) {
         setTimeout(() => {
           this.scrollAtPost = window.scrollY;
-        }, 500);
-        this.debouncedScroller = debounce(this.handleScroll, 30);
-        window.addEventListener("scroll", this.debouncedScroller);
+          this.debouncedScroller = debounce(this.handleScroll, 30);
+          window.addEventListener("scroll", this.debouncedScroller);
+        }, 1000);
+        this.$router.push({ name: 'post', params: { post: 'testing' } });
+        // this.$router.push({ name: 'postpage', params: { post: 'testpage' } });
       } else {
         window.removeEventListener("scroll", this.debouncedScroller);
         this.debouncedScroller = null;
+        this.$router.back();
       }
 
-      setTimeout(() => {
-        this.$router.push({ path: '/topic/this/postname' });
-      }, 1000);
     },
     handleScroll (e) {
       if (this.isScrollEventRunning) return;
@@ -498,18 +500,8 @@ export default {
         this.isScrollEventRunning = false;
       }, 1000);
     },
-    routeTo (path, pageType = "git") {
-      if (pageType != "post") {
-        window.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: "smooth"
-        });
-      }
-      this.$store.commit("movePageTo", pageType);
-      setTimeout(() => {
-        this.$router.push({ path: path });
-      }, 1000);
+    routeTo (path) {
+      this.$router.push({ path: path });
     },
     loadMoreContents () {
       this.contentLoading = true;
@@ -639,22 +631,37 @@ export default {
           .v-card__text {
             transition: font-size 0.5s;
             transition-delay: 1s;
+            overflow: hidden;
           }
           img {
             object-fit: cover;
             max-height: 14em;
+            transition: max-height 1s;
           }
           &.active {
             background-color: rgb(200, 200, 200);
             color: black;
             min-height: 80vh;
+            max-height: 80vh;
             z-index: 10;
+            overflow-y: scroll;
+            img {
+              max-height: 30em;
+            }
             .v-subheader {
               color: black;
               font-size: x-large;
             }
             .v-card__text {
-              font-size: larger;
+              display: none;
+              // padding-top: 0;
+              // padding-bottom: 0;
+              // height: 0;
+              // font-size: larger;
+            }
+            .v-btn {
+              display: none;
+              color: black;
             }
           }
         }
@@ -678,6 +685,15 @@ export default {
   }
   #skeleton-loader {
     position: relative;
+  }
+  #post-card {
+    position: fixed;
+    // top: 100px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80vh;
+    z-index: 20;
   }
 }
 </style>

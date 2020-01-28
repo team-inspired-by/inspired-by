@@ -20,14 +20,15 @@ export default new Vuex.Store({
       state.topic = topic;
     },
     movePage(state, to) {
-      console.log("pageType:", state.pageType);
+      if (to == 'post')
+        return;
       state.show = false;
       if (to != 'topic')
         state.pageType = to;
       else
         setTimeout(() => {
           state.pageType = to;
-        }, 5000);
+        }, 6000);
 
       var timing = 4000;
       if (state.pageType == "intro")
