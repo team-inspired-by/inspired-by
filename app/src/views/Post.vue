@@ -5,23 +5,19 @@
         <v-item-group class="px-5 py-0">
           <v-card ref="post-card" class="mb-4">
             <v-row class="px-5 py-0">
-              <v-col cols="12" sm="4">
+              <v-col>
                 <img width="100%" src="https://picsum.photos/200/300?grayscale" />
-              </v-col>
-              <v-col cols="12" sm="8">
+                <img width="100%" src="https://picsum.photos/200/300?grayscale" />
                 <v-subheader>
                   <h5 class="mr-3">post</h5>
                   <h3>Difference between backtracking and DFS</h3>
                 </v-subheader>
 
                 <v-divider></v-divider>
-                <v-card-text>
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim
-                  reiciendis recusandae eaque, facere nesciunt quibusdam suscipit ipsam
-                  nisi sequi explicabo ducimus itaque, illo harum cumque repellat
-                  inventore aperiam unde incidunt!
-                </v-card-text>
-                <v-divider></v-divider>
+                <vue-markdown>{{content}}</vue-markdown>
+                <vue-markdown>{{getLorem}}</vue-markdown>
+                <vue-markdown>{{getLorem}}</vue-markdown>
+
               </v-col>
             </v-row>
           </v-card>
@@ -36,11 +32,6 @@ export default {
   name: "Post",
   data: () => ({
     content: `
-# Setting up a frontend web app
-
-- Author: Kim Jihyeong(KJHRicky@gmail.com)
-- Written in Nov 20, 2019
-
 ## Overview
 
 This document gives a way to make a frontend web application with Vue. The steps below are exactly same as "inspired_by" blog.
@@ -65,8 +56,12 @@ This document gives a way to make a frontend web application with Vue. The steps
   updated () {
     this.$scrollTo(this.$refs["post-card"].$el, 1, { easing: "linear" });
   },
-  computed: {},
-  methods: {}
+  methods: {},
+  computed: {
+    getLorem() {
+      return this.$store.getters.getLorem;
+    }
+  }
 };
 </script>
 
@@ -78,14 +73,28 @@ This document gives a way to make a frontend web application with Vue. The steps
     background-color: rgb(200, 200, 200);
     color: black;
     min-height: 80vh;
+    max-height: 80vh;
     overflow: scroll;
-    z-index: 10;
+    z-index: 20;
     .v-subheader {
       color: black;
       font-size: x-large;
     }
     .v-card__text {
       font-size: larger;
+    }
+    img:nth-child(1) {
+      float: left;
+      min-width: 5em;
+      max-width: 33%;
+      margin-right: 3em;
+    }
+    img:nth-child(2) {
+      float: left;
+      min-width: 5em;
+      max-width: 33%;
+      padding-top: 10em;
+      margin-left: 3em;
     }
   }
 }
