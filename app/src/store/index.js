@@ -10,7 +10,14 @@ export default new Vuex.Store({
     topic: "",
     focusedTopic: "",
     popupLogin: false,
-    loginStatus: false
+    loginStatus: false,
+    str: `## Lorem Ipsum
+Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor nobis debitis, odit quisquam itaque et, totam dolores voluptas accusamus at explicabo porro? Neque incidunt, id voluptates omnis at ipsa distinctio consequuntur illum, necessitatibus magnam unde quae nesciunt iste sapiente inventore reprehenderit placeat voluptate quam enim a earum,
+### How can we improve it?
+lorem asperiores, nisi nobis quisquam id neque consequatur dolorem magni, consequuntur magnam
+### Is this really Happen?
+consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iure a blanditiis laborum praesentium, dignissimos inventore illo libero quia? Culpa iusto earum quae vero provident, asperiores, nisi nobis quisquam id neque consequatur dolorem magni, consequuntur magnam ex natus velit quo? Quaerat quia quae eius dolore, libero cupiditate nihil expedita ut laborum voluptatibus itaque molestiae?
+    `
   },
   mutations: {
     focusTopic(state, topic) {
@@ -107,6 +114,9 @@ export default new Vuex.Store({
     },
     getLoginStatus(state) {
       return state.loginStatus;
+    },
+    getLorem(state) {
+      return state.str
     }
   }
 });
