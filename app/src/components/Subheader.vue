@@ -1,5 +1,8 @@
 <template>
-  <v-row class="subheader-box" :class="{'reversed': reversed, 'indent': indent}">
+  <v-row
+    class="subheader-box"
+    :class="{'reversed': reversed, 'indent': indent, 'nomargin': nomargin}"
+  >
     <v-col class="pa-0 mt-0" cols="12">
       <div class="leftside edge" :class="{'reversed': reversed, 'indent': indent}"></div>
       <div id="title-subheader">
@@ -16,7 +19,8 @@ export default {
   props: {
     'title': String,
     'reversed': Boolean,
-    'indent': Boolean
+    'indent': Boolean,
+    'nomargin': Boolean
   },
 }
 </script>
@@ -24,6 +28,9 @@ export default {
 <style lang="scss" scoped>
 .subheader-box {
   margin-bottom: -2px;
+  &.nomargin {
+    margin-top: calc(-3em + -2px);
+  }
   &.indent:after,
   &.indent.reversed:before {
     display: block;
@@ -50,17 +57,27 @@ export default {
     }
     #title-subheader {
       flex: 1;
+      display: flex;
       text-align: center;
       padding-top: 0;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+      // border-bottom: 2px solid rgba(255, 255, 255, 0.12);
       span {
         position: relative;
         top: 1.2em;
-        background: #424242;
+        // background: #424242;
+        border: 2px solid rgba(255, 255, 255, 0.12);
         border-radius: 0.5em;
         color: #999;
         font-size: medium;
-        padding: 0.25em 0.5em;
+        padding: 0.25em 0.75em;
+        margin-top: -4px;
+      }
+      &:before,
+      &:after {
+        content: "";
+        display: inline;
+        flex: 1;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.12);
       }
     }
     .col.indent #title-subheader span {

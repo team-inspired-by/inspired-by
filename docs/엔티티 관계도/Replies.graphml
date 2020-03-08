@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd" xmlns:y="http://www.yworks.com/xml/graphml">
+	<key for="node" id="nodegraph" yfiles.type="nodegraphics"/>
+	<key for="edge" id="edgegraph" yfiles.type="edgegraphics"/>
+	<graph edgedefault="directed" id="G">
+		<node id="n1">
+			<data key="nodegraph">
+				<y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
+					<y:Geometry height="74" width="71" x="20" y="67"/>
+					<y:Fill color="#FF8040" transparent="false"/>
+					<y:BorderStyle color="#000000" type="line" width="1.0"/>
+					<y:NodeLabel alignment="center" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.name" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="internal" modelPosition="t" backgroundColor="#FF8040" textColor="#000000" visible="true" height="22" width="67" x="22" y="69">_Replies</y:NodeLabel>
+					<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" modelPosition="t" backgroundColor="#FFFFFF" textColor="#000000" visible="true" height="5" width="67" x="22" y="134">A
+B						<y:LabelModel>
+							<y:ErdAttributesNodeLabelModel/>
+						</y:LabelModel>
+						<y:ModelParameter>
+							<y:ErdAttributesNodeLabelModelParameter/>
+						</y:ModelParameter>
+					</y:NodeLabel>
+				</y:GenericNode>
+			</data>
+		</node>
+		<node id="n2">
+			<data key="nodegraph">
+				<y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
+					<y:Geometry height="169" width="90" x="131" y="20"/>
+					<y:Fill color="#FFFFE1" transparent="false"/>
+					<y:BorderStyle color="#000000" type="line" width="1.0"/>
+					<y:NodeLabel alignment="center" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.name" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="internal" modelPosition="t" backgroundColor="#FFFFE1" textColor="#000000" visible="true" height="22" width="86" x="133" y="22">Comment</y:NodeLabel>
+					<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Courier" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" modelPosition="t" backgroundColor="#FFFFFF" textColor="#000000" visible="true" height="119" width="86" x="133" y="68">id
+contents
+likes
+createdAt
+updatedAt
+author
+post						<y:LabelModel>
+							<y:ErdAttributesNodeLabelModel/>
+						</y:LabelModel>
+						<y:ModelParameter>
+							<y:ErdAttributesNodeLabelModelParameter/>
+						</y:ModelParameter>
+					</y:NodeLabel>
+				</y:GenericNode>
+			</data>
+		</node>
+		<edge id="e1" source="n1" target="n2">
+			<data key="edgegraph">
+				<y:PolyLineEdge>
+					<y:Path/>
+					<y:LineStyle color="#000000" type="dashed" width="1.0"/>
+					<y:Arrows source="white_diamond" target="circle"/>
+					<y:BendStyle smoothed="false"/>
+				</y:PolyLineEdge>
+			</data>
+		</edge>
+		<edge id="e2" source="n1" target="n2">
+			<data key="edgegraph">
+				<y:PolyLineEdge>
+					<y:Path/>
+					<y:LineStyle color="#000000" type="dashed" width="1.0"/>
+					<y:Arrows source="white_diamond" target="circle"/>
+					<y:BendStyle smoothed="false"/>
+				</y:PolyLineEdge>
+			</data>
+		</edge>
+	</graph>
+</graphml>

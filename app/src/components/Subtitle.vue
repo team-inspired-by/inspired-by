@@ -1,6 +1,6 @@
 <template>
-  <div id="subtitle" :class="[pageType, isMoving ? 'isMoving' : '']">
-    <div v-if="pageType == 'git'">
+  <div id="subtitle" :class="[pageTo, isMoving ? 'isMoving' : '']">
+    <div v-if="pageTo == 'git'">
       <v-row>
         <v-col cols="12">
           <div
@@ -22,7 +22,7 @@
             </v-col>
             <v-col cols="7" class="justify-left">
               <div>
-                <h1>{{ titleText[pageType] }}</h1>
+                <h1>{{ titleText[pageTo] }}</h1>
               </div>
             </v-col>
           </v-row>
@@ -35,20 +35,19 @@
         <v-col class="pa-0 ma-0" cols="12"></v-col>
       </v-row>
     </div>
-    <!-- <v-container class="intro-container" v-if="pageType=='intro'"></v-container> -->
-    <div v-if="pageType=='intro'">
+    <!-- <v-container class="intro-container" v-if="pageTo=='intro'"></v-container> -->
+    <!-- <div> -->
+    <div v-if="pageTo=='topic'">
       <custom-startitle :topic="{'title': topic, 'x': '50vw', 'y': '50vh'}" selected />
-      <transition name="fade">
-        <v-container id="intro-container" class="pa-0">
-          <canvas
-            id="curved"
-            class="selected"
-            width="500"
-            :height="4600 + windowHeight"
-            ref="curved"
-          ></canvas>
-        </v-container>
-      </transition>
+      <v-container id="intro-container" class="pa-0">
+        <canvas
+          id="curved"
+          :class="{'intro': pageTo == 'topic'}"
+          width="500"
+          :height="4600 + windowHeight"
+          ref="curved"
+        ></canvas>
+      </v-container>
     </div>
   </div>
 </template>
@@ -72,10 +71,11 @@ export default {
   created () {
   },
   computed: {
-    pageType () {
-      return this.$store.getters.getPageType;
+    pageTo () {
+      return this.$store.getters.getPageTo;
     },
     isMoving () {
+      // return true;
       return !(this.$store.getters.getShow);
     },
     topic () {
@@ -83,7 +83,7 @@ export default {
     }
   },
   mounted () {
-    if (this.pageType == 'intro') {
+    if (this.pageTo == 'topic') {
       var canvas = this.$refs['curved']
       var ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -124,7 +124,7 @@ export default {
   & {
     transform: translateX(100vw);
   }
-  &.intro {
+  &.topic {
     width: 100vw;
     height: 100vh;
     transform: translateY(-100vh);
@@ -225,12 +225,12 @@ export default {
     #curved {
       position: relative;
       top: 45vh;
-      // opacity: 0;
-      &.selected {
+      &.intro {
         animation-name: slideout;
-        animation-delay: 1s;
+        animation-delay: 0s;
         animation-duration: 2s;
         animation-timing-function: ease-in;
+        // animation-fill-mode: initial;
         animation-fill-mode: forwards;
       }
     }

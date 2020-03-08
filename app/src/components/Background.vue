@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade" appear>
+  <transition name="item-fade" appear>
     <div id="container-background">
       <!-- <img id="image-sample" :style="{top: -905 + top + 'px'}" src="../assets/samplacam2.png" /> -->
       <!-- <div
@@ -53,11 +53,13 @@ export default {
   },
   computed: {
     selectedImage () {
-      var topic = this.$store.getters.getTopic
-      if (topic != '') {
-        return "default"
-      }
-      return "dark"
+      return "default"
+
+      // var topic = this.$store.getters.getTopic
+      // if (topic != '') {
+      //   return "default"
+      // }
+      // return "dark"
     }
   },
   beforeDestroy () {
