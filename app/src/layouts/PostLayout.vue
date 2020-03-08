@@ -22,7 +22,7 @@ export default {
   name: "PostLayout",
   apollo: {
     clients: {
-      query() {
+      query () {
         return Topics;
       },
       update: data => data
@@ -32,7 +32,7 @@ export default {
   VBoilerplate: {
     functional: true,
 
-    render(h, { data, props, children }) {
+    render (h, { data, props, children }) {
       return h(
         "v-skeleton-loader",
         {
@@ -48,17 +48,65 @@ export default {
     }
   },
   data: () => ({}),
-  created() {
+  created () {
     this.$store.commit("setTopic", this.$route.params.inspiration);
+    console.log('gql string:')
+    console.log(`gql
+    {
+    category: GENERAL,
+    coverImg: "test coverImg",
+    summary: "test summary",
+    contents: """
+## Overview
+ This document gives a way to make a frontend web application with Vue. The steps below are exactly same as "inspired_by" blog.
+
+## Create a vue project with vue-cli
+
+> For information on how to use Vue CLI 3, visit [official documentation](https://cli.vuejs.org/guide/)
+
+- What I chose:
+
+## Install vuetify
+
+- They say:
+
+> Vuetify is a Vue UI Library with beautifully handcrafted Material Components. No design skills required — everything you need to create amazing applications is at your fingertips. """,
+    isPrivate: false,
+    topics: [{
+      name: "front-end"
+    },{
+      name: "back-end"
+    }]
+  }){
+    id
+    category
+    summary
+    coverImg
+    contents
+    author{
+      userType
+    }
+    topics{
+      id
+    }
+    comments{
+      id
+    }
+    numViews
+    numLikes
+    numComments
+    isPrivate
+  }
+    `)
   },
   computed: {
-    topic() {
+    topic () {
       return this.$store.getters.getTopic;
     },
-    show() {
+    show () {
       return this.$store.getters.getShow;
     },
-    sampleText() {
+    sampleText () {
       // console.log("client", this.clients);
       // if (this.client.viewer.properties[0].name != '') {
       //   return this.client.viewer.properties[0].name
@@ -68,7 +116,7 @@ export default {
     }
   },
 
-  mounted() {
+  mounted () {
     // console.log(this.sample);
     this.video = this.$refs.video;
     // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -91,10 +139,10 @@ export default {
     // }
   },
   methods: {
-    expandTopic() {
+    expandTopic () {
       this.expand = !this.expand;
     },
-    expandCarousel() {
+    expandCarousel () {
       this.isCarouselOpen = !this.isCarouselOpen;
       if (this.isCarouselOpen) {
         this.carouselHeight = 700;
@@ -102,11 +150,11 @@ export default {
         this.carouselHeight = 250;
       }
     },
-    selectTopic(key) {
+    selectTopic (key) {
       this.selectedTopic = key;
       this.isTopicSelected = true;
     },
-    handleScroll() {
+    handleScroll () {
       this.$store.commit("setPosY", this.$refs.routeContainer.scrollTop);
     }
   }

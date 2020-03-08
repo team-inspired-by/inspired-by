@@ -3,8 +3,10 @@
     <v-content :class="{ blurred: isPoppedUp }">
       <router-view></router-view>
     </v-content>
-    <Login></Login>
-    <Background></Background>
+    <Login />
+    <Background />
+    <ContentsManager />
+    <custom-subtitle></custom-subtitle>
     <!-- <v-btn color="blue" dark @click="popupLogin()">Open Usage</v-btn> -->
   </v-app>
 </template>
@@ -12,13 +14,15 @@
 <script>
 import Background from "./components/Background";
 import Login from "./components/Login";
+import ContentsManager from "./components/ContentsManager";
 
 export default {
   name: "App",
 
   components: {
     Background,
-    Login
+    Login,
+    ContentsManager
   },
 
   methods: {
@@ -43,6 +47,15 @@ export default {
   width: 0px;
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .blurred {
   opacity: 0.2;
 }
@@ -59,27 +72,27 @@ export default {
   opacity: 0;
 }
 
-.intro-move-enter-active {
+.intro-to-topic-move-enter-active {
   transition: all 1s ease;
 }
-.intro-move-leave-active {
+.intro-to-topic-move-leave-active {
   transition: all 1s ease;
   // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
 }
-.intro-move-enter, .intro-move-leave-to
+.intro-to-topic-move-enter, .intro-to-topic-move-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
   // transform: translateY(50vh);
   transform: translateY(100vh);
 }
 
-.page-move-enter-active {
+.any-to-topic-move-enter-active {
   transition: all 1s ease;
 }
-.page-move-leave-active {
+.any-to-topic-move-leave-active {
   transition: all 1s ease;
   // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
 }
-.page-move-enter, .page-move-leave-to
+.any-to-topic-move-enter, .any-to-topic-move-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
   // transform: translateY(50vh);
   transform: translate(-85vw, 110vh);
@@ -128,6 +141,18 @@ export default {
 
 // }
 
+// .fade-enter-active {
+//   transition-delay: 2s;
+//   transition-duration: 0.5s;
+//   transition-property: opacity;
+//   transition-timing-function: ease;
+// }
+
+// .fade-enter,
+// .fade-leave-active {
+//   opacity: 0;
+// }
+
 .post-fade-enter-active {
   transition-delay: 2s;
   transition-duration: 0.5s;
@@ -135,9 +160,16 @@ export default {
   transition-timing-function: ease;
 }
 
-.post-fade-enter,
+.post-fade-enter-active,
 .post-fade-leave-active {
-  opacity: 0;
+  opacity: 1;
+}
+
+.item-fade-enter-active {
+  animation-name: fade-in;
+  animation-duration: 1s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
 }
 
 .left-edge {

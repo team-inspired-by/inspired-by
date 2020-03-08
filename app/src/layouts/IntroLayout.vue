@@ -6,7 +6,7 @@
         <div id="bg-container" :style="{'background-position-y':backPosY}"></div>
         <div v-if="focusedTopic" id="descriptor">
           <p>{{focusedTopic.description}}</p>
-          <v-btn class="ma-2" outlined color="grey">See this story ></v-btn>
+          <v-btn class="ma-2" outlined color="grey" @click="routeToTopic()">See this story ></v-btn>
         </div>
       </div>
     </transition>
@@ -66,12 +66,18 @@ export default {
     // },
     randomPosY () {
       return Math.floor(Math.random() * 60, 60);
+    },
+    routeToTopic () {
+      // console.log(this.focusedTopic)
+      this.$store.commit("setTopic", this.focusedTopic)
+      this.$router.push('/topic/' + this.focusedTopic)
     }
   },
   computed: {
     focusedTopic () {
-      var title = this.$store.getters.getFocusedTopic
-      return this.topics.filter(obj => { return obj.title == title })[0]
+      // var title = this.$store.getters.getFocusedTopic
+      // return this.topics.filter(obj => { return obj.title == title })[0]
+      return this.$store.getters.getFocusedTopic
     },
     selectedTopic () {
       return this.$store.getters.getTopic;

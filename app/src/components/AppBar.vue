@@ -20,8 +20,14 @@
         <!-- <v-btn icon href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
           <v-icon>mdi-open-in-new</v-icon>
         </v-btn>-->
-        <v-btn icon @click="routeTo('admin')" target="_blank" text>
+        <v-btn icon @click="routeTo('post')" target="_blank" text>
+          <v-icon>mdi-pencil-plus-outline</v-icon>
+        </v-btn>
+        <v-btn icon @click="routeTo('')" target="_blank" text>
           <v-icon>mdi-wrench-outline</v-icon>
+        </v-btn>
+        <v-btn icon @click="login()" target="_blank" text>
+          <v-icon>mdi-account-circle-outline</v-icon>
         </v-btn>
         <v-btn
           icon
@@ -56,6 +62,10 @@ export default {
     window.removeEventListener("scroll", this.debouncedScroller);
   },
   methods: {
+    login () {
+      this.$store.commit("setPopupLogin", true);
+      return;
+    },
     routeBack () {
       // this.$store.commit("movePageTo", "inspiration");
       // window.scrollTo({
@@ -72,21 +82,20 @@ export default {
     routeTo (path) {
       // this.$store.commit("movePageTo", "admin");
       // setTimeout(() => {
-      this.$router.push("/admin");
+      this.$router.push("/admin/" + path);
       // }, 1000);
     },
     handleScroll () {
       if (window.scrollY > 0) this.isScrolled = true;
       else this.isScrolled = false;
-    },
-
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 .app-box {
   position: fixed;
-  z-index: 10;
+  z-index: 500;
   #shadow {
     position: fixed;
     top: 0;

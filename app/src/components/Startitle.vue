@@ -1,9 +1,9 @@
 <template>
   <div
-    id="star"
+    class="star"
     :style="{'top': topic.y, 'right': topic.x}"
     @click="focus"
-    :class="{'isFocused': isFocused || isSelected, 'isSelected': isSelected}"
+    :class="{'isFocused': isFocused || isSelected || selected, 'isSelected': isSelected || selected}"
   >
     <p v-if="isNeeded">{{ topic.title }}</p>
   </div>
@@ -14,18 +14,16 @@ export default {
   name: "custom-startitle",
   props: {
     "topic": Object,
-    "selected": Boolean
+    "selected": Boolean,
   },
   data: () => ({
-    isSelected: false
   }),
   mounted () {
-    this.isSelected = this.selected
   },
   methods: {
     focus () {
       if (this.isFocused) {
-        this.isSelected = true
+        // this.isSelected = true
         this.$store.commit("setTopic", this.topic.title)
         this.$router.push('/topic/' + this.topic.title)
       } else {
@@ -54,6 +52,10 @@ export default {
         return false
       }
       return true
+    },
+    isSelected () {
+      if (this.selected) return true
+      return this.topic.title == this.$store.getters.getTopic
     }
   }
 }
@@ -65,13 +67,13 @@ export default {
     top: -15em;
   }
 }
-#star {
+.star {
   position: absolute;
   font-size: x-large;
   line-height: 1em;
   font-family: "Times New Roman", Times, serif;
   cursor: pointer;
-  transition: right 1s, top 1s, font-size 1s, color 2s;
+  transition: right 1s, top 1s, font-size 1s, color 2s, opacity 1s 0.5s;
   z-index: 5;
   p {
     text-shadow: none;
@@ -123,11 +125,22 @@ export default {
   &.isSelected {
     top: 45vh !important;
     right: calc(50vw - 5.5em) !important;
+    // opacity: 0;
     animation-name: slideout;
     animation-delay: 1s;
     animation-duration: 1s;
     animation-timing-function: ease-in;
     animation-fill-mode: forwards;
   }
+  // &.blowing {
+  //   top: 45vh !important;
+  //   right: calc(50vw - 5.5em) !important;
+  //   opacity: 1;
+  //   animation-name: slideout;
+  //   animation-delay: 1s;
+  //   animation-duration: 1s;
+  //   animation-timing-function: ease-in;
+  //   animation-fill-mode: forwards;
+  // }
 }
 </style>

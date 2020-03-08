@@ -1,12 +1,11 @@
 <template>
   <div>
     <transition name="project-move">
-      <div v-if="show">
+      <div v-if="isShowing">
         <!-- <div id="line"></div> -->
         <router-view></router-view>
       </div>
     </transition>
-    <custom-subtitle></custom-subtitle>
   </div>
 </template>
 
@@ -16,32 +15,32 @@ import { RecentRepo, RecentRepo2, Topics } from "../queries/repo";
 
 export default {
   name: "MainLayout",
-  apollo: {
-    clients: {      query () {
-        return Topics;
-      },
-      update: data => data
-    }
-  },
+  // apollo: {
+  //   clients: {      query () {
+  //       return Topics;
+  //     },
+  //     update: data => data
+  //   }
+  // },
   inject: ["theme"],
-  VBoilerplate: {
-    functional: true,
+  // VBoilerplate: {
+  //   functional: true,
 
-    render (h, { data, props, children }) {
-      return h(
-        "v-skeleton-loader",
-        {
-          ...data,
-          props: {
-            boilerplate: true,
-            elevation: 2,
-            ...props
-          }
-        },
-        children
-      );
-    }
-  },
+  //   render (h, { data, props, children }) {
+  //     return h(
+  //       "v-skeleton-loader",
+  //       {
+  //         ...data,
+  //         props: {
+  //           boilerplate: true,
+  //           elevation: 2,
+  //           ...props
+  //         }
+  //       },
+  //       children
+  //     );
+  //   }
+  // },
   data: () => ({
   }),
   created () {
@@ -51,7 +50,7 @@ export default {
     // topic () {
     //   return this.$store.getters.getTopic;
     // },
-    show () {
+    isShowing () {
       return this.$store.getters.getShow;
     },
     sampleText () {

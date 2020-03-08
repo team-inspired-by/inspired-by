@@ -116,3 +116,15 @@ npm i --save @algoz098/vue-player
 ```bash
 npm install --save vue-scrollto
 ```
+
+## Install vue-images-loaded
+
+```bash
+npm install --save vue-images-loaded
+```
+
+## Install v-scroll-lock
+
+```bash
+npm install v-scroll-lock --save
+```
