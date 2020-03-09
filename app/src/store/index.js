@@ -276,7 +276,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       return state.isPostOpened;
     },
     getPost(state) {
-      console.log("post: ", state.post);
+      // console.log("post: ", state.post);
       return state.post;
     },
     getImageUrl(state) {
