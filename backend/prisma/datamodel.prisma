@@ -1,0 +1,160 @@
+type User {
+  id: ID! @id
+  openId: String! @unique
+  accessToken: String
+  userType: UserType!
+  email: String!
+  name: String
+  alias: String
+  profileImg: String
+  initialLetter: String
+  isHeavyUser: Boolean! @default(value: false)
+  level: levelType! 
+  posts: [Post!]! @relation(name: "PostOnwer")
+  contributor: Contribution @relation(name: "UserToContributor", onDelete: CASCADE)
+  comments: [Comment!]! @relation(name: "CommentAuthor", onDelete: CASCADE)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Post {
+  title: String! @unique
+  category: Category! @default(value: GENERAL)
+  owner: User! @relation(name: "PostToOwner", onDelete:SET_NULL)
+  topic: Topic @relation(name: "PostTopic")
+  comments: [Comment!]! @relation(name: "Comments", onDelete: CASCADE)
+  gitPosts: GitPost @relation(name: "GitPostToPost", onDelete: CASCADE, link: INLINE)
+  bookPosts: BookPost @relation(name: "BookPostToPost", onDelete: CASCADE, link: INLINE)
+  contributions: [Contribution] @relation(name: "PostToContribution", onDelete: SET_NULL)
+  series: Series @relation(name: "SeriesPosts")
+  contents: String!
+  keywords: [String] @scalarList(strategy: RELATION)
+  summary: [String] @scalarList(strategy: RELATION)
+  numViews: Int! @default(value: 0)
+  numLikes: Int! @default(value: 0)
+  numComments: Int! @default(value: 0)
+  isPrivate: Boolean! @default(value: true)
+  publishedAt: DateTime @publishedAt
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+type Contribution {
+  id: ID! @id
+  post: Post! @relation(name: "PostToContribution", onDelete: CASCADE)
+  contributionName: String!
+  contributor: User! @relation(name: "UserToContributor")
+  type: ContributionType!
+  description: String
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type GitPost {
+  id: ID! @id
+  post: Post! @relation(name: "GitPostToPost", onDelete: CASCADE)
+  gitId: String!
+  gitAuthor: [String]! @scalarList(strategy: RELATION)
+  gitTitle: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type BookPost {
+  id: ID! @id
+  post: Post! @relation(name: "BookPostToPost", onDelete: CASCADE)
+  bookName: String!
+  bookPublisher: String!
+  LinkedStore: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+
+
+type Series {
+  id: ID! @id
+  name: String!
+  posts: [Post] @relation(name: "SeriesPosts", onDelete: CASCADE)
+  description: String!
+  numViews: Int! @default(value: 0)
+  numLikes: Int! @default(value: 0)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Comment {
+  id: ID! @id
+  post: Post! @relation(name:"Comments", onDelete: SET_NULL)
+  author: User! @relation(name:"CommentAuthor", onDelete: SET_NULL)
+  contents: String!
+  replies: [Comment] @relation(name: "Replies")
+  likes: Int! @default(value: 0)
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+type Topic {
+  id: ID! @id
+  name: String! @unique
+  posts: [Post] @relation(name: "PostTopic", onDelete: CASCADE)
+  events: [Event] @relation(name: "TopicEvents", onDelete: CASCADE)
+  coverImg: String
+  coverDescription: String
+  numViews: Int! @default(value: 0)
+  backImg: String
+  icon: String
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type Event {
+  id: ID! @id
+  name: String!
+  topic: Topic! @relation(name: "TopicEvents", onDelete: SET_NULL)
+  description: String!
+  mainImg: String
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+type File { 
+  id: ID! @id
+  author: User!
+  alias: String!
+  type: [FileType] @scalarList(strategy: RELATION)
+  size: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
+}
+
+enum Category {
+  GENERAL
+  GIT
+  BOOK
+}
+enum UserType {
+  GITHUB
+  GOOGLE
+}
+
+enum levelType {
+  VISITOR
+  MEMBER
+  WRITER
+  MANAGER
+}
+enum LinkedStore {
+  YES24
+  KYOBO
+}
+enum ContributionType {
+  TYPO
+  INFO_CORRECTION
+  INFO_ADDTION
+}
+enum FileType {
+  IMAGE
+  PDF
+  ETC
+}
+
+
