@@ -1,7 +1,7 @@
 <template>
   <v-container class="pt-0">
     <custom-appbar id="app-bar" :topic="topic" />
-    <div id="contents-box">
+    <div id="contents-box" v-if="isLoaded">
       <v-layout
         id="card-contents"
         class="d-flex justify-space-between flex-wrap overflow-y-auto pa-3"
@@ -12,7 +12,7 @@
               <span id="circle" ref="circle"></span>
               <span>
                 <h2 class="project-type">Github Project</h2>
-                <h1 class="main-title">{{repo['name']}}</h1>
+                <h1 class="main-title">{{repo['name'] ? repo['name'] : ''}}</h1>
                 <!-- <h1 class="main-title">Explore, and Do.</h1> -->
                 <!-- <p>
                   This project is an web application for private blogging.
@@ -27,8 +27,8 @@
                     width="5em"
                     class="px-2 py-1 mr-2 d-inline-block"
                     align="center"
-                    :color="repo['primaryLanguage']['color']"
-                  >{{repo['primaryLanguage'].name}}</v-card>
+                    :color="repo['primaryLanguage'] ? repo['primaryLanguage']['color'] : ''"
+                  >{{repo['primaryLanguage'] ? repo['primaryLanguage']['name']: ''}}</v-card>
                   <span class="tag-label">Collaborated with</span>
                 </p>
                 <v-btn text color="primary">
@@ -126,26 +126,33 @@
       <custom-subheader title="Wiki" indent />
       <v-row id="wiki-box" v-scroll-to="'#wiki-box'">
         <v-col cols="12" sm="3" class="pr-0 pl-5">
-          <v-list class="card-list fill-height" flat rounded>
-            <v-subheader>Documents</v-subheader>
-          </v-list>
+          <div class="card-list fill-height">
+            <v-list flat rounded>
+              <v-subheader>Documents</v-subheader>
+              <v-list-item-group>
+                <v-list-item></v-list-item>
+              </v-list-item-group>
+            </v-list>
+            <v-treeview
+              v-model="tree"
+              :open="open"
+              :items="documents"
+              activatable
+              item-key="name"
+              open-on-click
+            >
+              <template v-slot:prepend="{item, open}">
+                <v-icon v-if="!item['format']">{{open ? 'mdi-folder-open' : 'mdi-folder'}}</v-icon>
+                <v-icon v-else>{{ files[item['format']] }}</v-icon>
+              </template>
+            </v-treeview>
+          </div>
         </v-col>
-        <v-col cols="12" sm="9" class="px-0">
-          <v-card class="card-content fill-height mt-0">
-            <v-row class="mx-0">
-              <v-col cols="12"></v-col>
-            </v-row>
+        <v-col cols="12" sm="9" class="px-0 overflow-y-auto">
+          <v-card class="card-content fill-height mt-0 pa-5">
+            <vue-markdown>{{ readme }}</vue-markdown>
           </v-card>
         </v-col>
-      </v-row>
-      <v-row class="py-0 px-5 content-box">
-        <v-card class="ma-0 py-2 px-5">
-          <v-row>
-            <v-col cols="12" md="9">
-              <vue-markdown>{{ content }}</vue-markdown>
-            </v-col>
-          </v-row>
-        </v-card>
       </v-row>
       <custom-subheader title="Issues" indent reversed />
       <v-row class="copyright-box align-center mb-3">
@@ -159,24 +166,45 @@
 
 <script>
 import gql from "graphql-tag";
-import { TestGitQuery } from '../queries/repo';
+import { TestGitQuery, TestGitReadme } from '../queries/repo';
 
 export default {
   name: "Project",
   apollo: {
+    readme: {
+      query () {
+        return TestGitReadme
+      },
+      variables: {
+        owner: "team-inspired-by",
+        name: "inspired-by"
+      },
+      update: data => data
+    },
     clients: {
       query () {
         return TestGitQuery;
       },
       variables: {
-        number_of_repos: "5",
-        object_expression: "/master/"
+        number_of_repos: 5,
+        object_expression: "master:docs/"
       },
       update: data => data
     },
   },
   data: () => ({
-    testing: {},
+    open: ['public'],
+    files: {
+      html: 'mdi-language-html5',
+      js: 'mdi-nodejs',
+      json: 'mdi-json',
+      md: 'mdi-markdown',
+      pdf: 'mdi-file-pdf',
+      png: 'mdi-file-image',
+      txt: 'mdi-file-document-outline',
+      xls: 'mdi-file-excel',
+    },
+    tree: [],
     line_width: 100,
     line_pos_y: 0,
     messages: [
@@ -212,30 +240,6 @@ export default {
         excerpt: "Thank you"
       }
     ],
-    lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel, everti delicatissimi cu eos. Dico iuvaret debitis mel an, et cum zril menandri. Eum in consul legimus accusam. Ea dico abhorreant duo, quo illum minimum incorrupte no, nostro voluptaria sea eu. Suas eligendi ius at, at nemore equidem est. Sed in error hendrerit, in consul constituam cum.',
-    content: `
-# Setting up a frontend web app
-
-- Author: Kim Jihyeong(KJHRicky@gmail.com)
-- Written in Nov 20, 2019
-
-## Overview
-
-This document gives a way to make a frontend web application with Vue. The steps below are exactly same as "inspired_by" blog.
-
-## Create a vue project with vue-cli
-
-> For information on how to use Vue CLI 3, visit [official documentation](https://cli.vuejs.org/guide/)
-
-- What I chose:
-
-## Install vuetify
-
-- They say:
-
-> Vuetify is a Vue UI Library with beautifully handcrafted Material Components. No design skills required — everything you need to create amazing applications is at your fingertips.
-
-        `
   }),
   created () {
     for (let i in this.topics) {
@@ -244,8 +248,8 @@ This document gives a way to make a frontend web application with Vue. The steps
     }
   },
   mounted () {
-    this.line_pos_y = this.$refs['circle'].offsetTop
-    this.line_width = this.$refs['circle'].offsetLeft
+    // this.line_pos_y = this.$refs['circle'].offsetTop
+    // this.line_width = this.$refs['circle'].offsetLeft
     // console.log('circle: ', this.line_width, this.line_pos_y)
     setTimeout(() => {
       console.log('data:')
@@ -254,12 +258,28 @@ This document gives a way to make a frontend web application with Vue. The steps
     }, 2000);
   },
   computed: {
+    isLoaded () {
+      return (this.repo['name']) ? true : false
+    },
     topic () {
       return this.$store.getters.getTopic;
+    },
+    readme () {
+      if (!this.$apolloData.data['readme']) return {}
+      return this.$apolloData.data.readme.repository.object.text
     },
     repo () {
       if (!this.$apolloData.data.clients) return {}
       return this.$apolloData.data.clients.repository
+    },
+    documents () {
+      if (!this.repo['object']) return []
+      let files = this.repo.object.entries
+      for (let i in files) {
+        files[i]['format'] = files[i]['name'].split(".")[1]
+      }
+      console.log(files)
+      return files
     }
   },
   methods: {
@@ -344,6 +364,10 @@ This document gives a way to make a frontend web application with Vue. The steps
     #wiki-box {
       min-height: 80vh;
       height: 80vh;
+      .v-card {
+        height: 80vh;
+        overflow-y: auto;
+      }
     }
     // .content-box {
     //   margin-left: 2em;

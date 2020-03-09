@@ -2,6 +2,7 @@
 
 - Author: Kim Jihyeong(KJHRicky@gmail.com)
 - Written in Dec 5, 2019
+- Modified in Mar 9, 2020
 
 ## Overview
 
@@ -13,6 +14,28 @@ This documents provides a way how to make a backend web server using `mongoDB`, 
 1. run mongoDB
 1. run apollo server with mongoose
 
+### Set up postgreSQL
+
+```bash
+docker pull postgres
+docker run -d -p 5432:5432 --name pgsql -e POSTGRES_PASSWORD=mysecretpassword postgres
+docker volume create pgdata
+docker run -d -p 5432:5432 --name pgsql -it --rm -v pgdata:/var/lib/postgresql/data postgres
+docker exec -it pgsql bash
+root@<container-id>:/# psql -U postgres
+psql (10.3 (Debian 10.3-1.pgdg90+1))
+Type "help" for help.
+postgres=# CREATE DATABASE mytestdb;
+CREATE DATABASE
+postgres=#\q
+```
+
+### Alternative:
+
+````bash
+npm i -g prisma
+
+
 ### Set up apollo-server & GraphiQL
 
 ```bash
@@ -22,7 +45,7 @@ touch index.js
 npm init -y
 npm install apollo-server graphql mongoose dotenv --save
 node .
-```
+````
 
 ### Run `mongoDB`
 
@@ -91,3 +114,44 @@ docker kill <process_id>
 ```bash
 docker exec -it mongodb-server bash
 ```
+
+## Developing steps
+
+### First trial
+
+#### Framework
+
+- Mongoose
+
+  - DB: mongo
+  - Error: circular reference
+  - tried `populate()`
+
+```json
+{
+  0: ObjectId,
+  1: ObjectId
+}
+```
+
+```json
+[
+  0: {
+  key: ''
+},
+  1: {
+  key: ''
+}]
+```
+
+- e.g.) when deleting one of Comments, cause error deleting comment in Post
+
+- Prisma
+
+  - DB: postgre
+  - schema: `datamodel.prisma`
+  -
+
+Prisma.model({
+
+})

@@ -21,8 +21,20 @@ export const TestQuery = gql `
 //     }
 // }`
 
+export const TestGitReadme = gql `
+query($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+        object (expression: "master:README.md") {
+            ... on Blob {
+                text
+            }
+        }
+    }
+}
+`
+
 export const TestGitQuery = gql `
-query ($number_of_repos: Int!){
+query($number_of_repos: Int!, $object_expression: String!){
     repository(owner: "team-inspired-by", name: "inspired-by") {
         name
         nameWithOwner
@@ -44,13 +56,14 @@ query ($number_of_repos: Int!){
         hasWikiEnabled
         createdAt
         openGraphImageUrl
-        # object (expression: $object_expression) {
-        #     ... on Tree {
-        #         entries {
-        #             name
-        #         }
-        #     }
-        # }
+        object (expression: $object_expression) {
+            ... on Tree {
+                entries {
+                    name
+                    type
+                }
+            }
+        }
         repositoryTopics(first: $number_of_repos) {
             edges {
                 node {
