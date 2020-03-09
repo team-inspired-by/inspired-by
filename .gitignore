@@ -1,9 +1,7 @@
 node_modules
-<<<<<<< HEAD
 .DS_Store
 .env
-=======
 app/.env
 docker-compose-server
 server/.env
->>>>>>> 2d16fcdca07d456f8ef8ff3b3116fbac9304e296
+.vscode
