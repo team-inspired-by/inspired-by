@@ -1,0 +1,52 @@
+version: "3"
+networks:
+  app-tier:
+    driver: bridge
+services:
+  #   sequelize:
+  #     networks:
+  #       - app-tier
+  #     build: .
+  #     links:
+  #       - postgres-114
+  #     volumes:
+  #       - .:/sequelize
+  #     environment:
+  #       SEQ_DB: sequelize_test
+  #       SEQ_USER: sequelize_test
+  #       SEQ_PW: sequelize_test
+  backend:
+    networks:
+      - app-tier
+    # network_mode: service:postgres-114
+    env_file:
+      - .env
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+    links:
+      - postgres-114
+    depends_on:
+      - postgres-114
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+  postgres-114:
+    networks:
+      - app-tier
+    image: postgres:11.4
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    #   - "5432:5432"
+    container_name: postgres-114

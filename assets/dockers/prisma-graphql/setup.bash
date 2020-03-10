@@ -1,1 +1,1 @@
-npm install -g prisma
+npm install -g prismadocker 
