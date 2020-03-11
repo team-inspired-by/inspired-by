@@ -6,11 +6,18 @@
           <h3 class="pb-2">Oops, you aren't logged in yet.</h3>
           <v-row class="text-center">
             <v-col cols="3">
-              <v-btn class="ma-2" outlined large fab color="grey darken-2" @click.stop="validate()">
+              <v-btn
+                class="ma-2"
+                outlined
+                large
+                fab
+                color="grey darken-2"
+                @click.stop="validate('github')"
+              >
                 <v-icon>mdi-github-face</v-icon>
                 <!-- <img src="../assets/logo_kakaotalk.png" @click.stop="validate()" /> -->
               </v-btn>
-              <p>Login with Github</p>
+              <p @click.stop="validate('github')">Login with Github</p>
             </v-col>
             <v-col cols="3">
               <v-btn class="ma-2" outlined large fab color="grey darken-3">
@@ -25,7 +32,14 @@
               <p>Login with Apple</p>
             </v-col>
             <v-col cols="3">
-              <v-btn class="ma-2" outlined large fab color="red darken-3" @click="closePopup">
+              <v-btn
+                class="ma-2"
+                outlined
+                large
+                fab
+                color="red darken-3"
+                @click="closePopup"
+              >
                 <v-icon>mdi-close</v-icon>
               </v-btn>
               <p @click="closePopup">Nada.</p>
@@ -37,13 +51,27 @@
             <h3>Hello, {{ name }}!</h3>
             <v-row>
               <v-col cols="6">
-                <v-btn class="ma-2" outlined large fab color="grey darken-3" @click="logout">
+                <v-btn
+                  class="ma-2"
+                  outlined
+                  large
+                  fab
+                  color="grey darken-3"
+                  @click="logout"
+                >
                   <v-icon>mdi-logout</v-icon>
                 </v-btn>
                 <p @click="logout">Logout.</p>
               </v-col>
               <v-col cols="6">
-                <v-btn class="ma-2" outlined large fab color="red darken-3" @click="closePopup">
+                <v-btn
+                  class="ma-2"
+                  outlined
+                  large
+                  fab
+                  color="red darken-3"
+                  @click="closePopup"
+                >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <p @click="closePopup">Nada.</p>
@@ -73,7 +101,9 @@
             </v-row>
             <v-row>
               <v-col>
-                <v-btn text class="red darken-5" @click="closePopup">No, I don't want to register</v-btn>
+                <v-btn text class="red darken-5" @click="closePopup"
+                  >No, I don't want to register</v-btn
+                >
               </v-col>
             </v-row>
           </v-container>
@@ -84,12 +114,16 @@
               <v-col cols="6">
                 <v-checkbox class="py-0 my-0" v-model="form.terms">
                   <template v-slot:label>
-                    <div @click.stop>I agreed to collect some user data in inspired_by page</div>
+                    <div @click.stop>
+                      I agreed to collect some user data in inspired_by page
+                    </div>
                   </template>
                 </v-checkbox>
                 <v-checkbox class="py-0 my-0" v-model="form.subscribe">
                   <template v-slot:label>
-                    <div @click.stop>I want to subscribe new posts by email.</div>
+                    <div @click.stop>
+                      I want to subscribe new posts by email.
+                    </div>
                   </template>
                 </v-checkbox>
               </v-col>
@@ -114,7 +148,7 @@
 <script>
 export default {
   name: "custom-login",
-  data () {
+  data() {
     const defaultForm = Object.freeze({
       alias: "",
       email: "",
@@ -133,12 +167,12 @@ export default {
     };
   },
   computed: {
-    isPoppedUp () {
+    isPoppedUp() {
       return this.$store.getters.getPopupLogin;
     }
   },
   watch: {
-    isPoppedUp (newVal, oldVal) {
+    isPoppedUp(newVal, oldVal) {
       if (newVal) {
         document.getElementsByTagName("html")[0].style.overflow = "hidden";
       } else {
@@ -147,14 +181,17 @@ export default {
     }
   },
   methods: {
-    closePopup () {
+    closePopup() {
       this.$store.commit("setPopupLogin", false);
     },
-    validate () {
+    validate(loginType) {
+      if (loginType == "github") {
+        window.open("https://github.com/login/oauth/authorize", "_blank");
+      }
       this.loggedIn = true;
       this.step = 1;
     },
-    register () {
+    register() {
       this.step = 3;
       this.$store.commit("login", true);
       setTimeout(() => {
@@ -162,7 +199,7 @@ export default {
         this.step = 0;
       }, 3000);
     },
-    logout () {
+    logout() {
       this.loggedIn = false;
       this.step = 0;
     }
