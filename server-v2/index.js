@@ -13,6 +13,7 @@ const {
   GraphQLList
 } = require("graphql");
 const models = require('./models');
+const resolver = require("./resolvers");
 const express = require("express");
 const graphqlHTTP = require("express-graphql");
 
@@ -24,7 +25,7 @@ var options = {}
 const {
   generateSchema
 } = require("sequelize-graphql-schema")(options);
-// const models = require('./models')
+
 const app = express();
 
 // const sequelize = new Sequelize("Test", "sequelize_test", "sequelize_test", {
@@ -83,63 +84,63 @@ const app = express();
 //   })
 // });
 
-// let schema = new GraphQLSchema({
-//   query: new GraphQLObjectType({
-//     name: "RootQueryType",
-//     fields: {
-//       // Field for retrieving a user by ID
-//       user: {
-//         type: userType,
-//         // args will automatically be mapped to `where`
-//         args: {
-//           id: {
-//             description: "id of the user",
-//             type: new GraphQLNonNull(GraphQLInt)
-//           }
-//         },
-//         resolve: resolver(User)
-//       },
+let schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: "RootQueryType",
+    fields: {
+      // Field for retrieving a user by ID
+      user: {
+        type: userType,
+        // args will automatically be mapped to `where`
+        args: {
+          id: {
+            description: "id of the user",
+            type: new GraphQLNonNull(GraphQLInt)
+          }
+        },
+        resolve: resolver(User)
+      },
 
-//       // Field for searching for a user by name
-//       userSearch: {
-//         type: new GraphQLList(userType),
-//         args: {
-//           query: {
-//             description: "Fuzzy-matched name of user",
-//             type: new GraphQLNonNull(GraphQLString)
-//           }
-//         },
-//         resolve: resolver(User, {
-//           // Custom `where` clause that fuzzy-matches user's name and
-//           // alphabetical sort by username
-//           before: (findOptions, args) => {
-//             findOptions.where = {
-//               name: {
-//                 $like: `%${args.query}%`
-//               }
-//             };
-//             findOptions.order = [
-//               ["name", "ASC"]
-//             ];
-//             return findOptions;
-//           },
-//           // Custom sort override for exact matches first
-//           after: (results, args) => {
-//             return results.sort((a, b) => {
-//               if (a.name === args.query) {
-//                 return 1;
-//               } else if (b.name === args.query) {
-//                 return -1;
-//               }
+      // Field for searching for a user by name
+      userSearch: {
+        type: new GraphQLList(userType),
+        args: {
+          query: {
+            description: "Fuzzy-matched name of user",
+            type: new GraphQLNonNull(GraphQLString)
+          }
+        },
+        resolve: resolver(User, {
+          // Custom `where` clause that fuzzy-matches user's name and
+          // alphabetical sort by username
+          before: (findOptions, args) => {
+            findOptions.where = {
+              name: {
+                $like: `%${args.query}%`
+              }
+            };
+            findOptions.order = [
+              ["name", "ASC"]
+            ];
+            return findOptions;
+          },
+          // Custom sort override for exact matches first
+          after: (results, args) => {
+            return results.sort((a, b) => {
+              if (a.name === args.query) {
+                return 1;
+              } else if (b.name === args.query) {
+                return -1;
+              }
 
-//               return 0;
-//             });
-//           }
-//         })
-//       }
-//     }
-//   })
-// });
+              return 0;
+            });
+          }
+        })
+      }
+    }
+  })
+});
 
 // let schema = new GraphQLSchema({
 //   query: new GraphQLObjectType({

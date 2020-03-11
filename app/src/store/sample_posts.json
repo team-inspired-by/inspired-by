@@ -2,6 +2,7 @@
     "posts": [{
             "title": "Lorem ipsum dolor sit amet.",
             "category": "GENERAL",
+            "ownerId": "975d0ff76e5780b3efb943c815172073bcf00000",
             "owner": {
                 "id": "975d0ff76e5780b3efb943c815172073bcf00000",
                 "openId": "975d0ff76e5780b3efb943c815172073bcf00000",
