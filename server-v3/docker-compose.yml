@@ -16,6 +16,7 @@ services:
     ports:
       - "4000:4000"
       - "8080:8080"
+      - "8000:8000"
     links:
       - postgres-114
     depends_on:
