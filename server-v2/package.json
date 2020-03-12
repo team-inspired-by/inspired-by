@@ -17,6 +17,7 @@
   "version": "1.0.0",
   "description": "inspired-by server version 2",
   "main": "index.js",
+  "type": "module",
   "devDependencies": {},
   "scripts": {
     "test": "node index.js"
