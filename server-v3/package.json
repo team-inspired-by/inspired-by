@@ -4,7 +4,8 @@
   "description": "server for blogging with inspired-by",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js",
+    "babel-version": "npx babel --version"
   },
   "repository": {
     "type": "git",
@@ -14,13 +15,30 @@
     "blog"
   ],
   "author": "KJHRicky (kjhricky@gmail.com)",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/team-inspired-by/inspired-by/issues"
   },
   "homepage": "https://github.com/team-inspired-by/inspired-by#readme",
   "dependencies": {
-    "apollo-server": "^2.11.0",
-    "graphql": "^14.6.0"
+    "apollo-server-express": "^2.11.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql": "^14.6.0",
+    "graphql-import": "^1.0.0-beta.2",
+    "graphql-relay": "^0.6.0",
+    "graphql-sequelize": "^9.4.0",
+    "http": "0.0.0",
+    "pg": "^7.18.2",
+    "sequelize": "^5.21.5",
+    "sequelize-cli": "^5.5.1",
+    "typescript": "^3.8.3",
+    "uuid": "^7.0.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.8.7"
   }
 }
