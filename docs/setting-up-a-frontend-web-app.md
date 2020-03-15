@@ -66,3 +66,65 @@ npm install --save simplemde-theme-base
 ```bash
 npm install vue-custom-scrollbar --save
 ```
+
+## Syncing with github
+
+> See: [forming calls for graphQL](https://developer.github.com/v4/guides/forming-calls/)
+
+### Install `axios`
+
+```bash
+npm install axios --save
+```
+
+### Use `apollo`
+
+> See: [how to use the github graphql api in vue js with apollo](https://medium.com/@anoob.bava/how-to-use-the-github-graphql-api-in-vue-js-with-vue-apollo-24304b6731cf)
+
+```bash
+vue add apollo
+```
+
+<!--
+### install `eslint-plugin-graphql` and `typescript`
+
+```bash
+npm install eslint-plugin-graphql --save
+npm install typescript --save
+``` -->
+
+### Warning
+
+- when adding `app/.env` file for adding github auth token value, don't forget to add `app/.env` to `.gitignore`.
+
+## run vue app
+
+```bash
+npm run serve
+```
+
+## Install video player
+
+> See: [a-hml5-video-player-vue-component](https://vuejsexamples.com/a-hml5-video-player-vue-component/)
+
+```bash
+npm i --save @algoz098/vue-player
+```
+
+## Install scroll-to
+
+```bash
+npm install --save vue-scrollto
+```
+
+## Install vue-images-loaded
+
+```bash
+npm install --save vue-images-loaded
+```
+
+## Install v-scroll-lock
+
+```bash
+npm install v-scroll-lock --save
+```
