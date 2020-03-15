@@ -1,23 +1,181 @@
 <template>
   <v-app>
-    <v-content>
+    <v-content :class="{ blurred: isPoppedUp }">
       <router-view></router-view>
     </v-content>
+    <Login />
+    <Background />
+    <ContentsManager />
+    <custom-subtitle></custom-subtitle>
+    <!-- <v-btn color="blue" dark @click="popupLogin()">Open Usage</v-btn> -->
   </v-app>
 </template>
 
 <script>
+import Background from "./components/Background";
+import Login from "./components/Login";
+import ContentsManager from "./components/ContentsManager";
+
 export default {
   name: "App",
 
-  components: {},
+  components: {
+    Background,
+    Login,
+    ContentsManager
+  },
+
+  methods: {
+    popupLogin () {
+      this.$store.commit("setPopupLogin", true);
+      // console.log(this.$store.getters.getPopupLogin);
+    }
+  },
+
+  computed: {
+    isPoppedUp () {
+      return this.$store.getters.getPopupLogin;
+    }
+  },
 
   data: () => ({})
 };
 </script>
 
-<style>
+<style lang="scss">
 ::-webkit-scrollbar {
   width: 0px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.blurred {
+  opacity: 0.2;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(-10px);
+  opacity: 0;
+}
+
+.intro-to-topic-move-enter-active {
+  transition: all 1s ease;
+}
+.intro-to-topic-move-leave-active {
+  transition: all 1s ease;
+  // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
+}
+.intro-to-topic-move-enter, .intro-to-topic-move-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  // transform: translateY(50vh);
+  transform: translateY(100vh);
+}
+
+.any-to-topic-move-enter-active {
+  transition: all 1s ease;
+}
+.any-to-topic-move-leave-active {
+  transition: all 1s ease;
+  // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
+}
+.any-to-topic-move-enter, .any-to-topic-move-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  // transform: translateY(50vh);
+  transform: translate(-85vw, 110vh);
+}
+
+.project-move-enter-active {
+  transition: all 1s ease;
+}
+.project-move-leave-active {
+  transition: all 1s ease;
+  // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
+}
+.project-move-enter, .project-move-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  // transform: translateY(50vh);
+  transform: translate(100vw);
+}
+
+.post-detail-enter-active {
+  transition: all 0s;
+}
+.post-detail-leave-active {
+  transition: all 0s;
+  // transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
+}
+.post-detail-enter, .post-detail-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  // transform: translateY(50vh);
+  // transform: translate(100vw);
+}
+
+.loader-enter-active {
+  transition: all 0.8s ease;
+  transition-delay: 0.3s;
+}
+.loader-leave-active {
+  transition: all 0.8s cubic-bezier(1, 1, 0.2, 1);
+}
+.loader-enter, .loader-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(100vw);
+}
+
+// .post-fade-enter-active,
+// .post-fade-leave-active {
+
+// }
+
+// .fade-enter-active {
+//   transition-delay: 2s;
+//   transition-duration: 0.5s;
+//   transition-property: opacity;
+//   transition-timing-function: ease;
+// }
+
+// .fade-enter,
+// .fade-leave-active {
+//   opacity: 0;
+// }
+
+.post-fade-enter-active {
+  transition-delay: 2s;
+  transition-duration: 0.5s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.post-fade-enter-active,
+.post-fade-leave-active {
+  opacity: 1;
+}
+
+.item-fade-enter-active {
+  animation-name: fade-in;
+  animation-duration: 1s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+.left-edge {
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+}
+.right-edge {
+  border-right: 2px solid rgba(255, 255, 255, 0.12);
 }
 </style>

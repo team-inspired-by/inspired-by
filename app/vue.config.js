@@ -1,8 +1,9 @@
-// module.exports = {
-//     pluginOptions: {
-//         apollo: {
-//             lintGQL: true,
-//             enableEngine: false
-//         }
-//     }
-// };
+module.exports = {
+    pluginOptions: {
+        apollo: {
+            lintGQL: false,
+            enableEngine: false
+        }
+    },
+    lintOnSave: false
+};

@@ -1,34 +1,5 @@
 <template>
   <v-container>
-    <v-app-bar
-      v-show="!isMain"
-      color="#303030aa"
-      scroll-target="#card-contents"
-      dark
-      flat
-      shrink-on-scroll
-      prominent
-    >
-      <!-- <template v-slot:img="{ props }">
-        <v-img v-bind="props" gradient="to top right, rgba(100,115,201,.7), rgba(25,32,72,.7)"></v-img>
-      </template>-->
-      <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
-      <v-btn icon @click="$router.push('/')">
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
-
-      <v-toolbar-title class="d-flex align-center">
-        <span id="logo">Inspired by</span>
-        <span id="topic" class="topic ml-2">{{ topic }}</span>
-      </v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <!-- <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
-        <span class="mr-2">Credit</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>-->
-    </v-app-bar>
     <v-layout
       id="card-contents"
       class="d-flex justify-space-between flex-wrap overflow-y-auto pa-3"
@@ -40,7 +11,7 @@
           </v-card>
         </v-col>
         <v-col cols="6" md="6">
-          <vue-markdown>{{ content }} </vue-markdown>
+          <vue-markdown>{{ content }}</vue-markdown>
         </v-col>
       </v-row>
     </v-layout>
@@ -75,35 +46,18 @@ This document gives a way to make a frontend web application with Vue. The steps
 
         `
   }),
-  created() {
+  created () {
     for (let i in this.topics) {
       this.topics[i]["top"] = this.randomPosY() + "vh";
       this.topics[i]["left"] = this.randomPosX() + "vw";
     }
   },
   computed: {
-    topic() {
+    topic () {
       return this.$store.getters.getTopic;
     },
-    isMain() {
-      return this.$store.getters.getIsMain;
-    }
   },
   methods: {
-    expandTopic() {
-      this.expand = !this.expand;
-    },
-    selectTopic(key) {
-      this.selectedTopic = key;
-      this.isTopicSelected = true;
-    },
-    randomPosX() {
-      return Math.floor(Math.random() * 80, 80) + 10;
-    },
-    randomPosY() {
-      var val = Math.floor(Math.random() * 50, 50) + 5;
-      return val > 25 ? val + 35 : val;
-    }
   }
 };
 </script>

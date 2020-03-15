@@ -11,8 +11,8 @@ Vue.use(VueApollo)
 // Name of the localStorage item
 const AUTH_TOKEN = 'apollo-token'
 // Http endpoint
-// const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.github.com/graphql'
-const httpEndpoint = 'https://api.github.com/graphql'
+const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.github.com/graphql'
+// const httpEndpoint = 'http://34.64.74.193'
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
@@ -42,7 +42,6 @@ const defaultOptions = {
   // Override the way the Authorization header is set
   getAuth: () => {
     const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN
-    alert(process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN)
     if (token) {
       return 'Bearer ' + token
     } else {
