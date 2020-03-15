@@ -10,6 +10,6 @@ while ! nc -z postgres-114 5432; do
 done
 # sleep 2
 ./node_modules/.bin/sequelize db:migrate --env development
-# ./node_modules/.bin/sequelize db:seed:all
-echo "Server started"
+./node_modules/.bin/sequelize db:seed:all --env development
+echo "Starting Server..."
 node dist/index.js

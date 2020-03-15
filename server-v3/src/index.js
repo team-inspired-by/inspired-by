@@ -1,4 +1,3 @@
-console.log("executing server-v3");
 import Sequelize from "sequelize";
 import {
   ApolloServer,
@@ -13,9 +12,9 @@ import {
   GraphQLInt,
   GraphQLList
 } from "graphql";
-// import {
-//   importSchema
-// } from "graphql-import";
+import {
+  importSchema
+} from "graphql-import";
 import {
   PubSub
 } from "graphql-subscriptions";
@@ -26,7 +25,7 @@ import {
 //   resolver
 // } from"graphql-sequelize";
 
-import models from "./models";
+import db from "./models";
 // import redsolver from"./resolvers";
 
 // import {
@@ -40,84 +39,11 @@ import {
 import express from "express";
 const app = express();
 
-const data = {
-  posts: []
-};
-
-const resolvers = {
-  Date: new GraphQLScalarType({
-    name: "Date",
-    description: "Date custom scalar type",
-    parseValue(value) {
-      // value from the client
-      console.log("resolving date:");
-      console.log(value);
-      return new Date(value);
-    },
-    serialize(value) {
-      // value sent to the client
-      return value.getTime();
-    },
-    parseLiteral(ast) {
-      if (ast.kind === Kind.INT) {
-        // ast value is always in string format
-        return parseInt(ast.value, 10);
-      }
-      return null;
-    }
-  }),
-  Post: {
-    __resolveType(post, context, info) {
-      if (post.gitId) {
-        return "GitPost";
-      }
-
-      if (post.bookName) {
-        return "BookPost";
-      }
-      return "GeneralPost";
-    }
-  },
-  StashedPost: {
-    __resolveType(stashedPost, context, info) {
-      if (stashedPost.gitId) {
-        return "StashedGitPost";
-      }
-      if (stashedPost.bookName) {
-        return "StashedBookPost";
-      }
-    }
-  },
-  Query: {
-    showPosts(parent, args, context, info) {
-      console.log('on showPosts:')
-      console.log(data.posts)
-      console.log(_)
-      console.log(input)
-      return {
-        message: JSON.stringify(data.posts),
-        post: data.posts[0]
-      }
-    }
-  },
-  Mutation: {
-    addPost: (_, input, {
-      dataSources
-    }) => {
-      console.log(`on mutation addPost:`);
-      console.log(input);
-      data.posts.push(input);
-      console.log(data.posts);
-      return {
-        message: JSON.stringify(data.posts)
-      };
-    }
-  }
-};
-
 // const typeDefs = gql ;
 // const typeDef = importSchema('../schema/schema.graphql');
-import typeDefs from './schema/schema';
+import typeDefs from "./schemas/schemas";
+import resolvers from "./resolvers/resolvers";
+
 const server = new ApolloServer({
   // context: ({ req }): {
   //   getUser: () => Promise<User>;
@@ -144,7 +70,10 @@ const server = new ApolloServer({
   //     });
   //     },
   // }),
-  resolvers: resolvers,
+  context: {
+    db
+  },
+  resolvers,
   typeDefs,
   introspection: process.env.NODE_ENV !== "production",
   playground: process.env.NODE_ENV !== "production"
@@ -160,6 +89,6 @@ app.listen({
   },
   () => {
     console.log(`
-server ready at http: //localhost:4000${server.graphqlPath}`);
+server ready at http://localhost:4000${server.graphqlPath}`);
   }
 );

@@ -2,6 +2,7 @@
 
 - Author: Kim Jihyeong(KJHRicky@gmail.com)
 - Written in Dec 5, 2019
+- Modified in Mar 9, 2020
 
 ## Overview
 
@@ -57,7 +58,7 @@ touch index.js
 npm init -y
 npm install apollo-server graphql mongoose dotenv --save
 node .
-```
+````
 
 ### Run `mongoDB`
 
@@ -126,6 +127,47 @@ docker kill <process_id>
 ```bash
 docker exec -it mongodb-server bash
 ```
+
+## Developing steps
+
+### First trial
+
+#### Framework
+
+- Mongoose
+
+  - DB: mongo
+  - Error: circular reference
+  - tried `populate()`
+
+```json
+{
+  0: ObjectId,
+  1: ObjectId
+}
+```
+
+```json
+[
+  0: {
+  key: ''
+},
+  1: {
+  key: ''
+}]
+```
+
+- e.g.) when deleting one of Comments, cause error deleting comment in Post
+
+- Prisma
+
+  - DB: postgre
+  - schema: `datamodel.prisma`
+  -
+
+Prisma.model({
+
+})
 
 ## Tips
 

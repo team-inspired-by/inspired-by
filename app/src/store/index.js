@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import sample_posts from './sample_posts.json';
-import sample_users from './sample_users.json';
+import sample_posts from "./sample_posts.json";
+import sample_users from "./sample_users.json";
 
 Vue.use(Vuex);
 
@@ -12,7 +12,8 @@ export default new Vuex.Store({
     pageTo: "",
     topic: "",
     focusedTopic: "",
-    topicLists: [{
+    topicLists: [
+      {
         text: "English"
       },
       {
@@ -43,11 +44,11 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     `,
     pagePosition: {},
     pageTiming: {
-      'intro-topic': 4000,
-      'post-topic': 0,
-      'topic-git': 2000,
-      'post-git': 2000,
-      'admin-admin': 0,
+      "intro-topic": 4000,
+      "post-topic": 0,
+      "topic-git": 2000,
+      "post-git": 2000,
+      "admin-admin": 0
     },
     samplePost: sample_posts[0],
     samplePosts: sample_posts,
@@ -70,7 +71,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       // if (!state.pageType) state.pageType = val.to
       state.pagePosition[val.from] = window.scrollY;
       if (val.routingAnimation) {
-        state.show = false
+        state.show = false;
         window.scrollTo({
           top: 0,
           left: 0,
@@ -78,10 +79,9 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
         });
       }
 
-
       setTimeout(() => {
         state.show = true;
-      }, state.pageTiming[val.from + '-' + val.to] | 1000);
+      }, state.pageTiming[val.from + "-" + val.to] | 1000);
 
       setTimeout(() => {
         window.scrollTo({
@@ -89,8 +89,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
           left: 0,
           behavior: "smooth"
         });
-      }, (state.pageTiming[val.from + '-' + val.to] + 1000) | 0);
-
+      }, (state.pageTiming[val.from + "-" + val.to] + 1000) | 0);
     },
     // movePage (state, to) {
     //   state.pagePosition[to] = window.scrollY;
@@ -150,87 +149,48 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     },
     closePost(state, val) {
       state.isPostOpened = false;
-      state.post = {}
+      state.post = {};
     },
     uploadImage(state, val) {
       if (val.type == "unsplash") {
         this.imageToUpload = val.data.urls.small;
         // Add logig to uploac
-      } else if (val.type == "local") {}
+      } else if (val.type == "local") {
+      }
     }
   },
   actions: {
-    focusTopic({
-      commit
-    }, {
-      newVal
-    }) {
+    focusTopic({ commit }, { newVal }) {
       commit("focusTopic", newVal);
     },
-    setTopic({
-      commit
-    }, {
-      newVal
-    }) {
+    setTopic({ commit }, { newVal }) {
       commit("setTopic", newVal);
     },
-    loadTopicLists({
-      commit
-    }, {}) {
+    loadTopicLists({ commit }, {}) {
       commit("loadTopicLists");
     },
-    setPopupContentsManager({
-      commit
-    }, {
-      newVal
-    }) {
+    setPopupContentsManager({ commit }, { newVal }) {
       commit("setContentsManager", newVal);
     },
-    setPopupLogin({
-      commit
-    }) {
+    setPopupLogin({ commit }) {
       commit("setPopupLogin", newVal);
     },
-    movePageTo({
-      commit
-    }, {
-      newVal
-    }) {
+    movePageTo({ commit }, { newVal }) {
       commit("movePageTo", movePageTo);
     },
-    login({
-      commit
-    }, {
-      newVal
-    }) {
+    login({ commit }, { newVal }) {
       commit("login", login);
     },
-    openPost({
-      commit
-    }, {
-      newVal
-    }) {
+    openPost({ commit }, { newVal }) {
       commit("openPost", openPost);
     },
-    loadPost({
-      commit
-    }, {
-      newVal
-    }) {
+    loadPost({ commit }, { newVal }) {
       commit("loadPost", loadPost);
     },
-    closePost({
-      commit
-    }, {
-      newVal
-    }) {
+    closePost({ commit }, { newVal }) {
       commit("closePost", closePost);
     },
-    uploadImage({
-      commit
-    }, {
-      newVal
-    }) {
+    uploadImage({ commit }, { newVal }) {
       commit("uploadImage", uploadImage);
     }
   },
@@ -261,10 +221,10 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       return state.pageTo;
     },
     getPosition(state) {
-      return state.pagePosition
+      return state.pagePosition;
     },
     getTiming(state) {
-      return state.pageTiming
+      return state.pageTiming;
     },
     getLoginStatus(state) {
       return state.loginStatus;
@@ -276,7 +236,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       return state.isPostOpened;
     },
     getPost(state) {
-      console.log("post: ", state.post);
+      // console.log("post: ", state.post);
       return state.post;
     },
     getImageUrl(state) {

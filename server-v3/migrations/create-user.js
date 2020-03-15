@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
+    return queryInterface.createTable("Users", {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        primaryKey: true,
+        primaryKey: true
       },
       openId: {
         allowNull: false,
@@ -78,10 +78,10 @@ module.exports = {
       },
       writtenPostId: {
         allowNull: true,
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
-      // writtenPosts: 
-      // scrappedPosts: 
+      // writtenPosts:
+      // scrappedPosts:
       // comments:
       // contributions
       createdAt: {
@@ -93,10 +93,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
-      },
+      }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
+    return queryInterface.dropTable("Users");
   }
 };
