@@ -10,7 +10,7 @@ This document gives a guide how to dockerize a vue app by adding some comments f
 ## Steps
 
 ```docker
-FROM node:lts-alpine
+FROM node:lts
 
 # install simple http server for serving static content
 RUN npm install -g http-server

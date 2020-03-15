@@ -1,0 +1,69 @@
+scalar DateTime
+type Post{
+  id: ID!
+  category: Category!
+  coverImg: String
+  owner: User!
+  # contributor: [Contributor!]!
+  contents: String!
+  # topics: [Topic!]!
+  # comments: [Comment]
+  summary: [String]
+  keywords: [String]
+  numViews: Int!
+  numLikes: Int!
+  numComments: Int!
+  isPrivate: Boolean!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+type Query{
+  posts: [Post!]!
+  post(id: ID!): Post
+  getCommentsCount(postId: ID!): Int
+}
+type Mutation {
+  """포스트 생성 (토픽과 오너는 필수)"""
+  createPost(input: PostInput): Post
+  """포스트의 id값과 일치하는 포스트를 업데이트"""
+  updatePost(postInfo: PostUpdateInfo!, data: PostUpdateInput): Post
+  deletePost(postInfo: PostUpdateInfo!): Post
+  # incrementLike(id: ID!): Post
+  # decrementLike(id: ID!): Post
+}
+
+input PostInput {
+  category: Category!
+  coverImg: String
+  contents: String!
+  topics : [String!]!
+  keywords: [String]
+  summary: [String]
+  isPrivate: Boolean!
+}
+input PostUpdateInput{
+  category: Category
+  coverImg: String
+  contents: String
+  topics : [String]
+  keywords: [String]
+  summary: [String]
+  isPrivate: Boolean
+}
+input PostUpdateInfo {
+  ownerId: ID!
+  postId: ID!
+}
+
+enum Category {
+  GENERAL,
+  GIT,
+  BOOK
+}
+enum ContributorType {
+  TYPO
+  INFO_CORRECTION
+  INFO_ADDTION
+}
+

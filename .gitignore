@@ -1,4 +1,9 @@
 node_modules
+.DS_Store
+.env
 app/.env
 docker-compose-server
 server/.env
+server-v2/.env
+server-v3/dist
+.vscode

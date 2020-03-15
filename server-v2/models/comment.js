@@ -1,17 +1,23 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const Topic = sequelize.define('Topic', {
-    name: {
-      type: DataTypes.STRING,
+  const Comment = sequelize.define('Comment', {
+    id: {
+      type: DataTypes.UUID,
       primaryKey: true
     },
-    coverDescription: {
-      allowNull: true,
+    contents: {
+      allowNull: false,
       type: DataTypes.STRING
     },
-    numViews: {
+    isReply: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    numLikes: {
       allowNull: false,
       type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     createdAt: {
       allowNull: false,
@@ -24,10 +30,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.NOW
     }
   }, {});
-  Topic.associate = function (models) {
-    Topic.belongsToMany(models.Event, {
-      through: "EventsTopics"
-    })
+  Comment.associate = function (models) {
+    // associations can be defined here
   };
-  return Topic;
+  return Comment;
 };
