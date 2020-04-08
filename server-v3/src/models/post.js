@@ -2,117 +2,93 @@
 module.exports = (sequelize, DataTypes) => {
   const Post = sequelize.define('Post', {
     title: {
-      type: DataTypes.STRING,
+      allowNull: true,
       primaryKey: true,
+      type: DataTypes.STRING
     },
-    category: {
-      allowNull: false,
+    subtitle: {
+      allowNull: true,
+      type: DataTypes.STRING
+    },
+    postType: {
+      allowNull: true,
       type: DataTypes.STRING,
       defaultValue: "GENERAL"
     },
-    ownerId: {
+    languages: {
       allowNull: true,
-      type: DataTypes.UUID,
-      // references: {
-      //   model: 'Users',
-      //   key: 'id',
-      // }
-    },
-    // contributions:
-    contents: {
-      allowNull: false,
       type: DataTypes.STRING,
+      defaultValue: "KO"
     },
-    originalContents: {
+    authorId: {
       allowNull: false,
-      type: DataTypes.STRING,
-      defaultValue: "no contents"
+      type: DataTypes.UUID
     },
-    // series:
-    // topics:
-    // comments:
+    thumbnailId: {
+      allowNull: true,
+      type: DataTypes.UUID
+    },
     keywords: {
       allowNull: true,
-      type: DataTypes.STRING,
+      type: DataTypes.STRING
     },
     summary: {
       allowNull: true,
       type: DataTypes.STRING
     },
     numViews: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
     numLikes: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
     numComments: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
     isPrivate: {
-      allowNull: false,
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    },
-    // usedFiles:
-    // thumbImages:
-    // contentImages:
-    publishedAt: {
       allowNull: true,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    publishedAt: {
+      allowNull: false,
+      type: DataTypes.DATE
     },
     deprecatedAt: {
       allowNull: true,
       type: DataTypes.DATE
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
   Post.associate = function (models) {
-    // Post.hasOne(models.User, {
-    //   as: "owner",
-    //   // foreignKey: "id"
-    // })
     Post.belongsTo(models.User, {
-      onDelete: 'SET NULL',
-      onUpdate: 'CASCADE',
-      as: "owner",
-    })
-    Post.belongsTo(models.BookPost, {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-      as: "bookInfo",
-      foreignKey: "title"
-    })
-    Post.belongsTo(models.GitPost, {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-      as: "gitInfo",
-      foreignKey: "title"
-    })
-    Post.hasMany(models.Contribution, {
-      sourceKey: "title",
-      foreignKey: "postId",
-      as: "contributions"
-    })
+      as: "author",
+      foreignKey: "authorId"
+    });
     Post.belongsToMany(models.Series, {
-      through: "SeriesPosts"
+      as: "series",
+      through: "PostsSeries",
+      foreignKey: "postTitle",
+    });
+    Post.belongsToMany(models.Topic, {
+      as: "topics",
+      through: "PostsTopics",
+      foreignKey: "postTitle",
+    });
+    Post.belongsToMany(models.User, {
+      as: "scrappedUsers",
+      through: "PostsUsers",
+      foreignKey: "postTitle",
     })
-
+    Post.belongsTo(models.File, {
+      as: "thumbnail",
+      foreignKey: "thumbnailId"
+    });
   };
   return Post;
 };

@@ -3,36 +3,36 @@
 module.exports = function (sequelize, DataTypes) {
   var Series = sequelize.define('Series', {
     title: {
-      type: DataTypes.STRING,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.STRING
     },
     description: {
       allowNull: false,
       type: DataTypes.STRING
     },
     numViews: {
-      allowNull: false,
-      type: DataTypes.INTEGER
+      allowNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     numLikes: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+      allowNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {});
 
   Series.associate = function (models) {
     Series.belongsToMany(models.Post, {
-      through: "SeriesPosts"
+      as: "posts",
+      through: "PostsSeries",
+      foreignKey: "seriesTitle"
+    });
+    Series.belongsToMany(models.Topic, {
+      as: "topics",
+      through: "SeriesTopics",
+      foreignKey: "seriesTitle"
     });
   };
 

@@ -2,13 +2,21 @@
 module.exports = (sequelize, DataTypes) => {
   const Contribution = sequelize.define('Contribution', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.UUID
+    },
+    linkedPostTitle: {
+      allowNull: false,
+      type: DataTypes.STRING
     },
     contributorName: {
       allowNull: false,
       type: DataTypes.STRING
+    },
+    contributorId: {
+      allowNull: true,
+      type: DataTypes.UUID
     },
     type: {
       allowNull: false,
@@ -17,25 +25,13 @@ module.exports = (sequelize, DataTypes) => {
     description: {
       allowNull: true,
       type: DataTypes.STRING
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
   Contribution.associate = function (models) {
-    Contribution.belongsTo(models.Post, {
-      onDelete: 'CASCADE',
-      onUpdate: 'NO ACTION',
-      as: "post",
-      foreignKey: "postId"
-    })
+    Contribution.belongsTo(models.User, {
+      as: "contributor",
+      foreignKey: "contributorId"
+    });
   };
   return Contribution;
 };

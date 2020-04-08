@@ -3,50 +3,16 @@
 module.exports = function (sequelize, DataTypes) {
   var User = sequelize.define('User', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
-    },
-    openId: {
+      primaryKey: true,
       allowNull: false,
-      type: DataTypes.STRING
-    },
-    isPrimaryId: {
-      allowNull: false,
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    },
-    linkedId: {
-      allowNull: true,
-      type: DataTypes.STRING
-    },
-    accessToken: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    userType: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    isStashed: {
-      allowNull: false,
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    // stasher: {
-    //   allowNull: true,
-    //   type: model
-    // }
-    stashedDate: {
-      allowNull: true,
-      type: DataTypes.DATE
+      type: DataTypes.UUID
     },
     email: {
       allowNull: false,
       type: DataTypes.STRING
     },
     subscribeEmail: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
@@ -58,7 +24,24 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       type: DataTypes.STRING
     },
-    profileImg: {
+    isStashed: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    stasherId: {
+      allowNull: true,
+      type: DataTypes.UUID
+    },
+    stashedDate: {
+      allowNull: true,
+      type: DataTypes.DATE
+    },
+    profileImageId: {
+      allowNull: true,
+      type: DataTypes.UUID
+    },
+    profileMessage: {
       allowNull: true,
       type: DataTypes.STRING
     },
@@ -67,48 +50,45 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING
     },
     isHeavyUser: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
     level: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING,
       defaultValue: "VISITOR"
-    },
-    // writtenPostId: {
-    //   allowNull: true,
-    //   type: DataTypes.STRING,
-    // },
-    // writtenPosts: 
-    // scrappedPosts: 
-    // comments:
-    // contributions
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
 
   User.associate = function (models) {
-    // User.belongsTo(models.Post, {
-    //   onDelete: 'SET NULL',
-    //   onUpdate: 'NO ACTION',
-    //   as: 'owner'
-    //   // foreignKey: "owner",
-    //   // targetKey: ""
-    // })
-    // User.hasOne(models.User)
+    User.belongsTo(models.User, {
+      as: "stasher",
+      foreignKey: "stasherId"
+    });
+    User.belongsTo(models.File, {
+      as: "profileImage",
+      foreignKey: "profileImageId"
+    });
     User.hasMany(models.Post, {
+      as: "writtenPosts",
       sourceKey: "id",
-      foreignKey: "ownerId",
-      as: "writtenPosts"
+      foreignKey: "authorId"
+    });
+    User.belongsToMany(models.Post, {
+      as: "scrappedPosts",
+      through: "PostsUsers",
+      foreignKey: "userId"
+    });
+    User.hasMany(models.Comment, {
+      as: "writtenComments",
+      sourceKey: "id",
+      foreignKey: "authorId"
+    });
+    User.hasMany(models.Contribution, {
+      as: "contributions",
+      sourceKey: "id",
+      foreignKey: "contributorId"
     });
   };
 

@@ -2,32 +2,68 @@
 module.exports = (sequelize, DataTypes) => {
   const Topic = sequelize.define('Topic', {
     name: {
-      type: DataTypes.STRING,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.STRING
+    },
+    subname: {
+      allowNull: true,
+      type: DataTypes.STRING
+    },
+    languages: {
+      allowNull: true,
+      type: DataTypes.STRING
+    },
+    coverImageId: {
+      allowNull: true,
+      type: DataTypes.UUID
     },
     coverDescription: {
       allowNull: true,
       type: DataTypes.STRING
     },
     numViews: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER,
+      defaultValue: 0
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+    backImageId: {
+      allowNull: true,
+      type: DataTypes.UUID
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+    iconId: {
+      allowNull: true,
+      type: DataTypes.UUID
     }
   }, {});
   Topic.associate = function (models) {
+    Topic.belongsToMany(models.Post, {
+      as: "posts",
+      through: "PostsTopics",
+      foreignKey: "topicName",
+    });
+    Topic.belongsTo(models.File, {
+      as: "coverImage",
+      foreignKey: "coverImageId"
+    });
     Topic.belongsToMany(models.Event, {
-      through: "EventsTopics"
+      as: "events",
+      through: "EventsTopics",
+      foreignKey: "topicName",
+    });
+    Topic.belongsToMany(models.Series, {
+      as: "series",
+      through: "SeriesTopics",
+      foreignKey: "topicName",
     })
+    Topic.belongsTo(models.File, {
+      as: "backImage",
+      foreignKey: "backImageId"
+    });
+    Topic.belongsTo(models.File, {
+      as: "icon",
+      foreignKey: "iconId"
+    });
   };
   return Topic;
 };

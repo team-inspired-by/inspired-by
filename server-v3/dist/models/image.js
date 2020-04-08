@@ -3,20 +3,20 @@
 module.exports = function (sequelize, DataTypes) {
   var Image = sequelize.define('Image', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      allowNull: false,
+      primaryKey: true,
+      type: DataTypes.UUID
     },
     size: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING
     },
     width: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING
     },
     height: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING
     },
     color: {
@@ -47,34 +47,14 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       type: DataTypes.STRING
     },
-    fileId: {
-      allowNull: false,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
-    },
     copyright: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING,
       defaultValue: "UNKNOWN"
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
 
-  Image.associate = function (models) {
-    Image.belongsTo(models.File, {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
-    });
-  };
+  Image.associate = function (models) {};
 
   return Image;
 };

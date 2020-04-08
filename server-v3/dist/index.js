@@ -14,24 +14,59 @@ var _graphqlSubscriptions = require("graphql-subscriptions");
 
 var _language = require("graphql/language");
 
+var _awsSdk = _interopRequireDefault(require("aws-sdk"));
+
 var _models = _interopRequireDefault(require("./models"));
 
 var _http = require("http");
 
 var _express = _interopRequireDefault(require("express"));
 
+var _multer = _interopRequireDefault(require("multer"));
+
+var _multerS = _interopRequireDefault(require("multer-s3"));
+
+var _path = _interopRequireDefault(require("path"));
+
+var _cors = _interopRequireDefault(require("cors"));
+
 var _schemas = _interopRequireDefault(require("./schemas/schemas"));
 
 var _resolvers = _interopRequireDefault(require("./resolvers/resolvers"));
 
-// import {
-//   resolver
-// } from"graphql-sequelize";
-// import redsolver from"./resolvers";
-// import {
-//   PORT = 4000, JWT_SECRET = "undefined"
-// } = process.env;
-var app = (0, _express["default"])(); // const typeDefs = gql ;
+require("dotenv").config();
+
+_awsSdk["default"].config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
+});
+
+var app = (0, _express["default"])(); // const router = express.Router();
+
+var uploader = (0, _multer["default"])({
+  storage: (0, _multerS["default"])({
+    s3: new _awsSdk["default"].S3(),
+    bucket: "bucket-inspired-by",
+    acl: "public-read-write",
+    key: function key(req, file, cb) {
+      cb(null, "original/".concat(Date.now()).concat(_path["default"].basename(file.originalname)));
+    }
+  }),
+  limit: {
+    fileSize: 22 * 1024 * 1024
+  }
+});
+app.use((0, _cors["default"])());
+app.post("/upload", uploader.single("image"), function (req, res, next) {
+  console.log("data: ", req);
+  console.log("data: ", res); // console.log("Successfully uploaded " + req.files.length + " files!");
+
+  res.send("Successfully uploaded files!");
+});
+app.get("/test", function (req, res) {
+  console.log("hello");
+  res.send("Hello");
+}); // const typeDefs = gql ;
 // const typeDef = importSchema('../schema/schema.graphql');
 
 var server = new _apolloServerExpress.ApolloServer({

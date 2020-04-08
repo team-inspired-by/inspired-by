@@ -2,39 +2,36 @@
 module.exports = (sequelize, DataTypes) => {
   const GitPost = sequelize.define('GitPost', {
     title: {
-      type: DataTypes.STRING,
       primaryKey: true,
+      allowNull: false,
+      type: DataTypes.STRING
     },
-    gitId: {
+    gitRepoName: {
+      allowNull: true,
+      type: DataTypes.STRING
+    },
+    gitRepoUrl: {
       allowNull: false,
       type: DataTypes.STRING
     },
     gitAuthor: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING
     },
-    gitTitle: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+    mainImageId: {
+      allowNull: true,
+      type: DataTypes.UUID
     }
   }, {});
   GitPost.associate = function (models) {
     GitPost.belongsTo(models.Post, {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-      as: "post",
+      as: "linkedPost",
       foreignKey: "title"
-    })
+    });
+    GitPost.belongsTo(models.File, {
+      as: "mainImage",
+      foreignKey: "mainImageId"
+    });
   };
   return GitPost;
 };

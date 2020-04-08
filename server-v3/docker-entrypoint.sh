@@ -1,8 +1,11 @@
 # dockerize -wait tcp://postgre:5432 -timeout 20s
-
+# echo "npm install"
+# npm install
 echo "installing babel"
-npm run babel-version
-npx babel src --out-dir dist
+# npm run babel-version
+# npm run babel-compile
+rm -rf ./dist/
+./node_modules/.bin/babel src --out-dir dist
 # npx babel src --watch --out-dir dist
 echo "Waiting for postgres..."
 while ! nc -z postgres-114 5432; do

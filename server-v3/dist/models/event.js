@@ -3,9 +3,9 @@
 module.exports = function (sequelize, DataTypes) {
   var Event = sequelize.define('Event', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.UUID
     },
     name: {
       allowNull: false,
@@ -15,30 +15,29 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       type: DataTypes.STRING
     },
+    mainImageId: {
+      allowNull: true,
+      type: DataTypes.STRING
+    },
     publishedAt: {
       allowNull: true,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+      type: DataTypes.DATE
     },
     deprecatedAt: {
       allowNull: true,
       type: DataTypes.DATE
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
 
   Event.associate = function (models) {
+    Event.belongsTo(models.File, {
+      as: "mainImage",
+      foreignKey: "mainImageId"
+    });
     Event.belongsToMany(models.Topic, {
-      through: "EventsTopics"
+      as: "topics",
+      through: "EventsTopics",
+      foreignKey: "eventId"
     });
   };
 

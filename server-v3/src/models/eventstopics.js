@@ -1,23 +1,25 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const EventsTopics = sequelize.define('EventsTopics', {
-    EventId: {
+  const EventTopics = sequelize.define('EventsTopics', {
+    eventId: {
+      allowNull: false,
       type: DataTypes.UUID,
       references: {
-        model: "Events",
-        key: "id"
+        model: 'Events',
+        key: 'id'
       }
     },
-    TopicName: {
+    topicName: {
+      allowNull: false,
       type: DataTypes.STRING,
       references: {
-        model: "Topics",
-        key: "name"
+        model: 'Topics',
+        key: 'name'
       }
     }
-  }, {
-    timestamps: false
-  });
-  EventsTopics.associate = function (models) {};
-  return EventsTopics;
+  }, {});
+  EventTopics.associate = function (models) {
+    // associations can be defined here
+  };
+  return EventTopics;
 };

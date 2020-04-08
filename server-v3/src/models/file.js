@@ -2,39 +2,47 @@
 module.exports = (sequelize, DataTypes) => {
   const File = sequelize.define('File', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
       primaryKey: true,
+      type: DataTypes.UUID
+    },
+    uploaderId: {
+      allowNull: false,
+      type: DataTypes.UUID
     },
     alias: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    type: {
-      allowNull: false,
-      type: DataTypes.STRING
+    fileType: {
+      allowNull: true,
+      type: DataTypes.STRING,
+      defaultValue: "ETC"
     },
     url: {
       allowNull: false,
       type: DataTypes.STRING
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
   File.associate = function (models) {
     File.belongsTo(models.User, {
-      onDelete: 'SET NULL',
-      onUpdate: 'NO ACTION',
-      as: "uploader"
-    })
+      as: "uploader",
+      foreignKey: "uploaderId"
+    });
+    File.belongsTo(models.Image, {
+      as: "imageInfo",
+      foreignKey: "id"
+    });
+    File.belongsToMany(models.BookPost, {
+      as: "linkedBookPosts",
+      through: "BookPostsFiles",
+      foreignKey: "fileId",
+    });
+    File.belongsToMany(models.GeneralPost, {
+      as: "linkedGeneralPosts",
+      through: "GeneralPostsFiles",
+      foreignKey: "fileId",
+    });
   };
   return File;
 };

@@ -3,36 +3,43 @@
 module.exports = function (sequelize, DataTypes) {
   var Comment = sequelize.define('Comment', {
     id: {
-      type: DataTypes.UUID,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.UUID
+    },
+    linkedPostTitle: {
+      allowNull: false,
+      type: DataTypes.STRING
     },
     contents: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    isReply: {
+    authorId: {
       allowNull: false,
+      type: DataTypes.UUID
+    },
+    isReply: {
+      allowNull: true,
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
     numLikes: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.INTEGER,
       defaultValue: 0
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
   }, {});
 
-  Comment.associate = function (models) {// associations can be defined here
+  Comment.associate = function (models) {
+    Comment.belongsTo(models.Post, {
+      as: "linkedPost",
+      foreignKey: "linkedPostTitle"
+    });
+    Comment.belongsTo(models.User, {
+      as: "author",
+      foreignKey: "authorId"
+    });
   };
 
   return Comment;

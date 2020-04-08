@@ -2,8 +2,13 @@
 module.exports = (sequelize, DataTypes) => {
   const BookPost = sequelize.define('BookPost', {
     title: {
-      type: DataTypes.STRING,
-      primaryKey: true
+      primaryKey: true,
+      allowNull: false,
+      type: DataTypes.STRING
+    },
+    lastContentId: {
+      allowNull: false,
+      type: DataTypes.UUID
     },
     bookName: {
       allowNull: false,
@@ -29,25 +34,34 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING,
       defaultValue: "KYOBO"
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
     }
-  }, {});
+  }, {
+    timestamps: false
+  });
   BookPost.associate = function (models) {
     BookPost.belongsTo(models.Post, {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-      as: "post",
+      as: "linkedPost",
       foreignKey: "title"
-    })
+    });
+    BookPost.hasMany(models.Contribution, {
+      as: "contributions",
+      sourceKey: "title",
+      foreignKey: "linkedPostTitle"
+    });
+    BookPost.belongsTo(models.Content, {
+      as: "lastContent",
+      foreignKey: "lastContentId"
+    });
+    BookPost.hasMany(models.Comment, {
+      as: "comments",
+      sourceKey: "title",
+      foreignKey: "linkedPostTitle"
+    });
+    BookPost.belongsToMany(models.File, {
+      as: "contentFiles",
+      through: "BookPostsFiles",
+      foreignKey: "postTitle",
+    });
   };
   return BookPost;
 };
