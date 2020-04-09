@@ -27,7 +27,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-      - "8080:8080"
     links:
       - postgres-114
     depends_on:

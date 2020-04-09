@@ -31,7 +31,7 @@
                         color="grey lighten-2"
                         outlined
                         :key="key"
-                        v-for="(topic, key) in topicLists"
+                        v-for="(topic, key) in topicList"
                       >
                         <v-icon left>
                           mdi-alpha-{{
@@ -186,8 +186,8 @@ export default {
     ],
   }),
   computed: {
-    topicLists () {
-      return this.$store.getters.getTopicLists;
+    topicList () {
+      return this.$store.getters.getTopicList;
     }
   }
 };

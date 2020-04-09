@@ -7,13 +7,14 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    language: "ko",
     show: true,
-    pageType: "intro",
+    pageFrom: "intro",
     pageTo: "",
+    playVideo: false,
     topic: "",
     focusedTopic: "",
-    topicLists: [
-      {
+    topicList: [{
         text: "English"
       },
       {
@@ -29,11 +30,17 @@ export default new Vuex.Store({
         text: "Memory"
       }
     ],
+    darken: false,
+    popup: {
+      profile: false
+    },
     popupContentsManager: false,
     popupLogin: false,
+    popupProfile: false,
     loginStatus: false,
     isPostOpened: false,
     imageToUpload: {},
+    imagesToUpload: [],
     post: {},
     str: `## Lorem Ipsum
 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor nobis debitis, odit quisquam itaque et, totam dolores voluptas accusamus at explicabo porro? Neque incidunt, id voluptates omnis at ipsa distinctio consequuntur illum, necessitatibus magnam unde quae nesciunt iste sapiente inventore reprehenderit placeat voluptate quam enim a earum,
@@ -45,15 +52,24 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     pagePosition: {},
     pageTiming: {
       "intro-topic": 4000,
-      "post-topic": 0,
+      "git-topic": 1500,
+      "topic-admin": 2000,
+      "topic-intro": 2000,
+      "topic-writer": 2000,
       "topic-git": 2000,
+      "post-admin": 2000,
       "post-git": 2000,
-      "admin-admin": 0
+      "post-topic": 0,
+      "post-writer": 2000,
+      "writer-post": 2000,
+      "writer-topic": 1500,
+      "admin-admin": 0,
+      "admin-post": 2000,
+      "admin-topic": 1500
     },
-    samplePost: sample_posts[0],
-    samplePosts: sample_posts,
-    sampleUser: sample_users[0],
-    sampleUsers: sample_users
+    adminStatus: {
+      isPostEditing: false,
+    }
   },
   mutations: {
     focusTopic(state, topic) {
@@ -63,12 +79,14 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.topic = topic;
     },
     loadTopicLists(state) {
-      // Logic to load topicLists
+      // Logic to load topicList
     },
     movePage(state, val) {
-      state.pageType = val.from;
+      state.pageFrom = val.from;
       state.pageTo = val.to;
-      // if (!state.pageType) state.pageType = val.to
+      // if (!state.pageFrom) state.pageFrom = val.to
+      console.log("page:");
+      console.log(val.from, val.to);
       state.pagePosition[val.from] = window.scrollY;
       if (val.routingAnimation) {
         state.show = false;
@@ -79,6 +97,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
         });
       }
 
+      console.info(val.from + "-" + val.to);
       setTimeout(() => {
         state.show = true;
       }, state.pageTiming[val.from + "-" + val.to] | 1000);
@@ -95,29 +114,43 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     //   state.pagePosition[to] = window.scrollY;
     //   if (to == "post") return;
     //   state.show = false;
-    //   if (to != "topic") state.pageType = to;
+    //   if (to != "topic") state.pageFrom = to;
     //   else
     //     setTimeout(() => {
-    //       state.pageType = to;
+    //       state.pageFrom = to;
     //     }, 6000);
 
     //   // var timing = 4000;
-    //   // if (state.pageType == "intro") timing = 4000;
+    //   // if (state.pageFrom == "intro") timing = 4000;
     //   setTimeout(() => {
     //     state.show = true;
     //   }, state.pageTiming[to] | state.pageTiming['default']);
     // },
     // Deprecated: movePageTo()
     movePageTo(state, val) {
-      state.pageType = val;
+      state.pageFrom = val;
       if (val == "post") return;
       state.show = false;
       setTimeout(() => {
         state.show = true;
       }, 2000);
     },
+    lighten(state) {
+      state.darken = false;
+      for (let i in state.popup) {
+        state.popup[i] = false;
+      }
+    },
+    setDarken(state, val) {
+      state.darken = val;
+    },
     setPopupContentsManager(state, val) {
+      state.darken = val;
       state.popupContentsManager = val;
+    },
+    setPopupProfile(state, val) {
+      state.darken = true;
+      state.popup.profile = val;
     },
     setPopupLogin(state, val) {
       state.popupLogin = val;
@@ -152,46 +185,139 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.post = {};
     },
     uploadImage(state, val) {
-      if (val.type == "unsplash") {
-        this.imageToUpload = val.data.urls.small;
-        // Add logig to uploac
-      } else if (val.type == "local") {
-      }
+      // if (val.type == "unsplash") {
+      //   state.imageToUpload = val.data.urls.small;
+      //   // Add logig to uploac
+      // } else if (val.type == "local") {}
+      state.imagesToUpload.push(val);
+      console.log("on uploadImage:");
+      console.log(state.imagesToUpload);
+    },
+    imageToContent(state, val) {
+      /* NOTE: process works in a writer component  */
+      return;
+    },
+    setVideoState(state, val) {
+      state.playVideo = val;
+    },
+    setIsPostEditing(state, val) {
+      console.log('set is postEditing: ', val)
+      state.isPostEditing = val;
     }
   },
   actions: {
-    focusTopic({ commit }, { newVal }) {
+    focusTopic({
+      commit
+    }, {
+      newVal
+    }) {
       commit("focusTopic", newVal);
     },
-    setTopic({ commit }, { newVal }) {
+    setTopic({
+      commit
+    }, {
+      newVal
+    }) {
       commit("setTopic", newVal);
     },
-    loadTopicLists({ commit }, {}) {
+    loadTopicLists({
+      commit
+    }, {}) {
       commit("loadTopicLists");
     },
-    setPopupContentsManager({ commit }, { newVal }) {
+    lighten({
+      commit
+    }, {}) {
+      commit("lighten");
+    },
+    setDarken({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setDarken", newVal);
+    },
+    setPopupContentsManager({
+      commit
+    }, {
+      newVal
+    }) {
       commit("setContentsManager", newVal);
     },
-    setPopupLogin({ commit }) {
+    setPopupProfile({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setPopupProfile", newVal);
+    },
+    setPopupLogin({
+      commit
+    }) {
       commit("setPopupLogin", newVal);
     },
-    movePageTo({ commit }, { newVal }) {
+    movePageTo({
+      commit
+    }, {
+      newVal
+    }) {
       commit("movePageTo", movePageTo);
     },
-    login({ commit }, { newVal }) {
+    login({
+      commit
+    }, {
+      newVal
+    }) {
       commit("login", login);
     },
-    openPost({ commit }, { newVal }) {
+    openPost({
+      commit
+    }, {
+      newVal
+    }) {
       commit("openPost", openPost);
     },
-    loadPost({ commit }, { newVal }) {
+    loadPost({
+      commit
+    }, {
+      newVal
+    }) {
       commit("loadPost", loadPost);
     },
-    closePost({ commit }, { newVal }) {
+    closePost({
+      commit
+    }, {
+      newVal
+    }) {
       commit("closePost", closePost);
     },
-    uploadImage({ commit }, { newVal }) {
+    uploadImage({
+      commit
+    }, {
+      newVal
+    }) {
       commit("uploadImage", uploadImage);
+    },
+    imageToContent({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("imageToContent", imageToContent);
+    },
+    setVideoState({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setVideoState", setVideoState);
+    },
+    setIsPostEditing({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setIsPostEditing", setIsPostEditing);
     }
   },
   modules: {},
@@ -202,8 +328,8 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     getTopic(state) {
       return state.topic;
     },
-    getTopicLists(state) {
-      return state.topicLists;
+    getTopicList(state) {
+      return state.topicList;
     },
     getPopupContentsManager(state) {
       return state.popupContentsManager;
@@ -211,11 +337,14 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     getPopupLogin(state) {
       return state.popupLogin;
     },
+    getPopupProfile(state) {
+      return state.popup.profile;
+    },
     getShow(state) {
       return state.show;
     },
-    getPageType(state) {
-      return state.pageType;
+    getPageFrom(state) {
+      return state.pageFrom;
     },
     getPageTo(state) {
       return state.pageTo;
@@ -232,6 +361,9 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     getLorem(state) {
       return state.str;
     },
+    getDarken(state) {
+      return state.darken;
+    },
     getIsPostOpened(state) {
       return state.isPostOpened;
     },
@@ -245,6 +377,9 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
         return state.imageToUpload.data.urls.small;
       } else return "null";
     },
+    getImagesToUpload(state) {
+      return state.imagesToUpload;
+    },
     getSamplePost(state) {
       return sample_posts.posts[0];
     },
@@ -256,6 +391,12 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     },
     getSampleUsers(state) {
       return sample_users.users;
+    },
+    getVideoState(state) {
+      return state.playVideo;
+    },
+    getIsPostEditing(state) {
+      return state.isPostEditing;
     }
   }
 });

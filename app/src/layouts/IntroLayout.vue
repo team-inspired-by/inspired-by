@@ -3,9 +3,9 @@
     <custom-startitle :key="key" :topic="topic" v-for="(topic, key) in topics" />
     <transition name="slide-fade">
       <div v-if="!selectedTopic">
-        <div id="bg-container" :style="{'background-position-y':backPosY}"></div>
+        <div id="bg-container" :style="{ 'background-position-y': backPosY }"></div>
         <div v-if="focusedTopic" id="descriptor">
-          <p>{{focusedTopic.description}}</p>
+          <p>{{ focusedTopic.coverDescription }}</p>
           <v-btn class="ma-2" outlined color="grey" @click="routeToTopic()">See this story ></v-btn>
         </div>
       </div>
@@ -14,46 +14,51 @@
 </template>
 
 <script>
+import gql from "graphql-tag";
+import { getTopicList } from "../queries/queryContents";
+
 export default {
   name: "IntroLayout",
+  apollo: {
+    topics: {
+      client: "inspiredBy",
+      query () {
+        return getTopicList;
+      },
+      update: data => {
+        if (data["getTopicList"] && data.getTopicList.success) {
+          const topics = data.getTopicList.topics;
+          for (let i in topics) {
+            topics[i]['y'] = Math.floor(Math.random() * 60, 60) + "vh";
+            topics[i]['x'] = Math.floor(Math.random() * 90, 90) + 5 + "vw";
+          }
+          console.debug(topics);
+          return topics;
+        } else {
+          console.error("Error occurred when updating getTopicList, data:");
+          console.error(data);
+        }
+      }
+    }
+  },
   data: () => ({
     showDescription: false,
-    topics: [
-      {
-        title: "OpenCV",
-        description: "Image processing with the representative framework, OpenCV"
-      },
-      {
-        title: "ROS"
-      },
-      {
-        title: "Philosophy",
-        description:
-          "“Is man merely a mistake of God's? Or God merely a mistake of man's?” – Friedrich Nietzsche"
-      },
-      {
-        title: "Memory"
-      },
-      {
-        title: "Indonesian"
-      },
-      {
-        title: "English"
-      }
-    ],
-    backPosY: 0,
+    // topics: [],
+    positions: [],
+    backPosY: 0
   }),
   created () {
-    for (let i in this.topics) {
-      this.topics[i]["y"] = this.randomPosY() + "vh";
-      this.topics[i]["x"] = this.randomPosX() + "vw";
-    }
-    this.$store.commit('focusTopic', '')
-    this.$store.commit('setTopic', '')
+    // for (let i in this.topics) {
+
+    //   this.positions[i]["y"] = Math.floor(Math.random() * 60, 60) + "vh";
+    //   this.positions[i]["x"] = Math.floor(Math.random() * 90, 90) + 5 + "vw";
+    // }
+    this.$store.commit("focusTopic", "");
+    this.$store.commit("setTopic", "");
   },
   mounted () {
     setTimeout(() => {
-      this.backPosY = 'bottom';
+      this.backPosY = "bottom";
     }, 500);
   },
   methods: {
@@ -69,24 +74,27 @@ export default {
     },
     routeToTopic () {
       // console.log(this.focusedTopic)
-      this.$store.commit("setTopic", this.focusedTopic)
-      this.$router.push('/topic/' + this.focusedTopic)
+      this.$store.commit("setTopic", this.focusedTopic);
+      this.$router.push("/topic/" + this.focusedTopic);
     }
   },
   computed: {
+    topics () {
+      return this.$apolloData.data.topics;
+    },
     focusedTopic () {
       // var title = this.$store.getters.getFocusedTopic
       // return this.topics.filter(obj => { return obj.title == title })[0]
-      return this.$store.getters.getFocusedTopic
+      return this.$store.getters.getFocusedTopic;
     },
     selectedTopic () {
       return this.$store.getters.getTopic;
     },
     isTopicSelected () {
-      return this.selectedTopic != ''
+      return this.selectedTopic != "";
     }
-  },
-}
+  }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -128,3 +128,15 @@ npm install --save vue-images-loaded
 ```bash
 npm install v-scroll-lock --save
 ```
+
+## Install apollo-upload-client
+
+```bash
+npm install apollo-upload-client --save
+```
+
+## Install vue-code-highlight
+
+```bash
+npm install vue-code-highlight --save
+```

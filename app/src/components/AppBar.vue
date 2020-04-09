@@ -20,21 +20,16 @@
         <!-- <v-btn icon href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
           <v-icon>mdi-open-in-new</v-icon>
         </v-btn>-->
-        <v-btn icon @click="routeTo('post')" target="_blank" text>
+        <v-btn icon @click="routeTo('/admin/post')" target="_blank" text>
           <v-icon>mdi-pencil-plus-outline</v-icon>
         </v-btn>
-        <v-btn icon @click="routeTo('')" target="_blank" text>
+        <v-btn icon @click="routeTo('/admin')" target="_blank" text>
           <v-icon>mdi-wrench-outline</v-icon>
         </v-btn>
-        <v-btn icon @click="login()" target="_blank" text>
+        <v-btn icon ref="profile-icon" @click="seeProfile()" target="_blank" text>
           <v-icon>mdi-account-circle-outline</v-icon>
         </v-btn>
-        <v-btn
-          icon
-          href="https://github.com/vuetifyjs/vuetify/releases/latest"
-          target="_blank"
-          text
-        >
+        <v-btn icon @click="routeTo('/treeview')" target="_blank" text>
           <v-icon>mdi-graph-outline</v-icon>
         </v-btn>
       </v-app-bar>
@@ -62,9 +57,12 @@ export default {
     window.removeEventListener("scroll", this.debouncedScroller);
   },
   methods: {
-    login () {
-      this.$store.commit("setPopupLogin", true);
-      return;
+    seeProfile () {
+      if (this.isLoggedIn)
+        this.$store.commit("setPopupProfile", true);
+      else
+        this.$store.commit("setPopupLogin", true);
+      console.log(this.$refs["profile-icon"].$el.offsetLeft)
     },
     routeBack () {
       // this.$store.commit("movePageTo", "inspiration");
@@ -82,12 +80,17 @@ export default {
     routeTo (path) {
       // this.$store.commit("movePageTo", "admin");
       // setTimeout(() => {
-      this.$router.push("/admin/" + path);
+      this.$router.push("" + path);
       // }, 1000);
     },
     handleScroll () {
       if (window.scrollY > 0) this.isScrolled = true;
       else this.isScrolled = false;
+    }
+  },
+  computed: {
+    isLoggedIn () {
+      return this.$store.getters.getLoginStatus;
     }
   }
 };

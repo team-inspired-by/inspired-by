@@ -17,14 +17,49 @@
 <script>
 export default {
   name: "MainLayout",
-  data: () => ({}),
+  data: () => ({
+    transitionName: "topic-any",
+  }),
   created () {
     this.$store.commit("setTopic", this.$route.params.inspiration);
+    // this.$store.commit("setVideoState", true);
+  },
+  async mounted () {
+    await this.setTransitionName();
+  },
+  async beforeRouteLeave (to, from, next) {
+    // console.log("before Routing:");
+    // console.log(to, from);
+    await this.setTransitionName(to.name);
+    next();
   },
   methods: {
     closePost () {
       this.$store.commit("closePost")
       this.$router.back();
+    },
+    setTransitionName (to) {
+      return new Promise(resolve => {
+        let target;
+        if (to)
+          target = to
+        else
+          target = (this.pageFrom == "topic") ? this.pageTo : this.pageFrom
+        if (target == "post") {
+          this.transitionName = "";
+        } else if (target == "intro") {
+          this.transitionName = "topic-intro";
+        } else if (target == "admin" || target == "writer") {
+          this.transitionName = "topic-admin";
+        } else if (target == "treeview") {
+          this.transitionName = "topic-treeview";
+        } else {
+          this.transitionName = "topic-any";
+        }
+        console.log("transitionName:");
+        console.log(this.transitionName);
+        resolve();
+      });
     }
   },
   computed: {
@@ -34,17 +69,11 @@ export default {
     isShowing () {
       return this.$store.getters.getShow;
     },
-    pageType () {
-      return this.$store.getters.getPageType;
+    pageFrom () {
+      return this.$store.getters.getPageFrom;
     },
-    transitionName () {
-      if (this.pageType == "post") {
-        return "";
-      } else if (this.pageType == "intro") {
-        return "intro-to-topic-move";
-      } else {
-        return "any-to-topic-move";
-      }
+    pageTo () {
+      return this.$store.getters.getPageTo;
     },
   },
 };

@@ -38,7 +38,7 @@ export default {
     width: 100%;
     height: 1em;
     margin: -2px 0 -0.5em 3.7em;
-    border-left: 2px solid rgba(255, 255, 255, 0.12);
+    border-left: 2px solid rgba(255, 255, 255, 0.22);
     padding: 0;
     z-index: 0;
   }
@@ -60,12 +60,12 @@ export default {
       display: flex;
       text-align: center;
       padding-top: 0;
-      // border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+      // border-bottom: 2px solid rgba(255, 255, 255, 0.22);
       span {
         position: relative;
         top: 1.2em;
         // background: #424242;
-        border: 2px solid rgba(255, 255, 255, 0.12);
+        border: 2px solid rgba(255, 255, 255, 0.22);
         border-radius: 0.5em;
         color: #999;
         font-size: medium;
@@ -77,7 +77,7 @@ export default {
         content: "";
         display: inline;
         flex: 1;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.22);
       }
     }
     .col.indent #title-subheader span {
@@ -89,7 +89,7 @@ export default {
       height: 2em;
       // margin-top: -0.9em;
       // margin-bottom: -2em;
-      border: 2px solid rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.22);
       &.leftside {
         position: relative;
       }

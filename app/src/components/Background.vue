@@ -7,18 +7,11 @@
       :style="{ top: -scrollY / 5 + 'px', 'background-image': 'url(\'' + image[selectedImage] + '\')' }"
       ></div>-->
 
-      <img id="backgroundImg" :src="image[selectedImage]" />
+      <!-- <img id="backgroundImg" :src="image[selectedImage]" /> -->
 
-      <!-- <div id="video-container">
-      <video
-        width="500"
-        height="400"
-        src="../assets/result.mp4"
-        controls
-        autoplay
-        loop
-      ></video>
-      </div>-->
+      <div id="video-container" :class="viewpoint">
+        <video ref="video" src="../assets/mv-bg-teal.mp4" loop muted="muted"></video>
+      </div>
     </div>
   </transition>
 </template>
@@ -34,32 +27,58 @@ export default {
     },
     // selectedImage: 'dark',
     scrollY: 0,
-    isMoving: false
+    isMoving: false,
+    viewpoint: 'normal'
   }),
   mounted () {
-    this.handleDebouncedScroll = debounce(this.handleScroll, 30);
-    window.addEventListener("scroll", this.handleDebouncedScroll);
+    // this.handleDebouncedScroll = debounce(this.handleScroll, 30);
+    // window.addEventListener("scroll", this.handleDebouncedScroll);
   },
   methods: {
-    handleScroll (e) {
-      if (this.isMoving) return;
-      this.isMoving = true
-      this.isUserScrolling = window.scrollY > 0;
-      this.scrollY = window.top.scrollY;
-      setTimeout(() => {
-        this.isMoving = false
-      }, 500);
-    }
+    // handleScroll (e) {
+    //   if (this.isMoving) return;
+    //   this.isMoving = true
+    //   this.isUserScrolling = window.scrollY > 0;
+    //   this.scrollY = window.top.scrollY;
+    //   setTimeout(() => {
+    //     this.isMoving = false
+    //   }, 500);
+    // }
   },
   computed: {
     selectedImage () {
       return "default"
-
       // var topic = this.$store.getters.getTopic
       // if (topic != '') {
       //   return "default"
       // }
       // return "dark"
+    },
+    videoState () {
+      return this.$store.getters.getVideoState;
+    },
+    pageFrom () {
+      return this.$store.getters.getPageFrom;
+    },
+    pageTo () {
+      return this.$store.getters.getPageTo;
+    }
+  },
+  watch: {
+    videoState (newVal, oldVal) {
+      if (newVal == true && oldVal == false)
+        var playState = this.$refs['video'].play();
+    },
+    pageTo (newVal, oldVal) {
+      if (newVal == oldVal) return;
+      if (newVal == "treeview")
+        this.viewpoint = 'landscape'
+      else if (newVal == "writer" || newVal == "admin")
+        this.viewpoint = 'leftside'
+      else if (newVal == "git")
+        this.viewpoint = 'rightside'
+      else
+        this.viewpoint = 'normal'
     }
   },
   beforeDestroy () {
@@ -112,11 +131,30 @@ body {
     filter: brightness(1.5) contrast(1.2);
   }
   #video-container {
-    position: absolute;
+    position: fixed;
     overflow: hidden;
-    top: 5em;
-    left: 50vw;
-    width: 450px;
+    width: 140vw;
+    height: 100vh;
+    margin-left: -20vw;
+    will-change: width, margin;
+    transition: width 4s, margin 4s;
+
+    &.landscape {
+      width: 100vw;
+      margin-left: 0;
+    }
+    &.leftside {
+      margin-left: 0;
+    }
+    &.rightside {
+      margin-left: -40vw;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 }
 </style>

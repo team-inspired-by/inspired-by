@@ -2,7 +2,7 @@
   <div>
     <custom-subheader title="User Management" indent />
     <v-row id="config-box" ref="config-box" @click="focus()">
-      <v-col cols="12" sm="3" class="pr-0 pl-5">
+      <v-col cols="12" sm="3" class="col-list pr-0 pl-5">
         <v-list class="card-list fill-height" flat rounded>
           <v-list-item-group v-model="selectedGeneralSetting" mandatory>
             <v-list-item :class="{'active': !selectedLevel}" @click="selectedLevel = ''">
@@ -30,7 +30,7 @@
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col cols="12" md="9" class="px-0">
+      <v-col cols="12" md="9" class="col-content px-0">
         <v-card class="card-content fill-height mt-0" flat>
           <v-row class="mx-0">
             <v-col cols="12" sm="6">
@@ -54,7 +54,7 @@
                         </v-avatar>
                       </v-col>
                       <v-col cols="9">
-                        <h3>{{val.name}}</h3>
+                        <h3>{{val.alias}}</h3>
                         <li>{{val.level}}</li>
                         <li>{{val.email}}</li>
                       </v-col>
@@ -73,12 +73,12 @@
                     </v-avatar>
                   </v-col>
                   <v-col cols="12" sm="8" class="pb-0">
-                    <v-text-field v-model="selectedUser['name']" label="username" filled />
+                    <v-text-field v-model="selectedUser['alias']" label="alias" filled />
                   </v-col>
                   <v-col cols="12" sm="8">
                     <v-text-field
-                      v-model="selectedUser['alias']"
-                      label="alias"
+                      v-model="selectedUser['name']"
+                      label="name"
                       class="px-0 mx-0"
                       filled
                       hide-details
@@ -137,8 +137,25 @@
 </template>
 
 <script>
+import gql from 'graphql-tag';
+import { getUsers } from "../queries/queryAuthentication";
+
 export default {
   name: "AdminUser",
+  apollo: {
+    users: {
+      client: "inspiredBy",
+      query () {
+        return getUsers;
+      },
+      update: data => {
+        console.debug("getUsers: ");
+        console.debug(data);
+        if (data.getUsers.success)
+          return data.getUsers.users;
+      }
+    }
+  },
   data: () => ({
     valid: true,
     lazy: false,
@@ -165,21 +182,24 @@ export default {
         val: "VISITOR"
       },
     ],
-    userData: [],
+    // userData: [],
     selectedLevel: '',
     selectedUser: {},
   }),
   mounted () {
-    setTimeout(() => {
-      this.userData = this.$store.getters.getSampleUsers;
-    }, 1300);
+    // setTimeout(() => {
+    //   this.userData = this.$store.getters.getSampleUsers;
+    // }, 1300);
   },
   computed: {
-    topicLists () {
-      return this.$store.getters.getTopicLists;
+    topicList () {
+      return this.$store.getters.getTopicList;
+    },
+    userData () {
+      return this.$apollo.data.users;
     },
     filteredData () {
-      return this.userData.filter(user => this.selectedLevel == user['level'] || this.selectedLevel == '')
+      return (this.userData) ? this.userData.filter(user => this.selectedLevel == user['level'] || this.selectedLevel == '') : null
     }
   },
   methods: {
@@ -196,7 +216,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@keyframes test {
+@keyframes intro {
   from {
     background: transparent;
     // opacity: 0;
@@ -227,7 +247,7 @@ export default {
         color: #aaa;
       }
       &:not(.active) {
-        animation-name: test;
+        animation-name: intro;
         animation-duration: 1s;
         animation-timing-function: ease-in;
         //   animation-fill-mode: forwards;

@@ -340,19 +340,19 @@ export default {
     .horizontal-line {
       width: 100%;
       height: 300px;
-      border-left: 2px solid rgba(255, 255, 255, 0.12);
+      border-left: 2px solid rgba(255, 255, 255, 0.22);
       margin-left: 2em;
       margin-top: -300px;
     }
     .summary-box {
       margin-left: 2em;
-      border-right: 2px solid rgba(255, 255, 255, 0.12);
+      border-right: 2px solid rgba(255, 255, 255, 0.22);
     }
     .card-list,
     .card-content {
       // background: transparent;
-      background: rgba(100, 100, 100, 0.12) !important;
-      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: rgba(100, 100, 100, 0.22) !important;
+      border: 2px solid rgba(255, 255, 255, 0.22);
     }
     .card-list {
       border-radius: 1em 0 0 1em;
@@ -371,7 +371,7 @@ export default {
     }
     // .content-box {
     //   margin-left: 2em;
-    //   border-left: 2px solid rgba(255, 255, 255, 0.12);
+    //   border-left: 2px solid rgba(255, 255, 255, 0.22);
     //   .v-card {
     //     background-color: rgba(100, 100, 100, 0.3);
     //   }
@@ -385,7 +385,7 @@ export default {
 }
 </style>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .v-expansion-panel {
   background-color: rgba(100, 100, 100, 0.3) !important;
 }

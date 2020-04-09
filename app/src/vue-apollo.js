@@ -1,25 +1,41 @@
-import Vue from 'vue'
-import VueApollo from 'vue-apollo'
+import Vue from "vue";
+import VueApollo from "vue-apollo";
 import {
   createApolloClient,
   restartWebsockets
-} from 'vue-cli-plugin-apollo/graphql-client'
+} from "vue-cli-plugin-apollo/graphql-client";
+import { createUploadLink } from "apollo-upload-client";
+import { ImMemoryCache, InMemoryCache } from "apollo-cache-inmemory";
 
 // Install the vue plugin
-Vue.use(VueApollo)
+Vue.use(VueApollo);
 
 // Name of the localStorage item
-const AUTH_TOKEN = 'apollo-token'
+const AUTH_TOKEN = "apollo-token";
 // Http endpoint
-const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.github.com/graphql'
+// const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'https://api.github.com/graphql'
 // const httpEndpoint = 'http://34.64.74.193'
+
+const clientGithubOptions = {
+  httpEndpoint: process.env.GITHUB_API_HTTP || "https://api.github.com/graphql"
+};
+
+const clientInspiredByOptions = {
+  httpEndpoint: "http://localhost:4000/graphql"
+};
+
+const clientUploadOptions = {
+  link: createUploadLink({ uri: "http://localhost:4000/graphql" }),
+  cache: new InMemoryCache()
+};
+
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
-  httpEndpoint,
+  // httpEndpoint,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
-  // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || 'ws://localhost:4000/graphql',
+  // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || "ws://localhost:4000/graphql",
   // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || 'ws://api.github.com/graphql',
   // LocalStorage token
   tokenName: AUTH_TOKEN,
@@ -41,11 +57,11 @@ const defaultOptions = {
 
   // Override the way the Authorization header is set
   getAuth: () => {
-    const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN
+    const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN;
     if (token) {
-      return 'Bearer ' + token
+      return "Bearer " + token;
     } else {
-      return ''
+      return "";
     }
   }
 
@@ -54,61 +70,87 @@ const defaultOptions = {
 
   // Client local data (see apollo-link-state)
   // clientState: { resolvers: { ... }, defaults: { ... } }
-}
+};
 
 // Call this in the Vue app file
 export function createProvider(options = {}) {
   // Create apollo client
-  const {
-    apolloClient,
-    wsClient
-  } = createApolloClient({
+  const createGithub = createApolloClient({
     ...defaultOptions,
-    ...options,
-  })
-  apolloClient.wsClient = wsClient
+    ...clientGithubOptions
+  });
+  const createInspiredBy = createApolloClient({
+    ...defaultOptions,
+    ...clientInspiredByOptions
+  });
+  const createUpload = createApolloClient({
+    ...defaultOptions,
+    ...clientUploadOptions
+  });
+  // const {
+  //   apolloClient,
+  //   wsClient
+  // } = createApolloClient({
+  //   ...defaultOptions,
+  //   ...options,
+  // })
+  // apolloClient.wsClient = wsClient
+
+  const github = createGithub.apolloClient;
+  const inspiredBy = createInspiredBy.apolloClient;
+  const upload = createUpload.apolloClient;
 
   // Create vue apollo provider
   const apolloProvider = new VueApollo({
-    defaultClient: apolloClient,
+    // defaultClient: apolloClient,
+    defaultClient: inspiredBy,
+    clients: {
+      github,
+      inspiredBy,
+      upload
+    },
     defaultOptions: {
       $query: {
         // fetchPolicy: 'cache-and-network',
-      },
+      }
     },
     errorHandler(error) {
       // eslint-disable-next-line no-console
-      console.log('%cError', 'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;', error.message)
-    },
-  })
+      console.log(
+        "%cError",
+        "background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;",
+        error.message
+      );
+    }
+  });
 
-  return apolloProvider
+  return apolloProvider;
 }
 
 // Manually call this when user log in
 export async function onLogin(apolloClient, token) {
-  if (typeof localStorage !== 'undefined' && token) {
-    localStorage.setItem(AUTH_TOKEN, token)
+  if (typeof localStorage !== "undefined" && token) {
+    localStorage.setItem(AUTH_TOKEN, token);
   }
-  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient)
+  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient);
   try {
-    await apolloClient.resetStore()
+    await apolloClient.resetStore();
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log('%cError on cache reset (login)', 'color: orange;', e.message)
+    console.log("%cError on cache reset (login)", "color: orange;", e.message);
   }
 }
 
 // Manually call this when user log out
 export async function onLogout(apolloClient) {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(AUTH_TOKEN)
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem(AUTH_TOKEN);
   }
-  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient)
+  if (apolloClient.wsClient) restartWebsockets(apolloClient.wsClient);
   try {
-    await apolloClient.resetStore()
+    await apolloClient.resetStore();
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log('%cError on cache reset (logout)', 'color: orange;', e.message)
+    console.log("%cError on cache reset (logout)", "color: orange;", e.message);
   }
 }

@@ -1,11 +1,15 @@
 <template>
   <div
     class="star"
-    :style="{'top': topic.y, 'right': topic.x}"
+    :style="{ top: topic.y, right: topic.x }"
     @click="focus"
-    :class="{'isFocused': isFocused || isSelected || selected, 'isSelected': isSelected || selected}"
+    :class="{
+      isFocused: isFocused || isSelected || isIntro,
+      isSelected: isSelected || isIntro,
+      isIntro: isIntro
+    }"
   >
-    <p v-if="isNeeded">{{ topic.title }}</p>
+    <p v-if="isNeeded">{{ topic.name }}</p>
   </div>
 </template>
 
@@ -13,21 +17,19 @@
 export default {
   name: "custom-startitle",
   props: {
-    "topic": Object,
-    "selected": Boolean,
+    topic: Object,
+    isIntro: Boolean
   },
-  data: () => ({
-  }),
-  mounted () {
-  },
+  data: () => ({}),
+  mounted () { },
   methods: {
     focus () {
       if (this.isFocused) {
         // this.isSelected = true
-        this.$store.commit("setTopic", this.topic.title)
-        this.$router.push('/topic/' + this.topic.title)
+        this.$store.commit("setTopic", this.topic.name);
+        this.$router.push("/topic/" + this.topic.name);
       } else {
-        this.$store.commit("focusTopic", this.topic.title)
+        this.$store.commit("focusTopic", this.topic.name);
       }
       // if (this.isFocused) {
       //   this.isSelected = true
@@ -35,35 +37,54 @@ export default {
       //     this.isSelected = false
       //   }, 4800);
       //   setTimeout(() => {
-      //     this.$router.push('/topic/' + this.topic.title)
+      //     this.$router.push('/topic/' + this.topic.name)
       //   }, 5000);
-      //   this.$store.commit("setTopic", this.topic.title)
+      //   this.$store.commit("setTopic", this.topic.name)
       // } else {
-      //   this.$store.commit("focusTopic", this.topic.title)
+      //   this.$store.commit("focusTopic", this.topic.name)
       // }
     }
   },
   computed: {
     isFocused () {
-      return this.topic.title == this.$store.getters.getFocusedTopic
+      return this.topic.name == this.$store.getters.getFocusedTopic;
     },
     isNeeded () {
       if (this.$store.getters.getTopic && !this.isSelected) {
-        return false
+        return false;
       }
-      return true
+      return true;
     },
     isSelected () {
-      if (this.selected) return true
-      return this.topic.title == this.$store.getters.getTopic
+      if (this.isIntro) return true;
+      return this.topic.name == this.$store.getters.getTopic;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 @keyframes slideout {
-  to {
+  // from {
+  //   top: 100vh !important;
+  //   opacity: 0;
+  // }
+  // 50% {
+  //   top: 45vh !important;
+  //   opacity: 1;
+  // }
+  0% {
+    top: 45vh;
+    opacity: 0;
+  }
+  49% {
+    opacity: 0;
+  }
+  50% {
+    top: 45vh;
+    opacity: 1;
+  }
+  100% {
     top: -15em;
   }
 }
@@ -126,9 +147,12 @@ export default {
     top: 45vh !important;
     right: calc(50vw - 5.5em) !important;
     // opacity: 0;
+  }
+  &.isIntro {
+    transition: opacity 0s;
     animation-name: slideout;
-    animation-delay: 1s;
-    animation-duration: 1s;
+    animation-delay: 0s;
+    animation-duration: 2s;
     animation-timing-function: ease-in;
     animation-fill-mode: forwards;
   }

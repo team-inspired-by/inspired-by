@@ -278,3 +278,15 @@ query {
 > See (https://babeljs.io/docs/en/babel-plugin-transform-runtime)
 
 - I installed both due to core-js 3 issue
+
+### hasOne vs belongsTo
+
+- I'll write soon
+
+### order in `/migration` is important
+
+- I'll write soon
+
+### hasMany should follow with belongsTo
+
+> See:(https://stackoverflow.com/questions/38082938/sequelize-hasmany-join-association)

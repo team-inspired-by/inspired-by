@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@algoz098/vue-player": "^0.4.3",
+    "apollo-cache-inmemory": "^1.6.5",
+    "apollo-upload-client": "^12.1.0",
     "axios": "^0.19.0",
     "core-js": "^3.3.2",
     "eslint-loader": "^3.0.2",
@@ -28,6 +30,7 @@
     "v-scroll-lock": "^1.1.0",
     "vue": "^2.6.10",
     "vue-apollo": "^3.0.0-beta.11",
+    "vue-code-highlight": "^0.7.4",
     "vue-custom-scrollbar": "^1.1.0",
     "vue-images-loaded": "^1.1.2",
     "vue-markdown": "^2.2.4",

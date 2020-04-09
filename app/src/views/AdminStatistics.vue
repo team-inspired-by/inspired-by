@@ -335,6 +335,6 @@ export default {
 <style lang="scss">
 .v-calendar-weekly__day {
   border-right: transparent;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
 }
 </style>

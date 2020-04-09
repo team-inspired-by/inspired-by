@@ -1,3 +1,4 @@
+
 <template>
   <v-row id="event-box">
     <v-col cols="12" class="pa-0">
@@ -6,7 +7,7 @@
         <v-carousel-item v-if="pageTo != 'admin'">
           <div>
             <v-row class="event-item">
-              <v-col cols="12" sm="8" class="description px-5 serif">
+              <v-col cols="8" sm="8" class="description px-5 serif" :class="{'xs': isXs}">
                 <div>
                   <h1 class="align-self-end font-weight-medium">See Chromized livestream</h1>
                   <p>see livestream that are chromized livestream</p>
@@ -20,8 +21,8 @@
                   </p>
                 </div>
               </v-col>
-              <v-col class="image-box py-0" cols="12" sm="4">
-                <img src="../assets/sample_event.png" />
+              <v-col class="image-box py-0" cols="4" sm="4">
+                <img src="../assets/sample_event.png" :class="{'xs': isXs}" />
                 <div class="color-box" id="c1"></div>
                 <div class="color-box" id="c2"></div>
               </v-col>
@@ -130,6 +131,9 @@ export default {
   computed: {
     pageTo () {
       return this.$store.getters.getPageTo;
+    },
+    isXs () {
+      return this.$vuetify.breakpoint.xs;
     }
   },
   methods: {
@@ -170,7 +174,7 @@ export default {
 <style lang="scss" scoped>
 #event-box {
   //   margin-bottom: calc(-1em + -4px);
-  border-right: 2px solid rgba(255, 255, 255, 0.12);
+  border-right: 2px solid rgba(255, 255, 255, 0.22);
   .col {
     .v-carousel {
       padding: 0;
@@ -178,31 +182,39 @@ export default {
       .event-item {
         .description {
           margin: 9em -6em 3em 6em;
+          &.xs {
+            margin: 9em -3e m 1em 3em;
+          }
         }
         .image-box {
           display: flex;
           img {
             width: 100%;
+            max-width: 30vw;
             object-fit: cover;
             margin: 0 2em 0 -2em;
             align-self: flex-end;
+            z-index: -1;
+            &.xs {
+              margin: 0 0.5em 0 -0.5em;
+            }
           }
           .color-box {
             position: absolute;
             top: 5em;
             width: 30vw;
             height: 23vw;
-            z-index: -1;
+            z-index: -2;
             &#c1 {
               background: rgba(81, 227, 238, 0.25);
-              //   border: 2px solid rgba(255, 255, 255, 0.12);
+              //   border: 2px solid rgba(255, 255, 255, 0.22);
               transform: rotate(-15deg);
               margin: 2em 0 0 -2em;
               filter: blur(4px);
             }
             &#c2 {
               background: rgba(81, 227, 238, 0.25);
-              //   border: 2px solid rgba(255, 255, 255, 0.12);
+              //   border: 2px solid rgba(255, 255, 255, 0.22);
               transform: rotate(-25deg);
               margin: 2em 0 0 -2em;
               filter: blur(2px);

@@ -1,18 +1,20 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const EventsTopics = sequelize.define('EventsTopics', {
-    EventId: {
+    eventId: {
+      allowNull: false,
       type: DataTypes.UUID,
       references: {
-        model: "Events",
-        key: "id"
+        model: 'Events',
+        key: 'id'
       }
     },
-    TopicName: {
+    topicName: {
+      allowNull: false,
       type: DataTypes.STRING,
       references: {
-        model: "Topics",
-        key: "name"
+        model: 'Topics',
+        key: 'name'
       }
     }
   }, {

@@ -10,30 +10,35 @@ import VueScrollTo from "vue-scrollto";
 import vuePlayer from "@algoz098/vue-player";
 import VScrollLock from "v-scroll-lock";
 // import imagesLoaded from "vue-images-loaded";
-
+import {
+  component as VueCodeHighlight
+} from 'vue-code-highlight';
 import {
   createProvider
 } from "./vue-apollo";
 
 import AppBar from "./components/AppBar";
-import Subtitle from "./components/Subtitle";
 import Subheader from "./components/Subheader.vue";
 import Startitle from "./components/Startitle.vue";
 import Writer from "./components/Writer.vue";
+import Reviewer from "./components/Reviewer.vue";
 import PostCard from "./components/PostCard.vue";
 import Event from "./components/Event.vue";
+import AuthorCard from "./components/AuthorCard.vue";
 
 Vue.config.productionTip = false;
 Vue.component("vue-markdown", VueMarkdown);
 Vue.component("vue-scroll-to", VueMarkdown);
 Vue.component(vuePlayer);
+Vue.component("vue-code-highlight", VueCodeHighlight);
 Vue.component("custom-appbar", AppBar);
-Vue.component("custom-subtitle", Subtitle);
 Vue.component("custom-subheader", Subheader);
 Vue.component("custom-startitle", Startitle);
 Vue.component("custom-writer", Writer);
+Vue.component("custom-reviewer", Reviewer);
 Vue.component("custom-post-card", PostCard);
 Vue.component("custom-event", Event);
+Vue.component("custom-author-card", AuthorCard);
 
 Vue.use(VueScrollTo, {
   container: "body",
@@ -61,6 +66,9 @@ var AppInstance = new Vue({
   render: h => h(App)
 }).$mount("#app");
 
+// console.log("sm: ", AppInstance.$vuetify.breakpoint.thresholds.sm)
+// AppInstance.$vuetify.breakpoint.thresholds.sm = 340;
+// console.log("sm: ", AppInstance.$vuetify.breakpoint.thresholds.sm)
 AppInstance.$vuetify.theme.dark = true;
 AppInstance.$vuetify.theme.themes.dark = {
   primary: "#12FFFF",

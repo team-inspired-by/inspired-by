@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const TestQuery = gql`
+export const TestQuery = gql `
   query {
     posts {
       id
@@ -21,7 +21,7 @@ export const TestQuery = gql`
 //     }
 // }`
 
-export const TestGitReadme = gql`
+export const TestGitReadme = gql `
   query($owner: String!, $name: String!) {
     repository(owner: $owner, name: $name) {
       object(expression: "master:README.md") {
@@ -33,7 +33,7 @@ export const TestGitReadme = gql`
   }
 `;
 
-export const TestGitQuery = gql`
+export const TestGitQuery = gql `
   query($number_of_repos: Int!, $object_expression: String!) {
     repository(owner: "team-inspired-by", name: "inspired-by") {
       name
@@ -116,7 +116,7 @@ export const TestGitQuery = gql`
 //     }
 // }`
 
-export const TestMutation = gql`
+export const TestMutation = gql `
   mutation {
     createPost(
       userId: "5e50d80bd3a9df1fdca8a800"
@@ -166,7 +166,7 @@ export const TestMutation = gql`
   }
 `;
 
-export const RecentRepo = gql`
+export const RecentRepo = gql `
   query clients {
     client: viewer {
       name
@@ -179,7 +179,7 @@ export const RecentRepo = gql`
   }
 `;
 
-export const RecentRepo2 = gql`
+export const RecentRepo2 = gql `
   query {
     viewer {
       name
@@ -192,7 +192,7 @@ export const RecentRepo2 = gql`
   }
 `;
 
-export const Topics = gql`
+export const Topics = gql `
   query {
     topic(name: openCV) {
       name
@@ -200,7 +200,7 @@ export const Topics = gql`
   }
 `;
 
-export const AuthorSearch = gql`
+export const AuthorSearch = gql `
   query {
     search(query: "100kimch", type: USER, first: 5) {
       userCount

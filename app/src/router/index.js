@@ -7,15 +7,16 @@ import ProjectLayout from "../layouts/ProjectLayout.vue";
 import PostLayout from "../layouts/PostLayout.vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
 import TestLayout from "../layouts/TestLayout.vue";
+import TreeviewLayout from "../layouts/TreeviewLayout.vue";
 import Topic from "../views/Topic.vue";
 import Content from "../views/Content.vue";
 import Project from "../views/Project.vue";
-import Post from "../views/Post.vue";
 import AdminPost from "../views/AdminPost.vue";
 import AdminUser from "../views/AdminUser.vue";
 import AdminProject from "../views/AdminProject.vue";
 import AdminStatistics from "../views/AdminStatistics.vue";
 import AdminGeneral from "../views/AdminGeneral.vue";
+import Treeview from "../views/Treeview.vue";
 import store from "../store/index.js";
 
 Vue.use(VueRouter);
@@ -24,6 +25,12 @@ const routes = [{
     path: "/",
     name: "intro",
     component: IntroLayout
+  },
+  {
+    path: "/invitation",
+    name: "invitation",
+    component: () =>
+      import("../layouts/InvitationLayout.vue")
   },
   {
     path: "/test",
@@ -40,6 +47,22 @@ const routes = [{
       import( /* webpackChunkName: "about" */ "../views/About.vue")
   },
   {
+    path: "/treeview",
+    name: "treeview",
+    component: TreeviewLayout,
+    children: [{
+      path: "",
+      name: "treeview",
+      component: Treeview,
+    }]
+  },
+  {
+    path: "/auth",
+    name: "auth",
+    component: () =>
+      import("../views/Auth.vue")
+  },
+  {
     path: "/admin",
     name: "admin",
     component: AdminLayout,
@@ -49,7 +72,7 @@ const routes = [{
       },
       {
         path: "post",
-        name: "admin",
+        name: "writer",
         component: AdminPost
       },
       {
@@ -84,17 +107,17 @@ const routes = [{
       component: Project
     }]
   },
-  {
-    path: "/post",
-    components: {
-      postcard: PostLayout
-    },
-    children: [{
-      path: ":post",
-      name: "postpage",
-      component: Post
-    }]
-  },
+  // {
+  //   path: "/post",
+  //   components: {
+  //     postcard: PostLayout
+  //   },
+  //   children: [{
+  //     path: ":post",
+  //     name: "postpage",
+  //     component: Post
+  //   }]
+  // },
   {
     path: "/topic",
     component: TopicLayout,
@@ -124,6 +147,10 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   scrollBehavior: (to, from, savedPosition) => {
+    // return {
+    //   x: 0,
+    //   y: 0
+    // };
     return null;
   },
   // scrollBehavior: (to, from, savedPosition) => {
@@ -156,9 +183,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.getElementsByTagName("html")[0].style.overflow = "auto";
+  document.getElementsByTagName("html")[0].style.overflowX = "hidden";
+  document.getElementsByTagName("html")[0].style.overflowY = "auto";
   console.log(`route from ${from.name} to ${to.name}`)
   let animation = true;
+
   switch (from.name) {
     case 'intro':
       switch (to.name) {
@@ -173,7 +202,7 @@ router.beforeEach((to, from, next) => {
     case 'topic':
       switch (to.name) {
         case 'post':
-          document.getElementsByTagName("html")[0].style.overflow = "hidden";
+          document.getElementsByTagName("html")[0].style.overflowY = "hidden";
           animation = false
           break;
         case 'intro':
