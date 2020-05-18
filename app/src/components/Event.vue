@@ -1,15 +1,21 @@
-
 <template>
   <v-row id="event-box">
     <v-col cols="12" class="pa-0">
       <v-carousel :show-arrows="false" hide-delimiters height="inherit">
         <!-- <v-carousel-item v-for="(item,i) in items" :key="i" :src="item.src"></v-carousel-item> -->
-        <v-carousel-item v-if="pageTo != 'admin'">
+        <v-carousel-item v-if="page != 'admin'">
           <div>
             <v-row class="event-item">
-              <v-col cols="8" sm="8" class="description px-5 serif" :class="{'xs': isXs}">
+              <v-col
+                cols="8"
+                sm="8"
+                class="description px-5 serif"
+                :class="{ xs: isXs }"
+              >
                 <div>
-                  <h1 class="align-self-end font-weight-medium">See Chromized livestream</h1>
+                  <h1 class="align-self-end font-weight-medium">
+                    See Chromized livestream
+                  </h1>
                   <p>see livestream that are chromized livestream</p>
                   <p>
                     <v-btn
@@ -17,12 +23,13 @@
                       outlined
                       color="white"
                       @click="expandCarousel()"
-                    >Turn on livestream</v-btn>
+                      >Turn on livestream</v-btn
+                    >
                   </p>
                 </div>
               </v-col>
               <v-col class="image-box py-0" cols="4" sm="4">
-                <img src="../assets/sample_event.png" :class="{'xs': isXs}" />
+                <img src="../assets/sample_event.png" :class="{ xs: isXs }" />
                 <div class="color-box" id="c1"></div>
                 <div class="color-box" id="c2"></div>
               </v-col>
@@ -34,7 +41,13 @@
                 <h3 class="text-center serif font-weight-light">Original</h3>
               </v-col>
               <v-col cols="5">
-                <v-card outlined flat class="mx-auto" width="373px" height="280px"></v-card>
+                <v-card
+                  outlined
+                  flat
+                  class="mx-auto"
+                  width="373px"
+                  height="280px"
+                ></v-card>
                 <h3 class="text-center serif font-weight-light">Filtered</h3>
               </v-col>
               <v-col cols="2"></v-col>
@@ -44,7 +57,12 @@
                 <div>
                   <button id="snap" v-on:click="capture()">Snap Photo</button>
                 </div>
-                <canvas ref="videoCanvas" id="videoCanvas" width="640" height="480"></canvas>
+                <canvas
+                  ref="videoCanvas"
+                  id="videoCanvas"
+                  width="640"
+                  height="480"
+                ></canvas>
                 <ul>
                   <li :key="c" v-for="c in videoCaptures">
                     <img v-bind:src="c" height="50" />
@@ -54,12 +72,14 @@
             </v-row>
           </div>
         </v-carousel-item>
-        <v-carousel-item v-if="pageTo == 'admin'">
+        <v-carousel-item v-if="page == 'admin'">
           <div>
             <v-row class="event-item">
               <v-col cols="12" sm="12" class="description px-5 serif">
                 <div>
-                  <h1 class="align-self-end font-weight-medium">We inspires people</h1>
+                  <h1 class="align-self-end font-weight-medium">
+                    We inspires people
+                  </h1>
                   <p>See all the information here</p>
                   <p>
                     <v-btn
@@ -67,20 +87,36 @@
                       outlined
                       color="white"
                       @click="routeTo('/admin/statistics')"
-                    >Statistics</v-btn>
+                      >Statistics</v-btn
+                    >
                     <v-btn
                       class="my-0 mr-2"
                       outlined
                       color="white"
                       @click="routeTo('/admin/general')"
-                    >General Settings</v-btn>
+                      >General</v-btn
+                    >
+                    <v-btn
+                      class="my-0 mr-2"
+                      outlined
+                      color="white"
+                      @click="routeTo('/admin/user')"
+                      >Users</v-btn
+                    >
+                    <v-btn
+                      class="my-0 mr-2"
+                      outlined
+                      color="white"
+                      @click="routeTo('/admin/data')"
+                      >Data</v-btn
+                    >
                     <v-btn
                       class="my-0 mr-2"
                       outlined
                       color="white"
                       @click="routeTo('/admin/post')"
-                    >Contents Editor</v-btn>
-                    <v-btn class="my-0" outlined color="white" @click="routeTo('/admin/user')">Users</v-btn>
+                      >Contents Editor</v-btn
+                    >
                   </p>
                 </div>
               </v-col>
@@ -98,16 +134,19 @@ import vuePlayer from "@algoz098/vue-player";
 export default {
   name: "custom-event",
   components: {
-    vuePlayer
+    vuePlayer,
+  },
+  props: {
+    page: String,
   },
   data: () => ({
     isCarouselOpen: false,
     isVideoPlaying: false,
     video: {},
     videoCanvas: {},
-    videoCaptures: []
+    videoCaptures: [],
   }),
-  mounted () {
+  mounted() {
     this.video = this.$refs.video;
     // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     //   navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -129,15 +168,12 @@ export default {
     // }
   },
   computed: {
-    pageTo () {
-      return this.$store.getters.getPageTo;
-    },
-    isXs () {
+    isXs() {
       return this.$vuetify.breakpoint.xs;
-    }
+    },
   },
   methods: {
-    expandCarousel () {
+    expandCarousel() {
       this.isCarouselOpen = !this.isCarouselOpen;
       //   if (this.isCarouselOpen) {
       //     this.carouselHeight = 500;
@@ -148,7 +184,7 @@ export default {
       //   }
       //   this.playVideo();
     },
-    capture () {
+    capture() {
       this.videoCanvas = this.$refs.videoCanvas;
       var videoCanvas = this.videoCanvas
         .getContext("2d")
@@ -156,19 +192,19 @@ export default {
       this.videoCaptures.push(videoCanvas.toDataURL("image/png"));
       // this.videoCaptures.push(videoCanvas.toDataURL("image/webp"));
     },
-    playVideo () {
+    playVideo() {
       navigator.mediaDevices
         .getUserMedia({ video: this.isVideoPlaying })
-        .then(stream => {
+        .then((stream) => {
           console.log(stream, this.$refs.video);
           this.video.srcObject = stream;
         });
     },
-    routeTo (path) {
+    routeTo(path) {
       this.$router.push({ path: path });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

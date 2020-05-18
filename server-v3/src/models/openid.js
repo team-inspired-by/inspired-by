@@ -14,10 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-    accessToken: {
-      allowNull: true,
-      type: DataTypes.STRING
-    },
     linkedUserId: {
       allowNull: false,
       type: DataTypes.UUID
@@ -27,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     }
   }, {});
-  OpenId.associate = function (models) {};
+  OpenId.associate = function (models) {
+    OpenId.belongsTo(models.User, {
+      as: "user",
+      foreignKey: "linkedUserId"
+    });
+  };
   return OpenId;
 };

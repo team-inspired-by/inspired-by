@@ -15,19 +15,19 @@ export default new Vuex.Store({
     topic: "",
     focusedTopic: "",
     topicList: [{
-        text: "English"
+        name: "English"
       },
       {
-        text: "Philosophy"
+        name: "Philosophy"
       },
       {
-        text: "ROS"
+        name: "ROS"
       },
       {
-        text: "Indonesian"
+        name: "Indonesian"
       },
       {
-        text: "Memory"
+        name: "Memory"
       }
     ],
     darken: false,
@@ -37,8 +37,19 @@ export default new Vuex.Store({
     popupContentsManager: false,
     popupLogin: false,
     popupProfile: false,
-    loginStatus: false,
+    // loginStatus: false,
+    userInfo: {
+      isLoggedIn: false,
+      isUser: false,
+      accessToken: '',
+      refreshToken: '',
+      user: {}
+    },
+    treeview: {
+      selected: ""
+    },
     isPostOpened: false,
+    attachedImages: {},
     imageToUpload: {},
     imagesToUpload: [],
     post: {},
@@ -59,16 +70,17 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       "topic-git": 2000,
       "post-admin": 2000,
       "post-git": 2000,
-      "post-topic": 0,
+      "post-topic": 10,
       "post-writer": 2000,
       "writer-post": 2000,
       "writer-topic": 1500,
-      "admin-admin": 0,
+      "admin-admin": 10,
       "admin-post": 2000,
       "admin-topic": 1500
     },
     adminStatus: {
       isPostEditing: false,
+      editRequest: [],
     }
   },
   mutations: {
@@ -85,8 +97,6 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.pageFrom = val.from;
       state.pageTo = val.to;
       // if (!state.pageFrom) state.pageFrom = val.to
-      console.log("page:");
-      console.log(val.from, val.to);
       state.pagePosition[val.from] = window.scrollY;
       if (val.routingAnimation) {
         state.show = false;
@@ -97,18 +107,20 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
         });
       }
 
-      console.info(val.from + "-" + val.to);
+      console.info("page: ", val.from + "-" + val.to);
+      const timing = state.pageTiming[val.from + "-" + val.to];
       setTimeout(() => {
         state.show = true;
-      }, state.pageTiming[val.from + "-" + val.to] | 1000);
+      }, timing | 1000);
 
-      setTimeout(() => {
-        window.scrollTo({
-          top: state.pagePosition[val.to] | 0,
-          left: 0,
-          behavior: "smooth"
-        });
-      }, (state.pageTiming[val.from + "-" + val.to] + 1000) | 0);
+      if (val.to != "post")
+        setTimeout(() => {
+          window.scrollTo({
+            top: state.pagePosition[val.to] | 0,
+            left: 0,
+            behavior: "smooth"
+          });
+        }, (timing ? timing + 1000 : 0) | 0);
     },
     // movePage (state, to) {
     //   state.pagePosition[to] = window.scrollY;
@@ -149,14 +161,43 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.popupContentsManager = val;
     },
     setPopupProfile(state, val) {
-      state.darken = true;
+      state.darken = val;
       state.popup.profile = val;
     },
     setPopupLogin(state, val) {
       state.popupLogin = val;
     },
     login(state, val) {
-      state.loginStatus = val;
+      console.debug('on login():')
+      for (let i in val) {
+        state.userInfo[i] = val[i]
+        console.debug("    ", i, ": ", val[i])
+        if (i == 'accessToken') {
+          console.debug('    accessToken stored.')
+          sessionStorage.setItem("inspired-by-access-token", val[i]);
+        } else if (i == 'refreshToken') {
+          console.debug('    refreshToken stored.')
+          localStorage.setItem("inspired-by-refresh-token", val[i]);
+        }
+      }
+    },
+    logout(state) {
+      console.debug('logged out.')
+      localStorage.removeItem('inspired-by-refresh-token');
+      sessionStorage.removeItem('inspired-by-access-token');
+      state.userInfo = {
+        isLoggedIn: false,
+        isUser: false,
+        accessToken: '',
+        refreshToken: '',
+        user: {}
+      }
+    },
+    setRefreshToken(state, val) {
+      state.userInfo.refreshToken = val;
+    },
+    setAccessToken(state, val) {
+      state.userInfo.accessToken = val;
     },
     openPost(state, val) {
       // query to load post
@@ -184,14 +225,64 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.isPostOpened = false;
       state.post = {};
     },
-    uploadImage(state, val) {
-      // if (val.type == "unsplash") {
-      //   state.imageToUpload = val.data.urls.small;
-      //   // Add logig to uploac
-      // } else if (val.type == "local") {}
-      state.imagesToUpload.push(val);
-      console.log("on uploadImage:");
-      console.log(state.imagesToUpload);
+    // // NOTE: deprecated
+    // uploadImage(state, val) {
+    //   // if (val.type == "unsplash") {
+    //   //   state.imageToUpload = val.data.urls.small;
+    //   //   // Add logig to uploac
+    //   // } else if (val.type == "local") {}
+    //   state.imagesToUpload.push({
+    //     uploaded: val
+    //   });
+    //   console.log("on uploadImage:");
+    //   console.log(state.imagesToUpload);
+    // },
+    // NOTE: deprecated
+    loadImages(state, val) {
+      state.attachedImages = val
+      console.debug("on loadImages:", state.attachedImages);
+    },
+    attachImage(state, {
+      uploaded,
+      image,
+    }) {
+      Vue.set(state.attachedImages, image.alias, {
+        alias: image.alias,
+        uploaded: uploaded,
+        registered: false,
+        registeredId: null,
+        image: image
+      });
+      // NOTE: the code above works like below, but the difference is change detection
+      // state.attachedImages[image.alias] = {
+      //   uploaded: uploaded,
+      //   registered: false,
+      //   registeredId: null,
+      //   image: image
+      // };
+      console.debug('on attatchImage(): ', state.attachedImages);
+    },
+    updateImage(state, {
+      alias,
+      registered,
+      registeredId,
+      uploaded
+    }) {
+      console.debug('updateImage()')
+      console.debug(alias, registered, uploaded);
+      // const image = state.attachedImages.filter(key =>
+      //   key.alias === alias
+      // )[0]
+      const image = state.attachedImages[alias];
+      console.debug('image: ', image)
+      if (uploaded)
+        image.uploaded = uploaded;
+      if (registered)
+        image.registered = registered;
+      if (registeredId)
+        image.registeredId = registeredId;
+
+      console.debug("attachedImages on update(): ", state.attachedImages)
     },
     imageToContent(state, val) {
       /* NOTE: process works in a writer component  */
@@ -201,8 +292,14 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       state.playVideo = val;
     },
     setIsPostEditing(state, val) {
-      console.log('set is postEditing: ', val)
-      state.isPostEditing = val;
+      console.debug('setIsPostEditing on store: ', val)
+      state.adminStatus.isPostEditing = val;
+    },
+    pushEditRequest(state, val) {
+      state.adminStatus.editRequest.push(val)
+    },
+    setTreeviewSelected(state, val) {
+      state.treeview.selected = val;
     }
   },
   actions: {
@@ -270,6 +367,20 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     }) {
       commit("login", login);
     },
+    setRefreshToken({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setRefreshToken", setRefreshToken);
+    },
+    setAccessToken({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setAccessToken", setAccessToken)
+    },
     openPost({
       commit
     }, {
@@ -298,6 +409,27 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     }) {
       commit("uploadImage", uploadImage);
     },
+    loadImages({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("loadImages", loadImages);
+    },
+    attachImage({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("attachImage", attachImage);
+    },
+    updateImage({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("updateImage", updateImage);
+    },
     imageToContent({
       commit
     }, {
@@ -318,7 +450,21 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       newVal
     }) {
       commit("setIsPostEditing", setIsPostEditing);
-    }
+    },
+    pushEditRequest({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("pushEditRequest", pushEditRequest)
+    },
+    setTreeviewSelected({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setTreeviewSelected", setTreeviewSelected);
+    },
   },
   modules: {},
   getters: {
@@ -355,8 +501,17 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     getTiming(state) {
       return state.pageTiming;
     },
-    getLoginStatus(state) {
-      return state.loginStatus;
+    // getLoginStatus(state) {
+    //   return state.loginStatus;
+    // },
+    getIsLoggedIn(state) {
+      return state.userInfo.isLoggedIn;
+    },
+    getUserInfo(state) {
+      return state.userInfo
+    },
+    getUser(state) {
+      return state.userInfo.user
     },
     getLorem(state) {
       return state.str;
@@ -377,6 +532,10 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
         return state.imageToUpload.data.urls.small;
       } else return "null";
     },
+    getAttachedImages(state) {
+      console.debug('getAttachedImages() executed.')
+      return state.attachedImages
+    },
     getImagesToUpload(state) {
       return state.imagesToUpload;
     },
@@ -396,7 +555,16 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       return state.playVideo;
     },
     getIsPostEditing(state) {
-      return state.isPostEditing;
+      return state.adminStatus.isPostEditing;
+    },
+    getNumberEditRequest(state) {
+      return state.adminStatus.editRequest.length
+    },
+    popEditRequest(state) {
+      return state.adminStatus.editRequest.pop(0)
+    },
+    getTreeviewSelected(state) {
+      return state.treeview.selected;
     }
   }
 });

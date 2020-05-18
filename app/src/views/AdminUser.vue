@@ -1,11 +1,19 @@
 <template>
   <div>
     <custom-subheader title="User Management" indent />
-    <v-row id="config-box" ref="config-box" @click="focus()">
-      <v-col cols="12" sm="3" class="col-list pr-0 pl-5">
-        <v-list class="card-list fill-height" flat rounded>
+    <v-row
+      id="config-box"
+      ref="config-box"
+      class="mt-2 indent"
+      @click="focus()"
+    >
+      <v-col cols="12" sm="3" id="col-list" class="pa-0">
+        <v-list class="fill-height" flat rounded>
           <v-list-item-group v-model="selectedGeneralSetting" mandatory>
-            <v-list-item :class="{'active': !selectedLevel}" @click="selectedLevel = ''">
+            <v-list-item
+              :class="{ active: !selectedLevel }"
+              @click="selectedLevel = ''"
+            >
               <v-list-item-icon>
                 <v-icon v-text="'mdi-account-circle-outline'"></v-icon>
               </v-list-item-icon>
@@ -16,7 +24,7 @@
             <v-list-item
               v-for="(item, i) in listLevels"
               :key="i"
-              :class="{'active': selectedLevel == item.val}"
+              :class="{ active: selectedLevel == item.val }"
               @click="selectedLevel = item.val"
             >
               <v-list-item-icon>
@@ -24,29 +32,28 @@
               </v-list-item-icon>
 
               <v-list-item-content>
-                <v-list-item-title v-text="item.text+'s'"></v-list-item-title>
+                <v-list-item-title v-text="item.text + 's'"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col cols="12" md="9" class="col-content px-0">
-        <v-card class="card-content fill-height mt-0" flat>
+      <v-col cols="12" md="9" id="col-content" class="pa-0">
+        <v-card class="card-content fill-height mt-0" flat color="transparent">
           <v-row class="mx-0">
             <v-col cols="12" sm="6">
               <v-subheader>Members</v-subheader>
               <v-list class="col-list" two-line subheader>
                 <v-card
-                  :id="'user-'+key"
+                  :id="'user-' + key"
                   class="user-card ma-2"
-                  :class="{'active': (val['id'] == selectedUser['id'
-                  ])}"
+                  :class="{ active: val['id'] == selectedUser['id'] }"
                   @click="selectUser(val)"
                   :key="key"
-                  v-for="val, key in filteredData"
+                  v-for="(val, key) in filteredData"
                   flat
                 >
-                  <a :v-scroll-to="'#user-card-'+key">
+                  <a :v-scroll-to="'#user-card-' + key">
                     <v-row class="mx-0">
                       <v-col cols="12" sm="3" class="ma-auto px-0 text-center">
                         <v-avatar>
@@ -54,9 +61,9 @@
                         </v-avatar>
                       </v-col>
                       <v-col cols="9">
-                        <h3>{{val.alias}}</h3>
-                        <li>{{val.level}}</li>
-                        <li>{{val.email}}</li>
+                        <h3>{{ val.alias }}</h3>
+                        <li>{{ val.level }}</li>
+                        <li>{{ val.email }}</li>
                       </v-col>
                     </v-row>
                   </a>
@@ -65,7 +72,12 @@
             </v-col>
             <v-col cols="12" sm="6" class="pl-0" v-if="selectedUser['id']">
               <v-subheader>Member Detail</v-subheader>
-              <v-form ref="selectedUser" class="user-form" v-model="valid" :lazy-validation="lazy">
+              <v-form
+                ref="selectedUser"
+                class="user-form"
+                v-model="valid"
+                :lazy-validation="lazy"
+              >
                 <v-row class="mx-0 text-center">
                   <v-col cols="12" sm="4" class="pt-2 pb-0">
                     <v-avatar class="pt-5">
@@ -73,7 +85,11 @@
                     </v-avatar>
                   </v-col>
                   <v-col cols="12" sm="8" class="pb-0">
-                    <v-text-field v-model="selectedUser['alias']" label="alias" filled />
+                    <v-text-field
+                      v-model="selectedUser['alias']"
+                      label="alias"
+                      filled
+                    />
                   </v-col>
                   <v-col cols="12" sm="8">
                     <v-text-field
@@ -121,10 +137,13 @@
                       label="Ban user"
                     />
                     <v-subheader class="text-left">
-                      Created in {{new Date(selectedUser['createdAt']).toDateString()}}
+                      Created in
+                      {{ new Date(selectedUser["createdAt"]).toDateString() }}
                       <br />
                     </v-subheader>
-                    <v-subheader class="overflow-x-auto text-left">User id: {{selectedUser['id']}}</v-subheader>
+                    <v-subheader class="overflow-x-auto text-left"
+                      >User id: {{ selectedUser["id"] }}</v-subheader
+                    >
                   </v-col>
                 </v-row>
               </v-form>
@@ -137,7 +156,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 import { getUsers } from "../queries/queryAuthentication";
 
 export default {
@@ -145,16 +164,15 @@ export default {
   apollo: {
     users: {
       client: "inspiredBy",
-      query () {
+      query() {
         return getUsers;
       },
-      update: data => {
+      update: (data) => {
         console.debug("getUsers: ");
         console.debug(data);
-        if (data.getUsers.success)
-          return data.getUsers.users;
-      }
-    }
+        if (data.getUsers.success) return data.getUsers.users;
+      },
+    },
   },
   data: () => ({
     valid: true,
@@ -164,54 +182,59 @@ export default {
       {
         icon: "mdi-account-circle-outline",
         text: "Manager",
-        val: 'MANAGER'
+        val: "MANAGER",
       },
       {
         icon: "mdi-account-circle-outline",
         text: "Writer",
-        val: "WRITER"
+        val: "WRITER",
       },
       {
         icon: "mdi-account-circle-outline",
         text: "Member",
-        val: "MEMBER"
+        val: "MEMBER",
       },
       {
         icon: "mdi-account-circle-outline",
         text: "Visitor",
-        val: "VISITOR"
+        val: "VISITOR",
       },
     ],
     // userData: [],
-    selectedLevel: '',
+    selectedLevel: "",
     selectedUser: {},
   }),
-  mounted () {
+  mounted() {
     // setTimeout(() => {
     //   this.userData = this.$store.getters.getSampleUsers;
     // }, 1300);
   },
   computed: {
-    topicList () {
+    topicList() {
       return this.$store.getters.getTopicList;
     },
-    userData () {
+    userData() {
       return this.$apollo.data.users;
     },
-    filteredData () {
-      return (this.userData) ? this.userData.filter(user => this.selectedLevel == user['level'] || this.selectedLevel == '') : null
-    }
+    filteredData() {
+      return this.userData
+        ? this.userData.filter(
+            (user) =>
+              this.selectedLevel == user["level"] || this.selectedLevel == ""
+          )
+        : null;
+    },
   },
   methods: {
-    focus () {
-      this.$scrollTo(document.getElementById('config-box'), 1000, {
+    focus() {
+      this.$scrollTo(document.getElementById("config-box"), 1000, {
         offset: 100,
-      })
+      });
     },
-    selectUser (user) {
-      this.selectedUser = user
+    selectUser(user) {
+      this.selectedUser = user;
     },
-  }
+  },
 };
 </script>
 

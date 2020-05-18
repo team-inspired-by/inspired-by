@@ -5,7 +5,13 @@ module.exports = {
       title: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        references: {
+          model: 'Posts', // name of Target model
+          key: 'title', // key in Target model that we're referencing
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       lastContentId: {
         allowNull: false,

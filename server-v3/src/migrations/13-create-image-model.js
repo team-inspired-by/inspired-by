@@ -7,6 +7,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.UUID
       },
+      hasInfo: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN
+      },
       size: {
         allowNull: true,
         type: Sequelize.STRING
@@ -48,6 +52,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       copyright: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      copyrightLink: {
         allowNull: true,
         type: Sequelize.STRING
       },

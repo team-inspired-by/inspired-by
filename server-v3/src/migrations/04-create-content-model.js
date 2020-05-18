@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.STRING,
         defaultValue: "KO"
       },
-      contents: {
+      content: {
         allowNull: false,
         type: Sequelize.TEXT
       },

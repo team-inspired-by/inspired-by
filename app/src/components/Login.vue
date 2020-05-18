@@ -12,12 +12,12 @@
                 large
                 fab
                 color="grey darken-2"
-                @click.stop="validate('github')"
+                @click.stop="login('GITHUB')"
               >
                 <v-icon size="4em">mdi-github</v-icon>
-                <!-- <img src="../assets/logo_kakaotalk.png" @click.stop="validate()" /> -->
+                <!-- <img src="../assets/logo_kakaotalk.png" @click.stop="login()" /> -->
               </v-btn>
-              <p @click.stop="validate('github')">Login with Github</p>
+              <p @click.stop="login('GITHUB')">Login with Github</p>
             </v-col>
             <v-col cols="3">
               <v-btn
@@ -26,7 +26,7 @@
                 large
                 fab
                 color="grey darken-3"
-                @click.stop="validate('google')"
+                @click.stop="login('GOOGLE')"
               >
                 <img src="../assets/logo_google.png" />
               </v-btn>
@@ -39,7 +39,7 @@
                 large
                 fab
                 color="grey darken-3"
-                @click.stop="validate('apple')"
+                @click.stop="validate('APPLE')"
               >
                 <img src="../assets/logo_apple.png" />
               </v-btn>
@@ -62,7 +62,7 @@
           <h3>Check the new window</h3>
           <div class="mt-5">
             <v-btn text class="red darken-5 mr-3" @click="closePopup">Cancel to register</v-btn>
-            <v-btn text outlined class="darken-5" @click="step=0">Go previous</v-btn>
+            <v-btn text outlined class="darken-5" @click="step = 0">Go previous</v-btn>
           </div>
         </v-container>
 
@@ -189,7 +189,7 @@
           <v-btn class="ma-2" outlined large fab disabled color="blue">
             <v-icon>mdi-check</v-icon>
           </v-btn>
-          <h3 class="pt-3">Hello, {{ name }}!</h3>
+          <h3 class="pt-3">Hello, {{ form.alias }}!</h3>
           <h2>Enjoy our blog!</h2>
         </v-container>
 
@@ -223,92 +223,26 @@
 
 <script>
 import gql from "graphql-tag";
-import { getAccessToken, checkAlias, checkEmail, registerUser } from "../queries/queryAuthentication";
-import axios from "axios";
+import {
+  getUserInfo,
+  githubLogin,
+  checkAlias,
+  checkEmail,
+} from "../queries/queryAuthentication";
+import { registerUser } from "../queries/mutateAuthentication";
+// import axios from "axios";
+import randomstring from "randomstring";
+
 export default {
   name: "custom-login",
-  apollo: {
-    userInfo: {
-      client: "inspiredBy",
-      query () {
-        return getAccessToken;
-      },
-      variables () {
-        return {
-          code: this.code,
-          state: "testing"
-        };
-      },
-      update: data => {
-        console.debug("getAccessToken data:");
-        console.debug(data);
-        return data.signUpWithGithub;
-      },
-      skip () {
-        return !this.enableQuery.userInfo;
-      }
-    },
-    checkAlias: {
-      client: "inspiredBy",
-      query () {
-        return checkAlias
-      },
-      variables () {
-        return {
-          alias: this.form.alias
-        }
-      },
-      update: data => {
-        console.debug("checkAlias: ");
-        console.debug(data);
-        return data.checkAlias;
-      },
-      skip () {
-        return !this.enableQuery.checkAlias;
-      }
-    },
-    checkEmail: {
-      client: "inspiredBy",
-      query () {
-        return checkEmail
-      },
-      variables () {
-        return {
-          email: this.form.email
-        }
-      },
-      update: data => {
-        console.debug("checkEmail: ");
-        console.debug(data);
-        return data.checkEmail;
-      },
-      skip () {
-        return !this.enableQuery.checkEmail;
-      }
-    },
-    // register: {
-    //   client: "inspiredBy",
-    //   mutation () {
-    //     return registerUser
-    //   },
-    //   variables () {
-    //     return this.form
-    //   },
-    //   update: data => {
-    //     console.debug("register: ");
-    //     console.debug(data);
-    //     return data.registerUser
-    //   },
-    // }
-  },
   data () {
     const defaultForm = Object.freeze({
       idType: "",
+      openId: "",
       alias: "",
       email: "",
       terms: false,
       subscribeEmail: false,
-      accessToken: ""
     });
     return {
       form: Object.assign({}, defaultForm),
@@ -316,128 +250,248 @@ export default {
       formEmail: true,
       formAgreement: true,
       rules: {
-        alias: [val => (val || "").length > 3 || "At least 4 characters",
-        val => (val || "").length <= 10 || "At most 10 characters"],
-        agree: [val => (val || "") == true || "You must agree to register"],
-        email: [val => (val || "").split("@").length == 2 || "Check your email again",
-        val => ((val.split("@")[1] || "").split(".").length || "") == 2 || "Check your email again"]
+        alias: [
+          (val) => (val || "").length > 3 || "At least 4 characters",
+          (val) => (val || "").length <= 10 || "At most 10 characters",
+        ],
+        agree: [(val) => (val || "") == true || "You must agree to register"],
+        email: [
+          (val) =>
+            (val || "").split("@").length == 2 || "Check your email again",
+          (val) =>
+            ((val.split("@")[1] || "").split(".").length || "") == 2 ||
+            "Check your email again",
+        ],
       },
       loggedIn: false,
       step: 0,
-      // hasReceivedCode: false,
-      enableQuery: {
-        userInfo: false,
-        checkAlias: false,
-        checkEmail: false,
-      },
-      code: "",
       name: "guest",
       snackbar: {
         loginSupport: false,
         checkAlias: false,
-        checkEmail: false
+        checkEmail: false,
       },
-      loading: false
+      loading: false,
     };
   },
+  mounted () {
+    this.setUserInfo();
+  },
   methods: {
-    closePopup (success = false) {
-      if (success == true) {
-        this.$store.commit("setPopupLogin", false);
-        this.step = 0;
+    setUserInfo () {
+      console.debug("userInfo:", this.userInfo);
+      let refreshToken, accessToken;
+      if (this.userInfo.isLoggedIn) return;
+      if (!this.userInfo.refreshToken) {
+        refreshToken = localStorage.getItem("inspired-by-refresh-token");
+        console.debug("refreshToken from local storage: ", refreshToken);
+        if (refreshToken) {
+          this.$store.commit("setRefreshToken", refreshToken);
+        } else {
+          return;
+        }
       }
-      this.step = 10;
-      for (let i in this.enableQuery) {
-        this.enableQuery[i] = false;
+      if (!this.userInfo.accessToken) {
+        accessToken = sessionStorage.getItem("inspired-by-access-token");
+        console.debug("accessToken from session storage: ", accessToken);
+        if (accessToken) {
+          this.$store.commit("setAccessToken", accessToken);
+        } else {
+          return;
+        }
       }
-      setTimeout(() => {
-        this.$store.commit("setPopupLogin", false);
-        this.step = 0;
-      }, 3000);
+      this.$apollo
+        .query({
+          client: "inspiredBy",
+          query: getUserInfo,
+          context: {
+            headers: {
+              authorization: "Bearer " + accessToken,
+            },
+          },
+        })
+        .then((res) => {
+          console.debug("on getUserInfo: ", res);
+          if (res.data.getUserInfo.success) {
+            this.$store.commit("login", {
+              isLoggedIn: true,
+              isUser: true,
+              user: res.data.getUserInfo.user,
+            });
+          } else {
+            this.$store.commit("logout");
+            this.closePopup();
+          }
+        })
+        .catch((err) => {
+          console.error("error occurred on getUserInfo(): ", err);
+        });
     },
-    validate (loginType) {
-      if (loginType == "github") {
+    login (idType) {
+      if (idType == "GITHUB") {
+        let stateString = randomstring.generate(7);
         this.form.idType = "GITHUB";
         window.open(
-          "https://github.com/login/oauth/authorize/?client_id=" + process.env.VUE_APP_CLIENT_ID + "&state=" + process.env.VUE_APP_STATE + "&scope=user",
+          "https://github.com/login/oauth/authorize/?client_id=" +
+          process.env.VUE_APP_CLIENT_ID +
+          "&state=" +
+          stateString +
+          "&scope=user",
           "_blank"
         );
-        window.addEventListener("storage", e => {
-          this.code = e.newValue;
-          // this.hasReceivedCode = true;
-          this.enableQuery.userInfo = true;
-          console.debug("received: true");
+        window.addEventListener("storage", (e) => {
+          if (e.key != "inspired-by-user-code") return;
+          const code = e.newValue;
+          // this.enableQuery.userInfo = true;
+          console.debug("received:", code, stateString);
+          // this.login(this.code, "GITHUB");
+          // window.removeEventListener('storage', e => { }, false);
+          this.$apollo
+            .query({
+              client: "inspiredBy",
+              query: githubLogin,
+              variables: {
+                code: code,
+                state: stateString,
+              },
+            })
+            .then((res) => {
+              let data = res.data.githubLogin;
+              console.log("data on login(): ", data);
+              if (res.data.githubLogin.isUser) {
+                this.form.alias = data.user.alias;
+                this.$store.commit("login", {
+                  isLoggedIn: true,
+                  isUser: true,
+                  accessToken: data.accessToken,
+                  refreshToken: data.refreshToken,
+                  user: data.user,
+                });
+                this.step = 6;
+                setTimeout(() => {
+                  this.closePopup(true);
+                }, 3000);
+              } else {
+                this.form.openId = data.openIdId;
+                this.form.alias = data.openIdAlias;
+                this.form.email = data.openIdEmail;
+                this.step = 2;
+              }
+            })
+            .catch((err) => {
+              console.error("error occurred on login(): ", err);
+            });
         });
-      }
-      else if (loginType == 'google' || loginType == 'apple') {
+      } else if (idType == "GOOGLE" || idType == "APPLE") {
         this.form.idType = "GOOGLE";
         this.snackbar.loginSupport = true;
         return;
       }
-      // this.loggedIn = true;
       this.step = 1;
     },
     checkAlias () {
       this.loading = true;
-      this.enableQuery.checkAlias = true;
+      // this.enableQuery.checkAlias = true;
+      this.$apollo
+        .query({
+          client: "inspiredBy",
+          query: checkAlias,
+          variables: {
+            alias: this.form.alias,
+          },
+        })
+        .then((res) => {
+          let data = res.data.checkAlias;
+          console.log("data on checkAlias(): ", data);
+          this.loading = false;
+          if (data.available) this.step = 3;
+          else this.snackbar.checkAlias = true;
+        })
+        .catch((err) => {
+          console.error("error occurred on checkAlias(): ", err);
+        });
     },
     checkEmail () {
       this.loading = true;
-      this.enableQuery.checkEmail = true;
-    },
-    async register () {
-      this.loading = true;
-      this.name = this.form.alias;
-      await this.$apollo.mutate({
-        client: "inspiredBy",
-        mutation: registerUser,
-        variables: this.form,
-        update: ((data) => {
-          console.debug("Register data: ");
-          console.debug(data);
+      // this.enableQuery.checkEmail = true;
+      this.$apollo
+        .query({
+          client: "inspiredBy",
+          query: checkEmail,
+          variables: {
+            email: this.form.email,
+          },
+        })
+        .then((res) => {
+          let data = res.data.checkEmail;
+          console.log("data on checkEmail(): ", res);
           this.loading = false;
+          if (data.available) this.step = 4;
+          else this.snackbar.checkEmail = true;
+        })
+        .catch((err) => {
+          console.error("error occurred on checkEmail(): ", err);
+        });
+    },
+    register () {
+      this.loading = true;
+      console.log("on register(): ", this.form);
+      this.$apollo
+        .mutate({
+          client: "inspiredBy",
+          mutation: registerUser,
+          variables: this.form,
+        })
+        .then((res) => {
+          console.debug("Registered res: ");
+          console.debug(res);
+          this.loading = false;
+          this.$store.commit("login", {
+            isLoggedIn: true,
+            isUser: true,
+            accessToken: res.data.registerUser.accessToken,
+            refreshToken: res.data.registerUser.refreshToken,
+            user: {
+              email: this.form.email,
+              alias: this.form.alias,
+              name: this.form.name,
+              isHeavyUser: true,
+              level: 'MEMBER'
+            },
+          });
           this.step = 6;
-          this.$store.commit("login", true);
           setTimeout(() => {
             this.closePopup(true);
           }, 3000);
-        }).bind(this)
-      });
-      // console.debug("on register: ");
-      // console.debug(this.form);
-      // setTimeout(() => {
-      //   this.step = 6;
-      //   this.$store.commit("login", true);
-      //   setTimeout(() => {
-      //     this.closePopup(true);
-      //   }, 3000);
-      // }, 3000);
-
-      // console.debug("Register newVal: ");
-      // console.log(newVal);
-      // this.loading = false;
-      // if (newVal.success) {
-      //   this.step = 6;
-      //   this.$store.commit("login", true);
-      //   setTimeout(() => {
-      //     this.closePopup(true);
-      //   }, 3000);
-      // }
+        })
+        .catch((err) => {
+          console.error("error occurred on register(): ", err);
+        });
+    },
+    closePopup (success = false) {
+      if (success == true) {
+        this.$store.commit("setPopupLogin", false);
+        setTimeout(() => {
+          this.step = 0;
+        }, 500);
+      } else {
+        this.step = 10;
+        setTimeout(() => {
+          this.$store.commit("setPopupLogin", false);
+          setTimeout(() => {
+            this.step = 0;
+          }, 500);
+        }, 3000);
+      }
     },
   },
   computed: {
+    userInfo () {
+      return this.$store.getters.getUserInfo;
+    },
     isPoppedUp () {
       return this.$store.getters.getPopupLogin;
     },
-    apolloUserInfo () {
-      return this.$apollo.data.userInfo;
-    },
-    apolloAlias () {
-      return this.$apollo.data.checkAlias;
-    },
-    apolloEmail () {
-      return this.$apollo.data.checkEmail;
-    }
   },
   watch: {
     isPoppedUp (newVal, oldVal) {
@@ -447,49 +501,7 @@ export default {
         document.getElementsByTagName("html")[0].style.overflow = "scroll";
       }
     },
-    apolloUserInfo (newVal, oldVal) {
-      if (newVal) {
-        this.step = 2;
-        console.debug('userInfo newVal: ');
-        console.debug(newVal);
-        if (newVal['accessToken'])
-          this.form.accessToken = newVal.accessToken;
-        if (newVal['email'])
-          this.form.email = newVal.email;
-        if (newVal['alias'])
-          this.form.alias = newVal.alias;
-
-        console.debug("form: ");
-        console.debug(this.form);
-      }
-    },
-    apolloAlias (newVal, oldVal) {
-      if (newVal) {
-        console.debug('Alias newVal: ');
-        console.debug(newVal);
-        this.loading = false;
-        if (newVal.available) {
-          this.step = 3;
-        } else {
-          this.enableQuery.checkAlias = false;
-          this.snackbar.checkAlias = true;
-        }
-      }
-    },
-    apolloEmail (newVal, oldVal) {
-      if (newVal) {
-        console.debug("Email newVal: ");
-        console.debug(newVal);
-        this.loading = false;
-        if (newVal.available) {
-          this.step = 4;
-        } else {
-          this.enableQuery.checkEmail = false;
-          this.snackbar.checkEmail = true;
-        }
-      }
-    }
-  }
+  },
 };
 </script>
 

@@ -1,9 +1,9 @@
 <template>
   <div>
     <custom-subheader title="General Settings" indent />
-    <v-row>
-      <v-col cols="12" sm="3" class="pr-0 pl-5">
-        <v-list class="card-list fill-height" flat rounded>
+    <v-row id="config-box" ref="config-box" class="mt-2 indent" @click="focus()">
+      <v-col cols="12" sm="3" id="col-list">
+        <v-list class="fill-height" flat rounded>
           <v-list-item-group v-model="selectedGeneralSetting" mandatory>
             <v-list-item v-for="(item, i) in settingLists" :key="i">
               <v-list-item-icon>
@@ -17,8 +17,8 @@
           </v-list-item-group>
         </v-list>
       </v-col>
-      <v-col cols="12" sm="9" class="px-0">
-        <v-card v-if="selectedGeneralSetting == 0" class="card-content fill-height" flat>
+      <v-col cols="12" sm="9" id="col-content">
+        <template v-if="selectedGeneralSetting == 0" class="fill-height">
           <v-row>
             <v-col cols="12" sm="6">
               <v-list two-line subheader>
@@ -33,11 +33,7 @@
                         :key="key"
                         v-for="(topic, key) in topicList"
                       >
-                        <v-icon left>
-                          mdi-alpha-{{
-                          topic["text"][0].toLowerCase()
-                          }}
-                        </v-icon>
+                        <v-icon left>mdi-alpha-{{ topic["text"][0].toLowerCase() }}</v-icon>
                         {{ topic["text"] }}
                       </v-chip>
                     </div>
@@ -88,9 +84,9 @@
               </v-list>
             </v-col>
           </v-row>
-        </v-card>
-        <v-card v-if="selectedGeneralSetting == 1" class="fill-height py-1 px-5">
-          <v-row>
+        </template>
+        <template v-if="selectedGeneralSetting == 1" class="fill-height py-1 px-5">
+          <!-- <v-row>
             <v-col cols="12">
               <v-data-table :headers="postHeaders" :items="postdata" :items-per-page="5"></v-data-table>
             </v-col>
@@ -150,8 +146,8 @@
                 </template>
               </v-list-item>
             </v-list-item-group>
-          </v-list>
-        </v-card>
+          </v-list>-->
+        </template>
       </v-col>
     </v-row>
   </div>
@@ -165,30 +161,48 @@ export default {
     settingLists: [
       {
         icon: "mdi-inbox-full-outline",
-        text: "Topics"
+        text: "Topics",
       },
       {
         icon: "mdi-file-document-outline",
-        text: "Posts"
+        text: "Posts",
       },
       {
         icon: "mdi-file-chart-outline",
-        text: "Projects"
+        text: "Projects",
       },
       {
         icon: "mdi-account-circle-outline",
-        text: "Users"
+        text: "Users",
       },
       {
         icon: "mdi-file-cabinet",
-        text: "File manager"
-      }
+        text: "File manager",
+      },
     ],
+    postSettings: {}
   }),
+  methods: {
+    focus () {
+      this.$scrollTo(document.querySelector("#config-box #col-content"), 1000, {
+        offset: 100,
+      });
+    }
+  },
   computed: {
     topicList () {
       return this.$store.getters.getTopicList;
-    }
-  }
+    },
+  },
 };
 </script>
+
+<style lang="scss" scoped>
+#col-content {
+  height: calc(100vh - 7em);
+  overflow: auto;
+  overflow-x: hidden;
+  padding: 0;
+  max-width: 100%;
+}
+</style>

@@ -121,7 +121,7 @@ export default {
   text-align: right;
   z-index: 5;
   * {
-    font-family: "Times New Roman", Times, serif !important;
+    // font-family: "Times New Roman", Times, serif !important;
   }
 }
 </style>

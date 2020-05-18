@@ -4,7 +4,7 @@
       <div v-if="isShowing" id="page-box">
         <v-container id="contents-box" class="py-0">
           <custom-appbar id="app-bar" :topic="topic" />
-          <custom-event />
+          <custom-event page="admin" />
           <router-view></router-view>
         </v-container>
       </div>
@@ -17,7 +17,7 @@ export default {
   name: "AdminLayout",
   data: () => ({
     carouselHeight: 150,
-    transitionName: "admin-any"
+    transitionName: "admin-any",
   }),
   async mounted () {
     await this.setTransitionName();
@@ -29,7 +29,7 @@ export default {
 
   methods: {
     setTransitionName (to) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         if (to) var target = to;
         else if (this.pageFrom == "admin" || this.pageFrom == "writer")
           var target = this.pageTo;
@@ -43,11 +43,10 @@ export default {
         } else {
           this.transitionName = "admin-any";
         }
-        console.log("transitionName:");
-        console.log(this.transitionName);
+        console.debug("transitionName:", this.transitionName);
         resolve();
       });
-    }
+    },
   },
   computed: {
     topic () {
@@ -61,8 +60,8 @@ export default {
     },
     pageTo () {
       return this.$store.getters.getPageTo;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -71,7 +70,7 @@ export default {
   // transform: translateY(-50vh);
   #contents-box {
     .serif {
-      font-family: "Times New Roman", Times, serif !important;
+      // font-family: "Times New Roman", Times, serif !important;
     }
     & > .row:first-child {
       padding-top: 150px;
@@ -105,6 +104,15 @@ export default {
       #col-content {
         border-radius: 0 1em 1em 0;
         border-left: none;
+      }
+
+      .v-data-table {
+        background: transparent;
+      }
+
+      .cm-link {
+        color: #278080 !important;
+        caret-color: #278080 !important;
       }
 
       &.writing-mode {
@@ -185,16 +193,52 @@ export default {
           }
         }
 
-        .thumb-box {
+        .file-image {
           width: 3em;
           height: 3em;
           border-radius: 1rem;
           border: 1px solid rgba(100, 100, 100, 0.22);
           cursor: pointer;
-          transition: background 0.5s;
+          transition: background 0.5s, opacity 0.5s;
+          .upload {
+            display: none;
+          }
           &.detail {
-            width: 6em;
-            height: 6em;
+            width: 8em;
+            height: 8em;
+          }
+          &.detail-thumbnail {
+            width: 8em;
+            height: 12em;
+          }
+          &.selector {
+            img {
+              transition: opacity 0.5s;
+              &.v-item--active {
+                opacity: 1;
+              }
+              &:not(.v-item--active) {
+                opacity: 0.5;
+              }
+            }
+            &.select-reverse img {
+              &.v-item--active {
+                opacity: 0.5;
+              }
+              &:not(.v-item--active) {
+                opacity: 1;
+              }
+            }
+          }
+          &.uploading {
+            .upload {
+              position: absolute;
+              z-index: 10;
+            }
+            img {
+              opacity: 0.2;
+              filter: grayscale(1);
+            }
           }
           img {
             width: 100%;

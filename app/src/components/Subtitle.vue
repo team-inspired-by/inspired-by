@@ -26,7 +26,7 @@
         <v-col class="pa-0 ma-0" cols="12"></v-col>
       </v-row>
     </div>
-    <div v-if="title == 'writer'">
+    <div v-if="title == 'writer' || title == 'admin'">
       <v-row class="subheader-box" align="end">
         <v-col class="pa-0 mt-0" cols="3">
           <div id="title-subheader"></div>
@@ -86,6 +86,7 @@ export default {
       home: "Inspired by",
       git: "Git Project",
       writer: "Writer",
+      admin: "Settings",
       inspiration: "Inspiration",
       post: null
     },
@@ -161,12 +162,27 @@ export default {
   }
 }
 
+@keyframes test {
+  from {
+    transform: translateX(-100vw);
+  }
+  20% {
+    transform: translateX(0);
+  }
+  70% {
+    transform: translateX(0);
+  }
+  90% {
+    transform: translateX(130vw);
+  }
+}
+
 #subtitle {
   // &.home {
   //   transform: translate(-100vw, 100vh);
   // }
   & {
-    transform: translateX(100vw);
+    transform: translateX(-100vw);
   }
   &.topic-intro {
     width: 100vw;
@@ -190,12 +206,17 @@ export default {
     padding-left: 7vw;
     transform: translateX(-130vw);
   }
-  &.writer {
+  &.writer,
+  &.admin {
     width: 93vw;
     height: 70vh;
     margin-top: 45vh;
     padding-right: 7vw;
     transform: translateX(130vw);
+    // animation-name: test;
+    // animation-duration: 3s;
+    // animation-timing-function: ease-out;
+    // animation-fill-mode: forwards;
   }
   &.inspiration {
     transform: translate(100vw, -130vh);

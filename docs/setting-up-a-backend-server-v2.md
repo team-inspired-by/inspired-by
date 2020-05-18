@@ -7,6 +7,10 @@
 
 Due to incompatibility of Prisma to arm-aarch architecture, we had to reconstruct backend server with node.js and sequelize
 
+## TODOS
+
+- set a Bearer expired date
+
 ## Start from modeling sequelize
 
 - create working directory
@@ -73,14 +77,14 @@ module.exports = {
         name: "admin",
         engName: "admin",
         createdAt: date,
-        updatedAt: date
-      }
+        updatedAt: date,
+      },
     ]);
   },
 
   down: (queryInterface, Sequelize) => {
     return queryInterface.bulkDelete("Users", null, {});
-  }
+  },
 };
 ```
 
@@ -104,22 +108,22 @@ module.exports = {
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
     host: env.DB_HOST,
-    dialect: "postgres"
+    dialect: "postgres",
   },
   test: {
     username: env.DB_USERNAME,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
     host: env.DB_HOST,
-    dialect: "postgres"
+    dialect: "postgres",
   },
   production: {
     username: env.DB_USERNAME,
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
     host: env.DB_HOST,
-    dialect: "postgres"
-  }
+    dialect: "postgres",
+  },
 };
 ```
 

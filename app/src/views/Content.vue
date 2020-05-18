@@ -65,7 +65,7 @@ This document gives a way to make a frontend web application with Vue. The steps
 <style lang="scss" scoped>
 .v-app-bar {
   span {
-    font-family: "Times New Roman", Times, serif !important;
+    // font-family: "Times New Roman", Times, serif !important;
     font-weight: 500;
   }
   #topic {

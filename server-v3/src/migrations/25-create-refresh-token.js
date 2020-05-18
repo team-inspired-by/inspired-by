@@ -1,37 +1,27 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Comments', {
+    return queryInterface.createTable('RefreshTokens', {
       id: {
         primaryKey: true,
         allowNull: false,
         type: Sequelize.UUID
       },
-      linkedPostTitle: {
+      token: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      content: {
+      userAlias: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      authorId: {
+      expiredIn: {
         allowNull: false,
-        type: Sequelize.UUID
+        type: Sequelize.DATE
       },
-      isReply: {
-        allowNull: true,
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      },
-      replyToCommentId: {
-        allowNull: true,
+      issuedAccessToken: {
+        allowNull: false,
         type: Sequelize.STRING
-      },
-      numLikes: {
-        allowNull: true,
-        type: Sequelize.INTEGER,
-        defaultValue: 0
       },
       createdAt: {
         allowNull: false,
@@ -44,6 +34,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Comments');
+    return queryInterface.dropTable('RefreshTokens');
   }
 };

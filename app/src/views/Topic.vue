@@ -127,18 +127,16 @@ export default {
       query () {
         return getTopic;
       },
-      variables: {
-        name: "ROS"
+      variables () {
+        console.warn("topic: ", this.$store.getters.getTopic)
+        return {
+          name: this.$store.getters.getTopic
+        }
       },
       update: data => {
-        console.debug("getTopic: ");
-        console.debug(data);
+        console.debug("getTopic: ", data);
         if (data["getTopic"] && data.getTopic.success)
           return data.getTopic.topic;
-        else if (data["getTopic"] && !data.getTopic.success)
-          console.error(data.message);
-        else
-          console.error("Unknown error occurred when updating getPostLists");
       }
     }
   },
@@ -346,7 +344,7 @@ export default {
 }
 #contents-box {
   .serif {
-    font-family: "Times New Roman", Times, serif !important;
+    // font-family: "Times New Roman", Times, serif !important;
   }
   & > .row:first-child {
     padding-top: 150px;

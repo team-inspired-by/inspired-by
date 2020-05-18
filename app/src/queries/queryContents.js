@@ -56,6 +56,13 @@ query ($name: String!, $language: String = null) {
                 author {
                     name
                 }
+                thumbnail {
+                    regular
+                    thumb
+                }
+                topics {
+                    name
+                }
                 summary
                 numLikes
                 createdAt
@@ -96,11 +103,11 @@ query($title: String!) {
         post {
             title
             lastContent {
-                contents
+                content
             }
             comments {
                 id
-                contents
+                content
                 author {
                     email
                     name
@@ -112,23 +119,47 @@ query($title: String!) {
 }
 `;
 
-export const getPostLists = gql `
-query {
-  getPostLists {
-      message
-      success
-      posts {
-          title
-          category
-          summary
-          numLikes
-          numViews
-          numComments
-          createdAt
-      }
-  }
+// export const getPostLists = gql `
+// query {
+//   getPostLists {
+//       message
+//       success
+//       posts {
+//           title
+//           summary
+//           numLikes
+//           numViews
+//           numComments
+//           createdAt
+//       }
+//   }
+// }
+// `;
+
+export const getWrittenPosts = gql `
+query($topic: String) {
+    getWrittenPosts(topic: $topic) {
+        message
+        success
+        posts {
+            title
+            postType
+            summary
+            topics {
+                name
+            }
+            numLikes
+            numViews
+            numComments
+            thumbnail {
+                id
+                thumb
+            }
+            createdAt
+        }
+    }
 }
-`;
+`
 
 export const checkPostTitle = gql `
 query ($title: String!) {
@@ -138,3 +169,36 @@ query ($title: String!) {
     }
 }
 `;
+
+export const getImage = gql `
+query ($id: String!) {
+    getImage (id: $id) {
+        message
+        success
+        file {
+            id
+            fileType
+            url
+            alias
+            imageInfo {
+                hasInfo
+                width
+                height
+                color
+                tags
+                regular
+            }
+        }
+    }
+}
+`
+
+export const getData = gql `
+query ($type: String!) {
+    getData (type: $type) {
+        message
+        success
+        data
+    }
+}
+`

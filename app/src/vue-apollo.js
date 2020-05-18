@@ -1,14 +1,89 @@
 import Vue from "vue";
 import VueApollo from "vue-apollo";
 import {
+  from
+} from "apollo-link";
+import {
   createApolloClient,
-  restartWebsockets
+  restartWebsockets,
 } from "vue-cli-plugin-apollo/graphql-client";
-import { createUploadLink } from "apollo-upload-client";
-import { ImMemoryCache, InMemoryCache } from "apollo-cache-inmemory";
+import {
+  createUploadLink
+} from "apollo-upload-client";
+import {
+  InMemoryCache
+} from "apollo-cache-inmemory";
+import {
+  onError
+} from "apollo-link-error";
+import store from "./store";
 
 // Install the vue plugin
 Vue.use(VueApollo);
+
+import {
+  ApolloLink
+} from "apollo-link";
+import {
+  // createHttpLink,
+  HttpLink
+} from "apollo-link-http";
+
+
+const httpLink = new HttpLink({
+  uri: "http://localhost:4000/graphql"
+})
+
+const afterLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map(res => {
+    if (res.data['token']) {
+      if (res.data.token['accessToken']) {
+        store.commit('setAccessToken', res.data.token.accessToken)
+        console.debug('fetched access token.', res.data.token.accessToken)
+      } else if (res.token['refreshToken']) {
+        store.commit('setRefreshToken', res.data.token.refreshToken)
+        console.debug('fetched refresh token.')
+      }
+      delete res.data.token
+    }
+    return res;
+  });
+});
+
+const errorLink = onError(
+  ({
+    graphQLErrors,
+    networkError,
+    operation,
+    forward
+  }) => {
+    if (graphQLErrors) {
+      for (let err of graphQLErrors) {
+        switch (err.extensions.code) {
+          case 'UNAUTHENTICATED':
+            const userInfo = store.getters.getUserInfo;
+            console.warn("sending refreshToken: ", userInfo)
+            const oldHeaders = operation.getContext().headers;
+            operation.setContext({
+              headers: {
+                ...oldHeaders,
+                'refresh-token': 'Bearer ' + userInfo.refreshToken,
+                authorization: 'Bearer ' + userInfo.accessToken
+              },
+            });
+            // console.warn("operation: ", oldHeaders);
+            // console.warn("operation: ", operation.getContext().headers);
+            return forward(operation);
+          default:
+            console.error("Error on errorLink: ", graphQLErrors)
+        }
+      }
+    }
+    console.error("Error on errorLink: ", networkError)
+
+    // logErrorMessages(error)
+  }
+);
 
 // Name of the localStorage item
 const AUTH_TOKEN = "apollo-token";
@@ -17,16 +92,21 @@ const AUTH_TOKEN = "apollo-token";
 // const httpEndpoint = 'http://34.64.74.193'
 
 const clientGithubOptions = {
-  httpEndpoint: process.env.GITHUB_API_HTTP || "https://api.github.com/graphql"
+  httpEndpoint: process.env.GITHUB_API_HTTP || "https://api.github.com/graphql",
 };
 
 const clientInspiredByOptions = {
-  httpEndpoint: "http://localhost:4000/graphql"
+  // httpEndpoint: "http://localhost:4000/graphql",
+  link: from([errorLink, afterLink, httpLink]),
+  defaultHttpLink: false,
+  // cache: new InMemoryCache(),
 };
 
 const clientUploadOptions = {
-  link: createUploadLink({ uri: "http://localhost:4000/graphql" }),
-  cache: new InMemoryCache()
+  link: createUploadLink({
+    uri: "http://localhost:4000/graphql",
+  }),
+  // cache: new InMemoryCache(),
 };
 
 // Config
@@ -63,7 +143,7 @@ const defaultOptions = {
     } else {
       return "";
     }
-  }
+  },
 
   // Additional ApolloClient options
   // apollo: { ... }
@@ -77,15 +157,15 @@ export function createProvider(options = {}) {
   // Create apollo client
   const createGithub = createApolloClient({
     ...defaultOptions,
-    ...clientGithubOptions
+    ...clientGithubOptions,
   });
   const createInspiredBy = createApolloClient({
     ...defaultOptions,
-    ...clientInspiredByOptions
+    ...clientInspiredByOptions,
   });
   const createUpload = createApolloClient({
     ...defaultOptions,
-    ...clientUploadOptions
+    ...clientUploadOptions,
   });
   // const {
   //   apolloClient,
@@ -107,12 +187,12 @@ export function createProvider(options = {}) {
     clients: {
       github,
       inspiredBy,
-      upload
+      upload,
     },
     defaultOptions: {
       $query: {
         // fetchPolicy: 'cache-and-network',
-      }
+      },
     },
     errorHandler(error) {
       // eslint-disable-next-line no-console
@@ -121,7 +201,7 @@ export function createProvider(options = {}) {
         "background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;",
         error.message
       );
-    }
+    },
   });
 
   return apolloProvider;

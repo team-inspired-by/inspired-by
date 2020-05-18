@@ -3,11 +3,11 @@ import {
 } from "apollo-server-express";
 const typeDefs = gql `
   scalar Date
-  enum EnumCategory {
-    GENERAL
-    GIT
-    BOOK
-  }
+  # enum EnumCategory {
+  #   GENERAL
+  #   GIT
+  #   BOOK
+  # }
 
   enum EnumLinkedStore {
     KYOBO
@@ -40,7 +40,7 @@ const typeDefs = gql `
     id: ID!
     linkedPost: Post!
     language: String
-    contents: String!
+    content: String!
     isDraft: Boolean
     createdAt: Date
     updatedAt: Date
@@ -55,7 +55,7 @@ const typeDefs = gql `
     series: [Series]
     topics: [Topic]
     scrappedUsers: [User]
-    thumbnail: File
+    thumbnail: Image
     keywords: String
     summary: String
     numViews: Int
@@ -134,7 +134,7 @@ const typeDefs = gql `
   type Comment {
     id: ID!
     linkedPost: Post!
-    contents: String!
+    content: String!
     author: User!
     isReply: Boolean!
     numLikes: Int!
@@ -190,6 +190,7 @@ const typeDefs = gql `
 
   type Image {
     id: ID!
+    hasInfo: Boolean
     size: String
     width: String
     height: String
@@ -282,30 +283,87 @@ const typeDefs = gql `
     email: String
   }
 
+  type QueryLoginResponse {
+    success: Boolean!
+    message: String
+    isUser: Boolean!
+    accessToken: String
+    refreshToken: String
+    user: User
+    openIdId: String
+    openIdAlias: String
+    openIdEmail: String
+  }
+
   type QueryYesNoResponse {
     success: Boolean!
     available: Boolean!
+  }
+
+  type QueryDBResponse {
+    message: String
+    success: Boolean!
+    data: String
+  }
+
+  type QueryImageResponse {
+    success: Boolean!
+    message: String
+    file: File
   }
 
   type Query {
     # getUsers: [User]
     getTopicList: QueryTopicListResponse
     getTopic(name: String!, language: String): QueryTopicResponse
+    getWrittenPosts(topic: String): QueryPostResponse
     getGeneralPost(title: String!): QueryGeneralPostResponse
     getUsers: QueryUserResponse
-    signUpWithGithub(code: String!, state: String!): QuerySignUpResponse
+    getUserInfo: QueryUserResponse
+    getImage(id: String!): QueryImageResponse
+    getData(type: String): QueryDBResponse
+    # signUpWithGithub(code: String!, state: String!): QuerySignUpResponse
+    # loginWithGithub(code: String!): QueryLoginResponse
     checkPostTitle(title: String!): QueryYesNoResponse
+    githubLogin(code: String!, state: String!): QueryLoginResponse
+    decodeTest: QueryLoginResponse
     checkAlias(alias: String!): QueryYesNoResponse
     checkEmail(email: String!): QueryYesNoResponse
   }
 
+  type AddCommentResponse {
+    message: String
+    success: Boolean!
+    commentId: String
+    content: String
+  }
+
   type AddPostResponse {
     message: String
+    success: Boolean!
+  }
+
+  type UpdatePostResponse {
+    message: String
+    success: Boolean!
+  }
+
+  type RemovePostResponse {
+    message: String
+    success: Boolean!
   }
 
   type AddUserResponse {
     message: String
     success: Boolean!
+    accessToken: String
+    refreshToken: String
+  }
+
+  type AddImageResponse {
+    message: String
+    success: Boolean!
+    imageId: String
   }
 
   type UploadResponse {
@@ -313,29 +371,75 @@ const typeDefs = gql `
     success: Boolean!
   }
 
+  type RefreshTokenResponse {
+    message: String
+    success: Boolean!
+    refreshToken: String
+    accessToken: String
+  }
+
+  type TestResponse {
+    message: String
+    success: Boolean!
+    result: String
+  }
+
+  input InputComment {
+    linkedPostTitle: String!
+    content: String!
+    isReply: Boolean
+    replyToCommentId: String
+  }
+
   input InputGeneralPost {
     title: String!
-    contents: String!
-    category: EnumCategory
-    ownerId: ID
-    accessToken: String!
-    createdAt: Date
-    updatedAt: Date
+    content: String!
+    thumbnailId: String
+    summary: String
+    publishedAt: Date
+    deprecatedAt: Date
+    topics: String
+    isPrivate: Boolean
   }
 
   input InputUserRegistration {
     idType: String!
+    openId: String!
     alias: String!
     email: String!
     terms: Boolean!
     subscribeEmail: Boolean!
-    accessToken: String!
+  }
+
+  input InputImageInfo {
+    alias: String!
+    fileType: String!
+    url: String!
+    hasInfo: Boolean!
+    size: String
+    width: String
+    height: String
+    color: String
+    tags: String
+    raw: String
+    full: String
+    regular: String
+    small: String
+    thumb: String
+    copyright: String
+    copyrightLink: String
   }
 
   type Mutation {
-    addPost(post: InputGeneralPost): AddPostResponse
+    testPosting(post: InputGeneralPost!): TestResponse
+    addComment(comment: InputComment!): AddCommentResponse
+    addGeneralPost(post: InputGeneralPost!): AddPostResponse
+    updateGeneralPost(post: InputGeneralPost!): UpdatePostResponse
+    removeGeneralPost(title: String!): RemovePostResponse
     registerUser(user: InputUserRegistration!): AddUserResponse
+    refreshToken: RefreshTokenResponse
     # addUser(user: InputUser): User
+    registerImage(fileInfo: InputImageInfo!): AddImageResponse
     testS3(file: Upload): UploadResponse
   }
 `;

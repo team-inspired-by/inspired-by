@@ -4,6 +4,7 @@ import router from "./router";
 import store from "./store";
 import "./registerServiceWorker";
 import vuetify from "./plugins/vuetify";
+import sigma from "./plugins/sigma";
 import VueMarkdown from "vue-markdown";
 import VueScrollTo from "vue-scrollto";
 // import axios from "axios";
@@ -17,6 +18,8 @@ import {
   createProvider
 } from "./vue-apollo";
 
+
+import Longpress from 'vue-longpress';
 import AppBar from "./components/AppBar";
 import Subheader from "./components/Subheader.vue";
 import Startitle from "./components/Startitle.vue";
@@ -25,8 +28,10 @@ import Reviewer from "./components/Reviewer.vue";
 import PostCard from "./components/PostCard.vue";
 import Event from "./components/Event.vue";
 import AuthorCard from "./components/AuthorCard.vue";
+import PostManagingCard from "./components/PostManagingCard.vue"
 
 Vue.config.productionTip = false;
+Vue.component("Longpress", Longpress);
 Vue.component("vue-markdown", VueMarkdown);
 Vue.component("vue-scroll-to", VueMarkdown);
 Vue.component(vuePlayer);
@@ -39,6 +44,7 @@ Vue.component("custom-reviewer", Reviewer);
 Vue.component("custom-post-card", PostCard);
 Vue.component("custom-event", Event);
 Vue.component("custom-author-card", AuthorCard);
+Vue.component("custom-post-managing-card", PostManagingCard);
 
 Vue.use(VueScrollTo, {
   container: "body",
@@ -56,6 +62,8 @@ Vue.use(VueScrollTo, {
 
 // Vue.use(imagesLoaded);
 Vue.use(VScrollLock);
+Vue.use(sigma);
+
 
 var AppInstance = new Vue({
   router,
@@ -69,10 +77,11 @@ var AppInstance = new Vue({
 // console.log("sm: ", AppInstance.$vuetify.breakpoint.thresholds.sm)
 // AppInstance.$vuetify.breakpoint.thresholds.sm = 340;
 // console.log("sm: ", AppInstance.$vuetify.breakpoint.thresholds.sm)
-AppInstance.$vuetify.theme.dark = true;
-AppInstance.$vuetify.theme.themes.dark = {
-  primary: "#12FFFF",
-  secondary: "#333333",
-  accent: "#8c9eff",
-  error: "#b71c1c"
-};
+// NOTE: moved to plugins/vuetify.js
+// AppInstance.$vuetify.theme.dark = true;
+// AppInstance.$vuetify.theme.themes.dark = {
+//   primary: "#12FFFF",
+//   secondary: "#333333",
+//   accent: "#8c9eff",
+//   error: "#b71c1c"
+// };

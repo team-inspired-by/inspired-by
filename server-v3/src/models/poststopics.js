@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Posts',
         key: 'title'
-      }
+      },
+      onDelete: 'cascade'
     },
     topicName: {
       allowNull: false,
@@ -15,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       references: {
         model: 'Topics',
         key: 'name'
-      }
+      },
+      onDelete: 'cascade'
     },
   }, {});
   PostsTopics.associate = function (models) {

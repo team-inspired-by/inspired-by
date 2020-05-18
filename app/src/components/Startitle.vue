@@ -92,11 +92,12 @@ export default {
   position: absolute;
   font-size: x-large;
   line-height: 1em;
-  font-family: "Times New Roman", Times, serif;
+  // font-family: "Times New Roman", Times, serif;
   cursor: pointer;
   transition: right 1s, top 1s, font-size 1s, color 2s, opacity 1s 0.5s;
   z-index: 5;
   p {
+    font-family: "Finger Paint";
     text-shadow: none;
     transition: text-shadow 0.5s;
   }
@@ -110,7 +111,11 @@ export default {
     content: "Inspired by";
     display: none;
     color: #eee;
-    font-size: smaller;
+    font-family: "Saira";
+    font-size: 0.8em;
+    // font-size: smaller;
+    vertical-align: bottom;
+    font-weight: 400;
     margin-right: 0.25em;
     opacity: 0;
     transition: opacity 1s 0.5s;

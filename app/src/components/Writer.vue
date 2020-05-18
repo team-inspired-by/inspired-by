@@ -41,7 +41,7 @@ import VueSimplemde from "vue-simplemde";
 export default {
   name: "custom-writer",
   components: {
-    VueSimplemde
+    VueSimplemde,
   },
   props: {
     value: {
@@ -51,18 +51,23 @@ export default {
   },
   data () {
     const defaultForm = Object.freeze({
-      title: '',
-      content: '',
-      contentRaw: ''
-    })
+      title: "",
+      content: "",
+      contentRaw: "",
+      summary: "",
+      publishedAt: "",
+      deprecatedAt: "",
+      topics: [],
+      isPrivate: false,
+    });
     return {
       form: Object.assign({}, defaultForm),
       keyListener: null,
       subscriber: null,
       // modeReview: false,
       rules: {
-        required: value => !!value || 'Required.',
-        min: v => v.length >= 8 || 'Min 8 characters',
+        required: (value) => !!value || "Required.",
+        min: (v) => v.length >= 8 || "Min 8 characters",
       },
       simplemdeConfig: {
         autosave: true,
@@ -80,14 +85,14 @@ export default {
           link: ["[", "](http://)"],
           table: [
             "",
-            "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"
-          ]
+            "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n",
+          ],
         },
         shortcuts: {
-          drawTable: "Cmd-Alt-T"
+          drawTable: "Cmd-Alt-T",
         },
         placeholder: "Write description here...",
-        spellChecker: true
+        spellChecker: true,
       },
 
       // select: ["Vuetify", "Programming"],
@@ -105,11 +110,12 @@ export default {
   created () {
     this.subscriber = this.$store.subscribe((mutation, state) => {
       if (mutation.type == "imageToContent") {
-        var file = mutation.payload;
-        if (this.form.content.slice(-2) != "![") this.form.content += "![";
-        this.form.content += file["keyword"];
-        if (!file["hasInfo"]) this.form.content += ", side";
-        this.form.content += "](from attatched)\n";
+        var image = mutation.payload;
+        if (this.form.content && this.form.content.slice(-2) != "![") this.form.content += "![";
+        else if (!this.form.content) this.form.content += "![";
+        this.form.content += image["alias"];
+        if (!image["hasInfo"]) this.form.content += ", side";
+        this.form.content += "](from attached)\n";
         setTimeout(() => {
           this.focusToEditor();
         }, 300);
@@ -117,11 +123,11 @@ export default {
     });
   },
   mounted () {
-    console.log("form: ", this.form);
+    console.debug("loaded form in writer: ", this.form);
     for (let i in this.value) {
-      this.form[i] = this.value[i]
+      this.form[i] = this.value[i];
     }
-    this.keyListener = window.addEventListener("keyup", ev => {
+    this.keyListener = window.addEventListener("keyup", (ev) => {
       // console.log(ev.target.tagName, ev.target.id, ev);
       // console.log(ev.keyCode);
       if (ev.target.id == "contents-manager-box") {
@@ -193,7 +199,6 @@ export default {
     cancel () {
       this.$store.commit("setIsPostEditing", false);
     },
-
   },
   computed: {
     imagesToUpload () {
@@ -208,15 +213,15 @@ export default {
   },
   watch: {
     title (newVal) {
-      this.$emit('input', this.form);
+      this.$emit("input", this.form);
     },
     content (newVal, oldVal) {
-      this.$emit('input', this.form);
+      this.$emit("input", this.form);
       if (newVal.trim().substr(-2) == "![") {
         this.$store.commit("setPopupContentsManager", true);
       }
     },
-  }
+  },
 };
 </script>
 

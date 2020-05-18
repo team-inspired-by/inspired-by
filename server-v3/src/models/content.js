@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       defaultValue: "KO"
     },
-    contents: {
+    content: {
       allowNull: false,
       type: DataTypes.TEXT
     },
@@ -28,7 +28,9 @@ module.exports = (sequelize, DataTypes) => {
   Content.associate = function (models) {
     Content.belongsTo(models.Post, {
       as: "linkedPost",
-      foreignKey: "linkedPostTitle"
+      foreignKey: "linkedPostTitle",
+      onDelete: "cascade",
+      hooks: true
     })
   };
   return Content;

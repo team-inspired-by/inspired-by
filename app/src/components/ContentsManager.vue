@@ -5,7 +5,9 @@
         <v-container id="contents-manager-box">
           <h3 class="mb-2">{{ descriptiveTitle }}</h3>
           <v-row
-            v-if="(!modeUpload && !searchedImage) || (modeUpload && !uploadedImage)"
+            v-if="
+              (!modeUpload && !searchedImage) || (modeUpload && !uploadedImage)
+            "
             class="text-center"
             align="baseline"
           >
@@ -83,7 +85,9 @@
             </v-row>
           </transition>
           <v-row
-            v-if="(modeUpload && !uploadedImage) || (!modeUpload && !searchedImage)"
+            v-if="
+              (modeUpload && !uploadedImage) || (!modeUpload && !searchedImage)
+            "
             @click="closePopup()"
           >
             <v-col>
@@ -109,7 +113,7 @@
               <v-btn
                 outlined
                 class="darken-5 mr-3 mb-3"
-                @click="attachImage('uploadInfo')"
+                @click="attachImage('infographic')"
               >ATTATCH AS AN INFOGRAPHIC</v-btn>
               <v-btn outlined text class="red darken-5 mb-3" @click="cancelImage()">NO</v-btn>
             </v-col>
@@ -124,7 +128,7 @@
 <script>
 import gql from "graphql-tag";
 import axios from "axios";
-import uploadImage from "../queries/queryUpload";
+import { registerImage } from "../queries/mutateUpload";
 
 export default {
   name: "custom-contents-manager",
@@ -142,7 +146,7 @@ export default {
     uploadedImage: null,
   }),
   mounted () {
-    this.keyListener = window.addEventListener("keyup", ev => {
+    this.keyListener = window.addEventListener("keyup", (ev) => {
       if (!this.isPoppedUp) return;
       if (ev.keyCode == 27) {
         this.$store.commit("setPopupContentsManager", false);
@@ -154,7 +158,7 @@ export default {
             "https://api.unsplash.com/search/photos/?client_id=RIKLfPLvf8YseCYe8C3uqeTgJPXqceJa1uaRmb6yBB0&query=" +
             this.searchString
           )
-          .then(res => {
+          .then((res) => {
             this.images = res.data.results;
             console.log(this.images, res.data.results);
             this.loadedString = this.searchString;
@@ -166,7 +170,7 @@ export default {
       }
     });
 
-    this.reader.onload = e => {
+    this.reader.onload = (e) => {
       console.log("reader:");
       console.log(e);
       this.filePreviewUrl = e.target.result;
@@ -196,9 +200,12 @@ export default {
     isPoppedUp () {
       return this.$store.getters.getPopupContentsManager;
     },
-    imagesToUpload () {
-      return this.$store.getters.getImagesToUpload;
-    }
+    attachedImages () {
+      return this.$store.getters.getAttachedImages;
+    },
+    userInfo () {
+      return this.$store.getters.getUserInfo;
+    },
   },
   watch: {
     isPoppedUp (newVal, oldVal) {
@@ -217,60 +224,103 @@ export default {
       if (newVal != oldVal && newVal) {
         this.reader.readAsDataURL(this.uploadedImage);
       }
-    }
+    },
   },
   methods: {
     selectImage (image) {
       this.searchedImage = image;
       this.filePreviewUrl = image.urls.regular;
     },
+    setImageAlias (_alias) {
+      // NOTE: save string for lazy search
+      let alias = _alias;
+      if (alias == "") alias = this.searchString = this.savedString;
+      if (this.attachedImages[alias]) {
+        let count = 2;
+        while (this.attachedImages[alias + count]) count++;
+        return alias + count;
+      }
+      // if (this.attachedImages.find((obj) => obj.alias == alias)) {
+      //   let count = 2;
+      //   while (this.attachedImages.find((obj) => obj.alias == alias + count)) {
+      //     count++;
+      //   }
+      //   return alias + count;
+      // }
+      return alias;
+    },
     attachImage (type) {
+      console.debug(`on attachImage() in ContentsManager (type: ${type}`);
+      let image = {};
       if (type == "search") {
-        var image = {
-          type: "unsplash",
+        const alias = this.setImageAlias(this.searchString);
+        const tags = [];
+        this.searchedImage.tags.forEach((val) => {
+          tags.push(val.title);
+        });
+
+        image = {
+          alias: alias,
+          fileType: "EXT_IMG",
+          url: this.searchedImage.links.html,
           hasInfo: false,
-          keyword: this.searchString,
-          data: this.searchedImage
+          width: this.searchedImage.width.toString(),
+          height: this.searchedImage.height.toString(),
+          color: this.searchedImage.color,
+          tags: tags.toString(),
+          raw: this.searchedImage.urls.raw,
+          full: this.searchedImage.urls.full,
+          regular: this.searchedImage.urls.regular,
+          small: this.searchedImage.urls.small,
+          thumb: this.searchedImage.urls.thumb,
+          copyright: "unsplash@" + this.searchedImage.user.name,
+          copyrightLink: this.searchedImage.links.html,
         };
-      } else if (type == "uploadInfo") {
-        var image = {
-          type: "local",
+
+        this.$store.commit("attachImage", {
+          uploaded: true,
+          image: image,
+        });
+        this.$apollo
+          .mutate({
+            client: "inspiredBy",
+            mutation: registerImage,
+            variables: image,
+            context: {
+              headers: {
+                authorization: "Bearer " + this.userInfo.accessToken,
+              },
+            },
+          })
+          .then((res) => {
+            console.debug("successfully registered(): ", res);
+            this.$store.commit("updateImage", {
+              alias: image.alias,
+              registered: true,
+              registeredId: res.data.registerImage.imageId,
+            });
+          })
+      } else if (type == "infographic") {
+        console.log("user: ", this.user);
+        image = {
+          alias: this.uploadedImage.name.split(".")[0],
+          fileType: "LOCAL_IMG",
           hasInfo: true,
-          keyword: this.uploadedImage.name.split(".")[0],
-          data: this.uploadedImage
+          url: null, // TODO: should update this
+          copyright: "inspired-by@" + this.user.alias,
         };
       } else {
-        var image = {
+        image = {
           type: "local",
           hasInfo: false,
-          keyword: this.uploadedImage.name.split(".")[0],
-          data: this.uploadedImage
+          alias: this.uploadedImage.name.split(".")[0],
+          data: this.uploadedImage,
         };
       }
-
-      let keyword = image['keyword'];
-      // NOTE: saved string for lazy search
-      if (keyword == "") keyword = this.searchString = this.savedString;
-      if (this.imagesToUpload.find(obj => obj.keyword == keyword)) {
-        let count = 2;
-        while (this.imagesToUpload.find(obj => (obj.keyword == keyword + count))) {
-          count++;
-        }
-        image['keyword'] = keyword + count
-      }
-
-      // console.log(image);
-      // console.log(this.filePreviewUrl);
-
-      // await axios({
-      //   method: 'get',
-      //   url: "http://localhost:4000/test"
-      // }).then(res => {
-      //   console.log('received: ', res);
-      // })
+      console.debug("image: ", image);
 
       let formData = new FormData();
-      formData.append("image", this.image);
+      formData.append("image", image);
 
       // await axios
       //   .post("http://localhost:4000/upload", formData, {})
@@ -298,8 +348,8 @@ export default {
       //   }).bind(this)
       // });
 
-      image["previewUrl"] = this.filePreviewUrl;
-      this.$store.commit("uploadImage", image);
+      // image["previewUrl"] = this.filePreviewUrl;
+      // this.$store.commit("uploadImage", image);
       this.$store.commit("imageToContent", image);
 
       setTimeout(() => {
@@ -319,13 +369,13 @@ export default {
       }
     },
     closePopup () {
-      this.savedString = this.searchString
+      this.savedString = this.searchString;
       this.$store.commit("setPopupContentsManager", false);
     },
     setModeUpload (val) {
       this.modeUpload = val;
-    }
-  }
+    },
+  },
 };
 </script>
 

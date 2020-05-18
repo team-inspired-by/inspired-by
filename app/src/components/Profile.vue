@@ -3,20 +3,25 @@
   <div v-show="popupStatus">
     <div id="profile-avatar">
       <v-avatar size="10em" color="indigo darken-2">
-        <v-icon size="10em" color="grey lighten-4" dark>mdi-account-circle</v-icon>
+        <v-icon size="10em" color="grey lighten-4" dark
+          >mdi-account-circle</v-icon
+        >
       </v-avatar>
     </div>
     <div id="profile-box" class="pa-5">
-      <h2>Kim Jihyeong</h2>
-      <h4>Manager</h4>
+      <h2>{{ user.alias }}</h2>
+      <h4>{{ user.level }}</h4>
       <v-divider />
       <div class="py-2">
-        <p class="mt-1 mb-0">kimjihyeong@gmail.com</p>
-        <p>김지형</p>
+        <p class="mt-1 mb-0">{{ user.email }}</p>
+        <p>{{ user.alias }}</p>
         <p>클릭하여 프로필 수정</p>
       </div>
     </div>
     <v-card id="profile-cover" ripple></v-card>
+    <div id="profile-logout">
+      <v-btn id="profile-logout" text ripple @click="logout()">Logout</v-btn>
+    </div>
   </div>
   <!-- </transition> -->
 </template>
@@ -25,30 +30,47 @@
 export default {
   name: "custom-profile",
   data: () => ({
-    hasLocked: false
+    hasLocked: false,
+    user: {},
   }),
   methods: {
-    test () {
+    test() {
       //   console.log(this.$refs)
-    }
+    },
+    logout() {
+      this.$store.commit("logout");
+      this.$store.commit("setPopupProfile", false);
+    },
   },
   computed: {
-    popupStatus () {
+    popupStatus() {
       return this.$store.getters.getPopupProfile;
-    }
+    },
+    _user() {
+      return this.$store.getters.getUser;
+    },
   },
   watch: {
-    popupStatus (newVal, oldVal) {
+    popupStatus(newVal, oldVal) {
       if (newVal && !oldVal) {
-        this.hasLocked = document.getElementsByTagName("html")[0].style.overflow;
+        this.hasLocked = document.getElementsByTagName(
+          "html"
+        )[0].style.overflow;
         document.getElementsByTagName("html")[0].style.overflow = "hidden";
+      } else {
+        document.getElementsByTagName(
+          "html"
+        )[0].style.overflow = this.hasLocked;
       }
-      else {
-        document.getElementsByTagName("html")[0].style.overflow = this.hasLocked;
-      }
-    }
-  }
-}
+    },
+    _user: {
+      deep: true,
+      handler() {
+        this.user = this.$store.getters.getUser;
+      },
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -133,6 +155,19 @@ export default {
   opacity: 0;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0), rgb(0, 0, 255, 0.4));
   z-index: 510;
+  animation-name: intro-cover;
+  animation-duration: 0.5s;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
+}
+#profile-logout {
+  position: fixed;
+  top: 250px;
+  right: 10vw;
+  width: 11rem;
+  height: 3rem;
+  z-index: 500;
+  opacity: 0;
   animation-name: intro-cover;
   animation-duration: 0.5s;
   animation-delay: 1s;

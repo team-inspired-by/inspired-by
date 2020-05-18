@@ -1,32 +1,49 @@
 import Sequelize from "sequelize";
-import { ApolloServer, gql } from "apollo-server-express";
 import {
-  GraphQLScalarType,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLList
-} from "graphql";
-import { importSchema } from "graphql-import";
-import { PubSub } from "graphql-subscriptions";
-import { Kind } from "graphql/language";
+  ApolloServer,
+  gql,
+  AuthenticationError
+} from "apollo-server-express";
+// import {
+//   GraphQLScalarType,
+//   GraphQLSchema,
+//   GraphQLObjectType,
+//   GraphQLNonNull,
+//   GraphQLString,
+//   GraphQLInt,
+//   GraphQLList,
+// } from "graphql";
+// import {
+//   importSchema
+// } from "graphql-import";
+// import {
+//   PubSub
+// } from "graphql-subscriptions";
+import {
+  Kind
+} from "graphql/language";
+
 import aws from "aws-sdk";
 require("dotenv").config();
 
 aws.config.update({
   accessKeyId: process.env.S3_ACCESS_KEY_ID,
-  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
 });
 
 import db from "./models";
-
+// import jwt from "jsonwebtoken";
+import {
+  issueAccessToken,
+  setAuth
+} from "./jwt";
 // import {
 //   PORT = 4000, JWT_SECRET = "undefined"
 // } = process.env;
 
-import { createServer } from "http";
+import {
+  createServer
+} from "http";
 
 import express from "express";
 const app = express();
@@ -43,11 +60,11 @@ const uploader = multer({
     acl: "public-read-write",
     key(req, file, cb) {
       cb(null, `original/${Date.now()}${path.basename(file.originalname)}`);
-    }
+    },
   }),
   limit: {
-    fileSize: 22 * 1024 * 1024
-  }
+    fileSize: 22 * 1024 * 1024,
+  },
 });
 
 app.use(cors());
@@ -67,50 +84,52 @@ app.get("/test", (req, res) => {
 // const typeDef = importSchema('../schema/schema.graphql');
 import typeDefs from "./schemas/schemas";
 import resolvers from "./resolvers/resolvers";
+import {
+  ProvidedRequiredArgumentsRule
+} from "graphql";
 
 const server = new ApolloServer({
-  // context: ({ req }): {
-  //   getUser: () => Promise<User>;
-  //   models: ModelType;
-  //   pubsub: PubSub;
-  //   appSecret: String;
-  // } => ({
-  //     getUser: (): Promise<User> => {
-  //     const { User: userModel } = nodels;
-  //     const token = getToken(req);
+  context: ({
+    req,
+    res
+  }) => {
+    if (!req.headers.authorization) {
+      console.log('with no authentication info');
+      return {
+        auth: undefined,
+        db
+      };
+    }
 
-  //     if (!token) {
-  //       return null;
-  //     }
+    // console.log('auth: ', req.headers);
 
-  //     const user = verifyUser(token);
-  //     const { userId } = user;
-
-  //     return userModel.findOne({
-  //       where: {
-  //         id: userId
-  //       },
-  //       raw: true,
-  //     });
-  //     },
-  // }),
-  context: {
-    db
+    if (req.headers['refresh-token']) {
+      return issueAccessToken(db, req.headers['refresh-token'].substr(7), req.headers.authorization.substr(7), res)
+    } else {
+      return setAuth(db, req.headers.authorization.substr(7))
+    }
+  },
+  formatResponse: (response, requestContext) => {
+    // console.log('formatResponse() executed.')
+    // if (requestContext.response && requestContext.response.http) {
+    //   requestContext.response.http.headers.set('custom-key', 'custom-value');
+    // }
+    response.data['token'] = requestContext.context.tokens
+    return response;
   },
   resolvers,
   typeDefs,
   introspection: process.env.NODE_ENV !== "production",
-  playground: process.env.NODE_ENV !== "production"
+  playground: process.env.NODE_ENV !== "production",
 });
 
 server.applyMiddleware({
   app,
-  path: "/graphql"
+  path: "/graphql",
 });
 
-app.listen(
-  {
-    port: 4000
+app.listen({
+    port: 4000,
   },
   () => {
     console.log(`

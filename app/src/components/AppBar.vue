@@ -2,7 +2,14 @@
   <div class="app-box">
     <div id="shadow" :class="{ active: isScrolled }"></div>
     <v-container>
-      <v-app-bar ref="appBar" color="transparent" dark flat prominent shrink-on-scroll>
+      <v-app-bar
+        ref="appBar"
+        color="transparent"
+        dark
+        flat
+        prominent
+        shrink-on-scroll
+      >
         <!-- <template v-slot:img="{ props }">
         <v-img v-bind="props" gradient="to top right, rgba(100,115,201,.7), rgba(25,32,72,.7)"></v-img>
         </template>-->
@@ -26,7 +33,13 @@
         <v-btn icon @click="routeTo('/admin')" target="_blank" text>
           <v-icon>mdi-wrench-outline</v-icon>
         </v-btn>
-        <v-btn icon ref="profile-icon" @click="seeProfile()" target="_blank" text>
+        <v-btn
+          icon
+          ref="profile-icon"
+          @click="seeProfile()"
+          target="_blank"
+          text
+        >
           <v-icon>mdi-account-circle-outline</v-icon>
         </v-btn>
         <v-btn icon @click="routeTo('/treeview')" target="_blank" text>
@@ -46,25 +59,23 @@ export default {
   data: () => ({
     contentsBox: null,
     isScrolled: false,
-    debouncedScroller: null
+    debouncedScroller: null,
   }),
-  mounted () {
+  mounted() {
     this.contentsBox = document.querySelector("#contents-box");
     this.debouncedScroller = debounce(this.handleScroll, 30);
     window.addEventListener("scroll", this.debouncedScroller);
   },
-  destroyed () {
+  destroyed() {
     window.removeEventListener("scroll", this.debouncedScroller);
   },
   methods: {
-    seeProfile () {
-      if (this.isLoggedIn)
-        this.$store.commit("setPopupProfile", true);
-      else
-        this.$store.commit("setPopupLogin", true);
-      console.log(this.$refs["profile-icon"].$el.offsetLeft)
+    seeProfile() {
+      if (this.isLoggedIn) this.$store.commit("setPopupProfile", true);
+      else this.$store.commit("setPopupLogin", true);
+      console.log(this.$refs["profile-icon"].$el.offsetLeft);
     },
-    routeBack () {
+    routeBack() {
       // this.$store.commit("movePageTo", "inspiration");
       // window.scrollTo({
       //   top: 0,
@@ -77,28 +88,36 @@ export default {
       //   this.$router.back();
       // }, 1000);
     },
-    routeTo (path) {
+    routeTo(path) {
       // this.$store.commit("movePageTo", "admin");
       // setTimeout(() => {
       this.$router.push("" + path);
       // }, 1000);
     },
-    handleScroll () {
+    handleScroll() {
       if (window.scrollY > 0) this.isScrolled = true;
       else this.isScrolled = false;
-    }
+    },
   },
   computed: {
-    isLoggedIn () {
-      return this.$store.getters.getLoginStatus;
-    }
-  }
+    isLoggedIn() {
+      return this.$store.getters.getIsLoggedIn;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
 .app-box {
   position: fixed;
   z-index: 500;
+  vertical-align: middle;
+  #logo {
+    font-weight: 500;
+    font-size: 1em;
+  }
+  #topic {
+    font-family: "Finger Paint";
+  }
   #shadow {
     position: fixed;
     top: 0;
@@ -121,12 +140,12 @@ export default {
   .v-app-bar {
     margin-top: 1em;
     padding-left: 0.4em;
-    padding-right: 1.5em;
+    padding-right: 0.4em;
     width: 100vw;
     .v-toolbar__content {
       span {
         text-shadow: 0 0 0.5em black;
-        font-family: "Times New Roman", Times, serif !important;
+        // font-family: "Times New Roman", Times, serif !important;
         font-weight: 500;
       }
       #topic {

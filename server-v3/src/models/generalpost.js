@@ -1,36 +1,47 @@
-'use strict';
+"use strict";
 module.exports = (sequelize, DataTypes) => {
-  const GeneralPost = sequelize.define('GeneralPost', {
-    title: {
-      allowNull: false,
-      primaryKey: true,
-      type: DataTypes.STRING
-    },
-    lastContentId: {
-      allowNull: false,
-      type: DataTypes.UUID
+  const GeneralPost = sequelize.define(
+    "GeneralPost", {
+      title: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.STRING,
+      },
+      lastContentId: {
+        allowNull: false,
+        type: DataTypes.UUID,
+      },
+    }, {
+      timestamps: false,
     }
-  }, {
-    timestamps: false
-  });
+  );
   GeneralPost.associate = function (models) {
     GeneralPost.belongsTo(models.Post, {
       as: "linkedPost",
-      foreignKey: "title"
+      foreignKey: {
+        name: "title",
+        allowNull: false
+      },
+      foreignKeyConstraint: true,
+      onDelete: 'cascade',
+      hooks: true
     });
     GeneralPost.hasMany(models.Contribution, {
       as: "contributions",
       sourceKey: "title",
-      foreignKey: "linkedPostTitle"
+      foreignKey: "linkedPostTitle",
     });
     GeneralPost.belongsTo(models.Content, {
       as: "lastContent",
-      foreignKey: "lastContentId"
+      foreignKey: "lastContentId",
     });
+    // GeneralPost.hasMany(models.Content, {
+    //   foreignKey: ""
+    // })
     GeneralPost.hasMany(models.Comment, {
       as: "comments",
       sourceKey: "title",
-      foreignKey: "linkedPostTitle"
+      foreignKey: "linkedPostTitle",
     });
     GeneralPost.belongsToMany(models.File, {
       as: "contentFiles",

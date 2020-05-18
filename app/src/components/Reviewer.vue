@@ -2,14 +2,14 @@
   <v-row class="px-0 mx-0 flex-column">
     <v-col cols="auto" class="col-header pb-0 px-5">
       <img
-        v-if="urlInfoIamges[0]"
-        :src="urlInfoIamges[0].url"
-        :alt="urlInfoIamges[0].alt"
+        v-if="thumbnailImage"
+        :src="thumbnailImage.image.regular"
+        :alt="thumbnailImage.alias"
         class="thumb"
       />
       <div class="post-header mt-5 ml-3">
         <span class="mr-5">post</span>
-        <h2>{{form.title}}</h2>
+        <h2>{{ form.title }}</h2>
       </div>
       <v-divider class="d-flex" />
       <p class="post-author ma-0 mt-3 ml-2">
@@ -18,19 +18,40 @@
         </v-avatar>
         Kim Jihyeong, posted at {{ postDate }}
       </p>
-      <vue-markdown class="px-3 pt-5 mt-5">{{ form.summary }}</vue-markdown>
+      <vue-markdown
+        v-if="form.summary"
+        :watches="['source']"
+        :source="'## Overview\n' +form.summary"
+        class="px-3 pt-5 mt-5"
+      ></vue-markdown>
       <!-- <vue-markdown v-else class="px-3 pt-5">{{ form.contentRaw[0] }}</vue-markdown> -->
     </v-col>
     <v-col class="preview" :key="key" v-for="(val, key) in form.contentRaw">
       <img
-        v-if="urlInfoIamges[key] && (key != 0)"
-        :src="urlInfoIamges[key].url"
-        :alt="urlInfoIamges[key].alt"
+        v-if="key-1 >= 0 && attachedImages[contentImages[key-1]]"
+        :src="attachedImages[contentImages[key-1]].image.regular"
+        :alt="attachedImages[contentImages[key-1]].alias"
         class="side"
-        :class="{'right': key%2, 'left': !(key%2)}"
+        :class="{ right: key % 2, left: !(key % 2) }"
       />
-      <vue-markdown class="px-3" v-if="key != 0">{{ val }}</vue-markdown>
-      <custom-author-card v-if="key == (form.contentRaw.length - 2)" />
+      <!-- <img
+        v-if="urlInfoImages[key-1] && (key-1 != 0)"
+        :src="urlInfoImages[key-1].url"
+        :alt="urlInfoImages[key-1].alt"
+        class="side"
+        :class="{ right: key % 2, left: !(key % 2) }"
+      />-->
+      <!-- <img
+        v-else-if="key-1 == 0 && urlInfoImages[key-1].url != thumbnailImage.image.regular"
+        :src="urlInfoImages[key-1].url"
+        :alt="urlInfoImages[key-1].alt"
+        class="side"
+        :class="{ right: key % 2, left: !(key % 2) }"
+      />-->
+      <div>
+        <vue-markdown :watches="['source']" :source="val" class="px-3"></vue-markdown>
+        <custom-author-card v-if="key == form.contentRaw.length - 1" />
+      </div>
     </v-col>
     <v-col class="pt-0">
       <v-divider />
@@ -44,7 +65,7 @@
           <v-expansion-panel-content>
             <v-textarea
               v-model="form.summary"
-              label="Overview"
+              label="Tell a brief story about this post..."
               maxlength="150"
               counter="150"
               autofocus
@@ -59,42 +80,64 @@
             {{ form.thumbnail ? "is set" : "will be the first Image" }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <!-- <v-textarea
-              v-model="form.summary"
-              label="Summary"
-              maxlength="150"
-              counter="150"
-              autofocus
-              full-width
-              @input="$emit('input', form)"
-            />-->
+            <v-item-group v-model="selectedThumbnail" mandatory>
+              <v-row>
+                <v-col
+                  v-for="(val, key) in attachedImages"
+                  :key="key"
+                  cols="auto"
+                  class="file-image detail-thumbnail selector mx-1 pa-1"
+                >
+                  <v-item v-slot:default="{ active, toggle }" :value="key">
+                    <img :src="val['image']['thumb']" @click="toggle" />
+                  </v-item>
+                </v-col>
+              </v-row>
+            </v-item-group>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-header>
-            Attatched Image
-            {{ form.attatchedImage ? "is set" : "" }}
+            Attached Image
+            {{ form.attachedImages ? "is set" : "" }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-row class="px-4">
-              <v-col
-                class="thumb-box detail pa-1 ma-1"
-                cols="auto"
-                :key="key"
-                v-for="(val, key) in imagesToUpload"
-                @click="imageToContent(val)"
-              >
-                <img :src="val['previewUrl']" />
-              </v-col>
-            </v-row>
+            <v-item-group v-model="selectedAttachedImages" multiple>
+              <v-subheader class="px-0">Used in this post:</v-subheader>
+              <v-row>
+                <div v-for="(val, key) in attachedImages" :key="key">
+                  <v-col
+                    v-if="contentImages.includes(key) || (selectedThumbnail == key)"
+                    cols="auto"
+                    class="file-image detail selector select-reverse mx-1 pa-1"
+                  >
+                    <v-item v-slot:default="{ active, toggle }" :value="key" disabled>
+                      <img :src="val['image']['thumb']" @click="toggle" />
+                    </v-item>
+                  </v-col>
+                </div>
+              </v-row>
+              <v-subheader class="px-0">Not used in this post (click to remove):</v-subheader>
+              <v-row>
+                <div v-for="(val, key) in attachedImages" :key="key">
+                  <v-col
+                    v-if="!(contentImages.includes(key) || (selectedThumbnail == key))"
+                    cols="auto"
+                    class="file-image detail selector mx-1 pa-1"
+                  >
+                    <v-item v-slot:default="{ active, toggle }" :value="key">
+                      <img :src="val['image']['thumb']" @click="toggle" />
+                    </v-item>
+                  </v-col>
+                </div>
+              </v-row>
+            </v-item-group>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
           <v-expansion-panel-header>
             Publish
-            {{
-            form.publishedAt ? "at " + form.publishedAt : "now"
-            }}
+            {{ form.publishedAt ? "at " + form.publishedAt : "now" }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-date-picker
@@ -111,9 +154,7 @@
         <v-expansion-panel>
           <v-expansion-panel-header>
             Deprecate
-            {{
-            form.deprecatedAt ? "in " + form.deprecatedAt : "is not set"
-            }}
+            {{ form.deprecatedAt ? "in " + form.deprecatedAt : "is not set" }}
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-date-picker
@@ -172,25 +213,29 @@
         </template>-->
         <template v-slot:selection="{ attrs, item, parent, selected }">
           <v-chip v-if="item === Object(item)" v-bind="attrs" :input-value="selected" label filled>
-            <span class="pr-2">{{ item.text }}</span>
+            <span class="pr-2">{{ item.name }}</span>
             <v-icon small @click="parent.selectItem(item)">close</v-icon>
           </v-chip>
         </template>
         <template v-slot:item="{ index, item }">
           <v-text-field
             v-if="topicEditing === item"
-            v-model="topicEditing.text"
+            v-model="topicEditing.name"
             autofocus
             flat
             background-color="transparent"
             hide-details
             @keyup.enter="topicEdit(index, item)"
           ></v-text-field>
-          <v-chip v-else light label>{{ item.text }}</v-chip>
+          <v-chip v-else light label>{{ item.name }}</v-chip>
           <v-spacer></v-spacer>
           <v-list-item-action @click.stop>
             <v-btn icon light @click.stop.prevent="topicEdit(index, item)">
-              <v-icon>{{ topicEditing !== item ? 'mdi-pencil-outline' : 'mdi-check' }}</v-icon>
+              <v-icon>
+                {{
+                topicEditing !== item ? "mdi-pencil-outline" : "mdi-check"
+                }}
+              </v-icon>
             </v-btn>
           </v-list-item-action>
         </template>
@@ -204,7 +249,7 @@ export default {
   name: "custom-reviewer",
   props: {
     value: {
-      type: Object
+      type: Object,
     },
     fillHeight: Boolean,
   },
@@ -213,78 +258,102 @@ export default {
       title: "",
       content: "",
       contentRaw: [],
+      thumbnailId: null,
       summary: "",
-      publishedAt: null,
+      publishedAt: "",
       deprecatedAt: null,
-      attatchedImage: [],
-      topics: []
+      topics: [],
+      isPrivate: false,
     });
+    const urlInfoImage = Object.freeze({
+      url: '',
+      alt: '',
+      at: null
+    })
     return {
       form: Object.assign({}, defaultForm),
       loading: false,
       topicSearch: null,
       topicEditing: null,
       topicIndex: -1,
-      urlInfoIamges: []
+      _urlInfoImage: Object.assign({}, urlInfoImage),
+      urlInfoImages: [],
+      contentImages: [],
+      thumbnailImage: null,
+      selectedThumbnail: null,
+      selectedAttachedImages: [],
       // selectedTopics: [],
-    }
+    };
   },
   created () {
-    this.contentToContentRaw()
+    this.contentToContentRaw();
   },
   mounted () {
-    this.form.title = this.value['title'] || "No title";
-    this.form.content = this.value['content'];
+    console.log("value: ", this.value);
+    this.form = this.value;
+    // this.form.title = this.value["title"] || "No title";
+    // this.form.content = this.value["content"];
   },
   methods: {
     contentToContentRaw () {
+      // NOTE: This logic may be similar to parseContent() in AdminPost.vue
       let contentRaw = [];
-      let contents = this.value['content'].split(", side](from attatched)");
+      let contents = this.value["content"].split(", side](from attached)");
       // let last_contents = contents.pop();
       // if (contents.length == 1 && !contents[0].includes("![")) return;
-      let content = ''
-      let name = ''
+      let content = "";
+      let name = "";
       for (let i in contents) {
-        if (i != (contents.length - 1)) {
-          content = contents[i].split('![');
-          name = content.pop()
-          this.urlInfoIamges.push({
-            url: this.imageUrl(name),
-            alt: name
+        if (i != contents.length - 1) {
+          content = contents[i].split("![");
+          name = content.pop();
+          this.urlInfoImages.push({
+            url: this.imgSrc(name),
+            alt: name,
           });
+          this.contentImages.push(name)
         } else {
-          content = contents[i]
+          content = contents[i];
         }
-        contentRaw.push(content)
+        contentRaw.push(content);
       }
 
-      let temp = []
+      let temp = [];
       for (let i in contentRaw) {
-        content = ''
+        content = "";
         for (let j in contentRaw[i]) {
-          temp = contentRaw[i][j].split("](from attatched)");
+          temp = contentRaw[i][j].split("](from attached)");
           if (temp.length > 1) {
-            content += '![' + temp[0] + "](" + this.imageUrl(temp[0]) + ")" + temp[1];
+            content +=
+              "![" + temp[0] + "](" + this.imgSrc(temp[0]) + ")" + temp[1];
           } else if (temp.length === 1) {
-            content += contentRaw[i][j]
+            // NOTE: for normal image url
+            if (temp[0].includes(']('))
+              content += "!["
+            content += contentRaw[i][j];
           }
         }
-        contentRaw[i] = content.trim()
+        contentRaw[i] = content.trim();
       }
 
       // console.log('contentRaw: ', contentRaw)
-      // console.log('urlInfoImages: ', this.urlInfoIamges)
-      this.form.contentRaw = contentRaw
-      this.form.summary = "## Overview"
+      // console.log('urlInfoImages: ', this.urlInfoImages)
+      this.form.contentRaw = contentRaw;
+      this.form.summary = "";
+      if (this.contentImages)
+        this.selectedThumbnail = this.contentImages[0];
+      // this.selectedThumbnail = this.attachedImages[0].alias;
 
+      console.log("attached Images:", this.attachedImages)
+      console.log("contentImages: ", this.contentImages, this.attachedImages['Tiger'], this.contentImages[0])
 
       // let tempContent = '';
-      // let contents = this.value['content'].split("](from attatched)");
+      // let contents = this.value['content'].split("](from attached)");
       // let last_contents = contents.pop();
       // if (contents.length == 1 && !contents[0].includes("![")) return;
       // for (let i in contents) {
       //   let name = contents[i].split("![").slice(-1)[0];
-      //   tempContent += contents[i] + "](" + this.imageUrl(name) + ")";
+      //   tempContent += contents[i] + "](" + this.imgSrc(name) + ")";
       // }
       // tempContent += last_contents;
 
@@ -293,78 +362,87 @@ export default {
       // // console.log(`content: ${this.contentRaw}`);
       // // console.log("contentRaw: ", this.form.contentRaw);
       // // console.log(this.imagesToUpload);
-      this.$emit('input', this.form);
+      this.$emit("input", this.form);
     },
-    createInfoImage () {
-
-    },
-    imageUrl (searchStr) {
+    createInfoImage () { },
+    imgSrc (searchStr) {
       if (!searchStr.trim()) return;
-      console.log('on imageUrl: ', searchStr)
-      const val = this.$store.getters.getImagesToUpload.find(obj => {
-        return obj.keyword == searchStr;
-      });
-      return val.previewUrl;
+      console.log("on imgSrc: ", searchStr);
+      // const val = this.$store.getters.getAttachedImages.find((obj) => {
+      //   return obj.alias == searchStr;
+      // });
+      // return val.image.regular;
+      // return this.$store.getters.getAttachedImages[searchStr].image.regular;
+      return this.attachedImages[searchStr].image.regular;
     },
     topicEdit (index, item) {
-      console.log('topicEdit:')
-      console.log(index, item)
+      console.log("topicEdit:");
+      console.log(index, item);
       if (!this.topicEditing) {
-        this.topicEditing = item
-        this.topicIndex = index
+        this.topicEditing = item;
+        this.topicIndex = index;
       } else {
-        this.topicEditing = null
-        this.topicIndex = -1
+        this.topicEditing = null;
+        this.topicIndex = -1;
       }
     },
     topicFilter (item, queryText, itemText) {
       // console.log("on topicFilter: ");
       // console.log(item, queryText, itemText);
-      if (item.header) return false
+      if (item.header) return false;
 
-      const hasValue = val => val != null ? val : ''
+      const hasValue = (val) => (val != null ? val : "");
 
-      const text = hasValue(itemText)
-      const query = hasValue(queryText)
+      const text = hasValue(itemText);
+      const query = hasValue(queryText);
 
-      return text.toString()
-        .toLowerCase()
-        .indexOf(query.toString().toLowerCase()) > -1
+      return (
+        text
+          .toString()
+          .toLowerCase()
+          .indexOf(query.toString().toLowerCase()) > -1
+      );
     },
-
   },
   computed: {
     topicList () {
       return this.$store.getters.getTopicList;
     },
-    imagesToUpload () {
-      return this.$store.getters.getImagesToUpload;
+    attachedImages () {
+      return this.$store.getters.getAttachedImages;
     },
     selectedTopics () {
       return this.form.topics;
     },
     postDate () {
       if (this.form.publishedAt)
-        return new Date(this.form.publishedAt).toDateString()
-      return new Date().toDateString()
-    }
+        return new Date(this.form.publishedAt).toDateString();
+      return new Date().toDateString();
+    },
   },
   watch: {
     selectedTopics (newVal, oldVal) {
       if (newVal.length === oldVal.length) return;
 
-      this.form.topics = newVal.map(v => {
-        if (typeof v === 'string') {
+      this.form.topics = newVal.map((v) => {
+        if (typeof v === "string") {
           v = {
-            text: v,
-          }
-          this.form.topics.push(v)
+            name: v,
+          };
+          this.form.topics.push(v);
         }
-        return v
-      })
+        return v;
+      });
     },
-  }
-}
+    selectedThumbnail (newVal) {
+      this.thumbnailImage = this.attachedImages[newVal];
+      if (this.attachedImages[newVal])
+        this.form.thumbnailId = this.attachedImages[newVal].registeredId;
+      console.log("selected: ", this.thumbnailImage, this.form.thumbnailId);
+      this.$emit('input', this.form);
+    }
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -373,7 +451,7 @@ export default {
   width: 100%;
 }
 .serif {
-  font-family: "Times New Roman", Times, serif;
+  // font-family: "Times New Roman", Times, serif;
   font-weight: 500;
 }
 

@@ -3,9 +3,15 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Posts', {
       title: {
-        allowNull: true,
+        allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        references: {
+          model: 'Posts', // name of Target model
+          key: 'title', // key in Target model that we're referencing
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       subtitle: {
         allowNull: true,
@@ -69,7 +75,7 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
     });
   },
   down: (queryInterface, Sequelize) => {

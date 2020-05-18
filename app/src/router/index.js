@@ -16,6 +16,7 @@ import AdminUser from "../views/AdminUser.vue";
 import AdminProject from "../views/AdminProject.vue";
 import AdminStatistics from "../views/AdminStatistics.vue";
 import AdminGeneral from "../views/AdminGeneral.vue";
+import AdminData from "../views/AdminData.vue";
 import Treeview from "../views/Treeview.vue";
 import store from "../store/index.js";
 
@@ -94,6 +95,11 @@ const routes = [{
         path: "general",
         name: "admin",
         component: AdminGeneral
+      },
+      {
+        path: "data",
+        name: "admin",
+        component: AdminData
       }
     ]
   },
@@ -146,13 +152,13 @@ const routes = [{
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  scrollBehavior: (to, from, savedPosition) => {
-    // return {
-    //   x: 0,
-    //   y: 0
-    // };
-    return null;
-  },
+  // scrollBehavior: (to, from, savedPosition) => {
+  //   // return {
+  //   //   x: 0,
+  //   //   y: 0
+  //   // };
+  //   return null;
+  // },
   // scrollBehavior: (to, from, savedPosition) => {
   //   // console.log("inroute, scrollBehavior from", from.name, ", to ", from.name);
   //   // let scrollTo = 0;
@@ -225,6 +231,16 @@ router.beforeEach((to, from, next) => {
       break;
 
     case 'admin':
+      store.commit("setTopic", "");
+      switch (to.name) {
+        case 'admin':
+          animation = false
+          break;
+      }
+      break;
+
+    case 'writer':
+      store.commit("setTopic", "");
       switch (to.name) {
         case 'admin':
           animation = false
@@ -244,7 +260,7 @@ router.beforeEach((to, from, next) => {
   var timing = 1000;
   setTimeout(() => {
     next();
-  }, timing);
+  }, animation ? timing : 10);
 });
 
 // router.beforeEach((to, from, next) => {

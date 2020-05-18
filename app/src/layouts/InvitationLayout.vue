@@ -46,7 +46,7 @@ export default {
     padding: 2em;
     border: 2px solid rgba(255, 255, 255, 0.22) !important;
     border-radius: 20em;
-    font-family: "GmarketSansMedium";
+    // font-family: "GmarketSansMedium";
     #top-image {
       width: 100%;
       max-width: 20em;

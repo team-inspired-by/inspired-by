@@ -15,10 +15,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      accessToken: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
       linkedUserId: {
         allowNull: false,
         type: Sequelize.UUID

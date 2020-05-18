@@ -31,11 +31,7 @@
           </v-btn>-->
         </v-app-bar>
       </v-container>
-      <div
-        ref="routeContainer"
-        id="route-container"
-        @scroll.passive="handleScroll"
-      >
+      <div ref="routeContainer" id="route-container" @scroll.passive="handleScroll">
         <router-view></router-view>
       </div>
     </div>
@@ -50,7 +46,7 @@ export default {
   name: "MainLayout",
   apollo: {
     clients: {
-      query() {
+      query () {
         return Topics;
       },
       update: data => data
@@ -60,7 +56,7 @@ export default {
   VBoilerplate: {
     functional: true,
 
-    render(h, { data, props, children }) {
+    render (h, { data, props, children }) {
       return h(
         "v-skeleton-loader",
         {
@@ -78,17 +74,17 @@ export default {
   data: () => ({
     show: false
   }),
-  created() {
+  created () {
     this.$store.commit("setTopic", this.$route.params.inspiration);
   },
   computed: {
-    topic() {
+    topic () {
       return this.$store.getters.getTopic;
     },
-    isMain() {
+    isMain () {
       return this.$store.getters.getIsMain;
     },
-    sampleText() {
+    sampleText () {
       console.log("client", this.clients);
       // if (this.client.viewer.properties[0].name != '') {
       //   return this.client.viewer.properties[0].name
@@ -97,7 +93,7 @@ export default {
       return "";
     }
   },
-  mounted() {
+  mounted () {
     console.log(this.sample);
     this.show = true;
     this.video = this.$refs.video;
@@ -110,7 +106,7 @@ export default {
     //   });
     // }
 
-    function hasGetUserMedia() {
+    function hasGetUserMedia () {
       return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     }
 
@@ -121,10 +117,10 @@ export default {
     }
   },
   methods: {
-    expandTopic() {
+    expandTopic () {
       this.expand = !this.expand;
     },
-    expandCarousel() {
+    expandCarousel () {
       this.isCarouselOpen = !this.isCarouselOpen;
       if (this.isCarouselOpen) {
         this.carouselHeight = 700;
@@ -132,18 +128,18 @@ export default {
         this.carouselHeight = 250;
       }
     },
-    selectTopic(key) {
+    selectTopic (key) {
       this.selectedTopic = key;
       this.isTopicSelected = true;
     },
-    routeBack() {
+    routeBack () {
       this.show = false;
       setTimeout(() => {
         // this.$router.go(-1);
         this.$router.back();
       }, 1000);
     },
-    handleScroll() {
+    handleScroll () {
       this.$store.commit("setPosY", this.$refs.routeContainer.scrollTop);
     }
   }
@@ -157,7 +153,7 @@ export default {
   #app-bar-container {
     flex: none;
     span {
-      font-family: "Times New Roman", Times, serif !important;
+      // font-family: "Times New Roman", Times, serif !important;
       font-weight: 500;
     }
     #topic {

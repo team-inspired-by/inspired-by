@@ -8,8 +8,8 @@
 <script>
 export default {
   name: "Auth",
-  mounted() {
-    localStorage.setItem("code", this.$route.query.code);
+  mounted () {
+    localStorage.setItem("inspired-by-user-code", this.$route.query.code);
     window.close();
   }
 };

@@ -87,6 +87,34 @@ export default {
   font-style: normal;
 }
 
+@font-face {
+  font-family: "JSDongkang-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/JSDongkang-RegularA1.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Handon3gyeopsal300g";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_seven@1.2/Handon3gyeopsal300g.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+// @font-face {
+//   font-family: "Josefin Sans";
+//   src: url("https://fonts.googleapis.com/css2?family=Josefin+Sans");
+//   font-weight: normal;
+//   font-style: normal;
+// }
+
+@import url("https://fonts.googleapis.com/css2?family=Finger+Paint&family=Josefin+Sans:wght@423&family=Saira:wght@200;400;500;600&display=swap");
+* {
+  font-family: "Saira", "Handon3gyeopsal300g", sans-serif;
+  font-weight: 400;
+}
+
 ::-webkit-scrollbar {
   width: 0px;
 }

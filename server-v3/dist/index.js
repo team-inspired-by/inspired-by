@@ -6,17 +6,13 @@ var _sequelize = _interopRequireDefault(require("sequelize"));
 
 var _apolloServerExpress = require("apollo-server-express");
 
-var _graphql = require("graphql");
-
-var _graphqlImport = require("graphql-import");
-
-var _graphqlSubscriptions = require("graphql-subscriptions");
-
 var _language = require("graphql/language");
 
 var _awsSdk = _interopRequireDefault(require("aws-sdk"));
 
 var _models = _interopRequireDefault(require("./models"));
+
+var _jwt = require("./jwt");
 
 var _http = require("http");
 
@@ -34,6 +30,23 @@ var _schemas = _interopRequireDefault(require("./schemas/schemas"));
 
 var _resolvers = _interopRequireDefault(require("./resolvers/resolvers"));
 
+var _graphql = require("graphql");
+
+// import {
+//   GraphQLScalarType,
+//   GraphQLSchema,
+//   GraphQLObjectType,
+//   GraphQLNonNull,
+//   GraphQLString,
+//   GraphQLInt,
+//   GraphQLList,
+// } from "graphql";
+// import {
+//   importSchema
+// } from "graphql-import";
+// import {
+//   PubSub
+// } from "graphql-subscriptions";
 require("dotenv").config();
 
 _awsSdk["default"].config.update({
@@ -70,30 +83,32 @@ app.get("/test", function (req, res) {
 // const typeDef = importSchema('../schema/schema.graphql');
 
 var server = new _apolloServerExpress.ApolloServer({
-  // context: ({ req }): {
-  //   getUser: () => Promise<User>;
-  //   models: ModelType;
-  //   pubsub: PubSub;
-  //   appSecret: String;
-  // } => ({
-  //     getUser: (): Promise<User> => {
-  //     const { User: userModel } = nodels;
-  //     const token = getToken(req);
-  //     if (!token) {
-  //       return null;
-  //     }
-  //     const user = verifyUser(token);
-  //     const { userId } = user;
-  //     return userModel.findOne({
-  //       where: {
-  //         id: userId
-  //       },
-  //       raw: true,
-  //     });
-  //     },
-  // }),
-  context: {
-    db: _models["default"]
+  context: function context(_ref) {
+    var req = _ref.req,
+        res = _ref.res;
+
+    if (!req.headers.authorization) {
+      console.log('with no authentication info');
+      return {
+        auth: undefined,
+        db: _models["default"]
+      };
+    } // console.log('auth: ', req.headers);
+
+
+    if (req.headers['refresh-token']) {
+      return (0, _jwt.issueAccessToken)(_models["default"], req.headers['refresh-token'].substr(7), req.headers.authorization.substr(7), res);
+    } else {
+      return (0, _jwt.setAuth)(_models["default"], req.headers.authorization.substr(7));
+    }
+  },
+  formatResponse: function formatResponse(response, requestContext) {
+    // console.log('formatResponse() executed.')
+    // if (requestContext.response && requestContext.response.http) {
+    //   requestContext.response.http.headers.set('custom-key', 'custom-value');
+    // }
+    response.data['token'] = requestContext.context.tokens;
+    return response;
   },
   resolvers: _resolvers["default"],
   typeDefs: _schemas["default"],

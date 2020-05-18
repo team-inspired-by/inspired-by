@@ -3,7 +3,7 @@
 module.exports = function (sequelize, DataTypes) {
   var Post = sequelize.define('Post', {
     title: {
-      allowNull: true,
+      allowNull: false,
       primaryKey: true,
       type: DataTypes.STRING
     },
@@ -87,9 +87,18 @@ module.exports = function (sequelize, DataTypes) {
       through: "PostsUsers",
       foreignKey: "postTitle"
     });
-    Post.belongsTo(models.File, {
+    Post.belongsTo(models.Image, {
       as: "thumbnail",
       foreignKey: "thumbnailId"
+    });
+    Post.hasOne(models.GeneralPost, {
+      as: "generalPost",
+      foreignKey: {
+        name: "title",
+        allowNull: false
+      },
+      onDelete: "cascade",
+      hooks: true
     });
   };
 

@@ -11,7 +11,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       type: DataTypes.STRING
     },
-    contents: {
+    content: {
       allowNull: false,
       type: DataTypes.STRING
     },
@@ -23,6 +23,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    replyToCommentId: {
+      allowNull: true,
+      type: DataTypes.STRING
     },
     numLikes: {
       allowNull: true,
@@ -39,6 +43,10 @@ module.exports = function (sequelize, DataTypes) {
     Comment.belongsTo(models.User, {
       as: "author",
       foreignKey: "authorId"
+    });
+    Comment.belongsTo(models.Comment, {
+      as: "replyToComment",
+      foreignKey: "replyToCommentId"
     });
   };
 

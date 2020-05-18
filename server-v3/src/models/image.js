@@ -6,6 +6,10 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.UUID
     },
+    hasInfo: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN
+    },
     size: {
       allowNull: true,
       type: DataTypes.STRING
@@ -50,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.STRING,
       defaultValue: "UNKNOWN"
+    },
+    copyrightLink: {
+      allowNull: true,
+      type: DataTypes.STRING,
     },
   }, {});
   Image.associate = function (models) {};

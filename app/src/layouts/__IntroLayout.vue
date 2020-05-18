@@ -108,7 +108,7 @@ export default {
 <style lang="scss" scoped>
 #title-parallax {
   background-color: #111;
-  font-family: "Times New Roman", Times, serif;
+  // font-family: "Times New Roman", Times, serif;
   min-height: 100vh;
   cursor: default;
   .flexbox {
@@ -124,7 +124,7 @@ export default {
       display: inline-block;
       // line-height: 100vh;
       font-weight: 500;
-      font-family: "Times New Roman", Times, serif !important;
+      // font-family: "Times New Roman", Times, serif !important;
       transition: width 1s;
       overflow: hidden;
       z-index: 10;

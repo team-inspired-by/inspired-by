@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
-  var GeneralPost = sequelize.define('GeneralPost', {
+  var GeneralPost = sequelize.define("GeneralPost", {
     title: {
       allowNull: false,
       primaryKey: true,
@@ -18,7 +18,13 @@ module.exports = function (sequelize, DataTypes) {
   GeneralPost.associate = function (models) {
     GeneralPost.belongsTo(models.Post, {
       as: "linkedPost",
-      foreignKey: "title"
+      foreignKey: {
+        name: "title",
+        allowNull: false
+      },
+      foreignKeyConstraint: true,
+      onDelete: 'cascade',
+      hooks: true
     });
     GeneralPost.hasMany(models.Contribution, {
       as: "contributions",
@@ -28,7 +34,10 @@ module.exports = function (sequelize, DataTypes) {
     GeneralPost.belongsTo(models.Content, {
       as: "lastContent",
       foreignKey: "lastContentId"
-    });
+    }); // GeneralPost.hasMany(models.Content, {
+    //   foreignKey: ""
+    // })
+
     GeneralPost.hasMany(models.Comment, {
       as: "comments",
       sourceKey: "title",
