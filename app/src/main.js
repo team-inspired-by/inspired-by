@@ -26,9 +26,12 @@ import Startitle from "./components/Startitle.vue";
 import Writer from "./components/Writer.vue";
 import Reviewer from "./components/Reviewer.vue";
 import PostCard from "./components/PostCard.vue";
+import PostLoader from "./components/PostLoader.vue";
+import GeneralPost from "./components/GeneralPost.vue";
 import Event from "./components/Event.vue";
 import AuthorCard from "./components/AuthorCard.vue";
 import PostManagingCard from "./components/PostManagingCard.vue"
+import PostArticle from "./components/PostArticle.vue"
 
 Vue.config.productionTip = false;
 Vue.component("Longpress", Longpress);
@@ -42,9 +45,12 @@ Vue.component("custom-startitle", Startitle);
 Vue.component("custom-writer", Writer);
 Vue.component("custom-reviewer", Reviewer);
 Vue.component("custom-post-card", PostCard);
+Vue.component("custom-post-loader", PostLoader);
+Vue.component("custom-general-post", GeneralPost);
 Vue.component("custom-event", Event);
 Vue.component("custom-author-card", AuthorCard);
 Vue.component("custom-post-managing-card", PostManagingCard);
+Vue.component("custom-post-article", PostArticle);
 
 Vue.use(VueScrollTo, {
   container: "body",

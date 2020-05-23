@@ -75,7 +75,7 @@ export default {
     routeToTopic () {
       // console.log(this.focusedTopic)
       this.$store.commit("setTopic", this.focusedTopic);
-      this.$router.push("/topic/" + this.focusedTopic);
+      this.$router.push("/stopic/" + this.focusedTopic);
     }
   },
   computed: {

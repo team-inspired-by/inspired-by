@@ -27,7 +27,7 @@ export default {
       if (this.isFocused) {
         // this.isSelected = true
         this.$store.commit("setTopic", this.topic.name);
-        this.$router.push("/topic/" + this.topic.name);
+        this.$router.push("/stopic/" + this.topic.name);
       } else {
         this.$store.commit("focusTopic", this.topic.name);
       }

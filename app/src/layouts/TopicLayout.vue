@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: "MainLayout",
+  name: "TopicLayout",
   data: () => ({
     transitionName: "topic-any",
   }),

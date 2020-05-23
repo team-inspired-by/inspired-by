@@ -5,5 +5,5 @@ module.exports = {
             enableEngine: false
         }
     },
-    lintOnSave: false
+    lintOnSave: false,
 };

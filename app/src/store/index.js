@@ -30,6 +30,10 @@ export default new Vuex.Store({
         name: "Memory"
       }
     ],
+    selectedPost: {
+      key: -1,
+      post: {}
+    },
     darken: false,
     popup: {
       profile: false
@@ -94,11 +98,13 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       // Logic to load topicList
     },
     movePage(state, val) {
+      // Vue.set(state, 'pageTo', val.to);
       state.pageFrom = val.from;
       state.pageTo = val.to;
       // if (!state.pageFrom) state.pageFrom = val.to
       state.pagePosition[val.from] = window.scrollY;
       if (val.routingAnimation) {
+        Vue.set(state, 'show', false);
         state.show = false;
         window.scrollTo({
           top: 0,
@@ -300,6 +306,11 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     },
     setTreeviewSelected(state, val) {
       state.treeview.selected = val;
+    },
+    setSelectedPost(state, val) {
+      // console.debug('setSelectedPost: ', val);
+      if (!val['post']) return;
+      state.selectedPost = val;
     }
   },
   actions: {
@@ -465,6 +476,13 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     }) {
       commit("setTreeviewSelected", setTreeviewSelected);
     },
+    setSelectedPost({
+      commit
+    }, {
+      newVal
+    }) {
+      commit("setSelectedPost", setSelectedPost);
+    },
   },
   modules: {},
   getters: {
@@ -565,6 +583,9 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     },
     getTreeviewSelected(state) {
       return state.treeview.selected;
+    },
+    getSelectedPost(state) {
+      return state.selectedPost;
     }
   }
 });

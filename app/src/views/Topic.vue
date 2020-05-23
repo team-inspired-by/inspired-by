@@ -346,13 +346,11 @@ export default {
   .serif {
     // font-family: "Times New Roman", Times, serif !important;
   }
-  & > .row:first-child {
-    padding-top: 150px;
-  }
   .custom-event {
     background: indigo;
   }
   .bubble-box {
+    padding-top: 150px;
     padding-bottom: 0;
     margin-bottom: 0;
     overflow-x: hidden;

@@ -1,19 +1,32 @@
 <template>
-  <transition name="item-fade" appear>
-    <div id="container-background">
-      <!-- <img id="image-sample" :style="{top: -905 + top + 'px'}" src="../assets/samplacam2.png" /> -->
-      <!-- <div
+  <div>
+    <transition name="item-fade" appear>
+      <div id="container-background">
+        <!-- <img id="image-sample" :style="{top: -905 + top + 'px'}" src="../assets/samplacam2.png" /> -->
+        <!-- <div
       id="background"
       :style="{ top: -scrollY / 5 + 'px', 'background-image': 'url(\'' + image[selectedImage] + '\')' }"
-      ></div>-->
+        ></div>-->
+        <div id="gradient-container">
+          <img src="../assets/topic_main_bg.jpg" />
+        </div>
+        <!-- <img id="backgroundImg" :src="image[selectedImage]" /> -->
 
-      <!-- <img id="backgroundImg" :src="image[selectedImage]" /> -->
-
-      <div id="video-container" :class="viewpoint">
-        <video ref="video" src="../assets/mv-bg-teal.mp4" loop muted="muted"></video>
+        <!-- <div id="video-container" :class="viewpoint"> -->
+        <!-- <video ref="video" src="../assets/mv-bg-teal.mp4" loop muted="muted"></video> -->
+        <!-- </div> -->
+        <transition name="item-fade">
+          <div
+            id="topic-intro-bg-column"
+            v-if="isShowing"
+            v-show="loaded['bg'] && currentPage == 'topic'"
+          >
+            <img id="bg" @load="loaded.bg = true;" src="../assets/topic_opencv_bg.jpg" />
+          </div>
+        </transition>
       </div>
-    </div>
-  </transition>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -28,7 +41,11 @@ export default {
     // selectedImage: 'dark',
     scrollY: 0,
     isMoving: false,
-    viewpoint: 'normal'
+    viewpoint: 'normal',
+    loaded: {
+      'bg': false
+    },
+    currentPage: '',
   }),
   mounted () {
     // this.handleDebouncedScroll = debounce(this.handleScroll, 30);
@@ -54,6 +71,9 @@ export default {
       // }
       // return "dark"
     },
+    isShowing () {
+      return this.$store.getters.getShow;
+    },
     videoState () {
       return this.$store.getters.getVideoState;
     },
@@ -67,10 +87,12 @@ export default {
   watch: {
     videoState (newVal, oldVal) {
       if (newVal == true && oldVal == false)
-        var playState = this.$refs['video'].play();
+        if (this.$refs['video'])
+          var playState = this.$refs['video'].play();
     },
     pageTo (newVal, oldVal) {
       if (newVal == oldVal) return;
+      this.currentPage = newVal;
       if (newVal == "treeview")
         this.viewpoint = 'landscape'
       else if (newVal == "writer" || newVal == "admin")
@@ -87,6 +109,33 @@ export default {
 };
 </script>
 <style lang="scss">
+@keyframes topic-intro {
+  from {
+    width: 100vw;
+    left: 100vw;
+  }
+  50% {
+    width: 40vw;
+  }
+  to {
+    width: 70vw;
+    left: 0;
+  }
+}
+
+@keyframes topic-bg-intro {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    width: 100vw;
+    height: 90vh;
+    right: 15vw;
+    bottom: 10vh;
+  }
+}
+
 .v-application {
   background: transparent !important;
 }
@@ -130,6 +179,21 @@ body {
     margin-bottom: -400px;
     filter: brightness(1.5) contrast(1.2);
   }
+  #gradient-container {
+    position: fixed;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    background: linear-gradient(45deg, #000, #333);
+    z-index: 0;
+    & > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      mix-blend-mode: overlay;
+    }
+  }
   #video-container {
     position: fixed;
     overflow: hidden;
@@ -154,6 +218,34 @@ body {
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+  }
+
+  #topic-intro-bg-column {
+    position: fixed;
+    overflow: hidden;
+    width: 120vw;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    z-index: 10;
+    // transition: opacity 1s 1s, right 1s;
+    transition: all 1s;
+    background: url("../assets/mask-painting.png");
+    background-color: black;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position-y: bottom;
+    mix-blend-mode: screen;
+    animation: topic-bg-intro 3s normal;
+    animation-fill-mode: forwards;
+    // animation-delay: 1s;
+    #bg {
+      width: 100%;
+      object-fit: cover;
+      mix-blend-mode: multiply;
+      z-index: 110;
     }
   }
 }

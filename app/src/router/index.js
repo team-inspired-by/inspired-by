@@ -2,12 +2,15 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import goTo from "vuetify/es5/services/goto";
 import IntroLayout from "../layouts/IntroLayout.vue";
+import sTopicLayout from "../layouts/sTopicLayout.vue";
 import TopicLayout from "../layouts/TopicLayout.vue";
 import ProjectLayout from "../layouts/ProjectLayout.vue";
 import PostLayout from "../layouts/PostLayout.vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
 import TestLayout from "../layouts/TestLayout.vue";
 import TreeviewLayout from "../layouts/TreeviewLayout.vue";
+import sTopic from "../views/sTopic.vue";
+import GeneralPost from "../components/GeneralPost.vue";
 import Topic from "../views/Topic.vue";
 import Content from "../views/Content.vue";
 import Project from "../views/Project.vue";
@@ -125,6 +128,20 @@ const routes = [{
   //   }]
   // },
   {
+    path: "/stopic",
+    component: sTopicLayout,
+    children: [{
+      path: ":inspiration",
+      name: "topic",
+      component: sTopic,
+      children: [{
+        path: ":post",
+        name: "post",
+        component: PostLayout
+      }]
+    }]
+  },
+  {
     path: "/topic",
     component: TopicLayout,
     children: [{
@@ -134,9 +151,6 @@ const routes = [{
       children: [{
         path: ":post",
         name: "post",
-        // components: {
-        //   postdetail: Post
-        // }
       }]
     }]
   }
@@ -191,7 +205,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   document.getElementsByTagName("html")[0].style.overflowX = "hidden";
   document.getElementsByTagName("html")[0].style.overflowY = "auto";
-  console.log(`route from ${from.name} to ${to.name}`)
+  // console.log(`route from ${from.name} to ${to.name}`)
   let animation = true;
 
   switch (from.name) {
@@ -208,7 +222,7 @@ router.beforeEach((to, from, next) => {
     case 'topic':
       switch (to.name) {
         case 'post':
-          document.getElementsByTagName("html")[0].style.overflowY = "hidden";
+          // document.getElementsByTagName("html")[0].style.overflowY = "hidden";
           animation = false
           break;
         case 'intro':
@@ -224,7 +238,9 @@ router.beforeEach((to, from, next) => {
           store.commit("openPost", false);
           animation = false
           break;
-
+        case 'post':
+          animation = false
+          break;
         default:
           break;
       }
