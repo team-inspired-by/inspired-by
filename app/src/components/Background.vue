@@ -18,8 +18,7 @@
         <transition name="item-fade">
           <div
             id="topic-intro-bg-column"
-            v-if="isShowing"
-            v-show="loaded['bg'] && currentPage == 'topic'"
+            v-show="loaded['bg'] && currentPage == 'topic' && isShowing"
           >
             <img id="bg" @load="loaded.bg = true;" src="../assets/topic_opencv_bg.jpg" />
           </div>
@@ -50,6 +49,7 @@ export default {
   mounted () {
     // this.handleDebouncedScroll = debounce(this.handleScroll, 30);
     // window.addEventListener("scroll", this.handleDebouncedScroll);
+    this.currentPage = this.$route.name;
   },
   methods: {
     // handleScroll (e) {
