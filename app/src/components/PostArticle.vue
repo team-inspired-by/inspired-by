@@ -1,5 +1,10 @@
 <template>
-  <v-row id="post-article" class="ma-0" :class="{'active': active}" @click="routeTo()">
+  <v-row
+    id="post-article"
+    class="mx-0 my-1"
+    :class="{'active': active, 'detail': detail, 'left': left}"
+    @click="routeTo()"
+  >
     <v-col cols="12">
       <h2>{{ post["title"].replace(/\-/gi, " ") }}</h2>
       <p class="mb-1">{{ post["summary"].slice(0, 50) }}</p>
@@ -12,6 +17,8 @@ export default {
   name: "custom-post-article",
   props: {
     data: Object,
+    detail: Boolean,
+    left: Boolean
   },
   data () {
     const postModel = Object.freeze({
@@ -56,18 +63,33 @@ export default {
 
 <style lang="scss" scoped>
 #post-article {
-  transition: border 0.5s;
+  transition: padding 0.5s, font-size 0.5s;
   border: 2px solid transparent;
-  border-left-width: 0.25em;
+  border-width: 0.25em;
   cursor: pointer;
-  &:hover {
-    border-left-width: 2px;
-    border-right: 0.25em solid #12ffff;
+  &:not(.left) {
+    &:hover,
+    &.active {
+      padding-right: 1em;
+      border-right: 0.25em solid #12ffff;
+    }
+  }
+  &.left {
+    padding-left: 1em;
+    &:hover,
+    &.active {
+      padding-left: 1em;
+      border-left: 0.25em solid #12ffff;
+    }
   }
   &.active {
-    // background-color: rgba(255, 255, 255, 0.12);
-    border-left-width: 2px;
-    border-right: 0.25em solid #12ffff;
+    font-size: large;
+  }
+
+  &.detail {
+    h2 {
+      font-size: medium;
+    }
   }
 }
 </style>

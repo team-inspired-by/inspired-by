@@ -2,7 +2,7 @@
   <div>
     <transition :name="transitionName">
       <div v-if="isShowing" id="topic-layout">
-        <div id="topic-contents-column" :class="{'post-mode': pageTo != 'topic'}">
+        <div>
           <router-view />
         </div>
         <transition name="item-fade">
@@ -14,7 +14,6 @@
         <div id="topic-contents-bg"></div>
       </div>
     </transition>
-    <custom-post-loader />
     <!-- <custom-general-post :data="{'title': 'test'}"></custom-general-post> -->
 
     <transition name="item-fade" mode="out-in">
@@ -96,20 +95,20 @@ export default {
 
 <style lang="scss" scoped>
 #topic-layout {
-  #topic-contents-column {
-    position: absolute;
-    top: 0;
-    right: 0;
-    will-change: right;
-    width: 50vw;
-    min-height: 100vh;
-    overflow: auto;
-    transition: right 1s;
-    z-index: 500;
-    &.post-mode {
-      right: 70vw;
-    }
-  }
+  // #topic-contents-column {
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   will-change: right;
+  //   width: 50vw;
+  //   min-height: 100vh;
+  //   overflow: auto;
+  //   transition: right 1s;
+  //   z-index: 500;
+  //   &.post-mode {
+  //     right: 70vw;
+  //   }
+  // }
 
   #topic-intro-column {
     position: fixed;

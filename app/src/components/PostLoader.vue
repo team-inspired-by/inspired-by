@@ -1,6 +1,11 @@
 <template>
   <transition name="item-fade">
-    <div v-if="$route.name=='post' && active" id="post-loader">
+    <div
+      v-if="$route.name=='post' && active && isShowing"
+      id="post-loader"
+      :class="{'dense': dense}"
+      class="align-center"
+    >
       <!-- <custom-general-post :position="posListedPosts[0]" :post="loadedPosts[idxListedPosts[0]]" />
       <custom-general-post :position="posListedPosts[1]" :post="loadedPosts[idxListedPosts[1]]" />
       <custom-general-post :position="posListedPosts[2]" :post="loadedPosts[idxListedPosts[2]]" />
@@ -31,6 +36,9 @@ export default {
   components: {
     GeneralPost
   },
+  props: {
+    dense: Boolean
+  },
   data () {
     return {
       intro: true,
@@ -53,6 +61,9 @@ export default {
     selectedPost () {
       return this.$store.getters.getSelectedPost
     },
+    isShowing () {
+      return this.$store.getters.getShow;
+    }
   },
   watch: {
     selectedPost (newVal, oldVal) {
@@ -106,5 +117,10 @@ export default {
   right: 3em;
   width: 70vw;
   height: 200vh;
+  z-index: 600;
+  transition: right 0.5s;
+  &.dense {
+    right: 1em;
+  }
 }
 </style>

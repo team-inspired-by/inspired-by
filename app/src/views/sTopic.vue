@@ -1,86 +1,111 @@
 <template>
   <v-container id="contents-box" class="pt-0">
-    <v-row>
-      <v-col cols="10" class="nav-topic-box">
-        <v-btn text class="pr-0" @click="routeTo('/')">
-          Topics
-          <v-icon class="ml-2">mdi-arrow-up</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="10" class="title-box">
-        <h2>Inspired by</h2>
-        <h1 :class="{'minimize': pageTo == 'post'}">{{topic}}</h1>
-      </v-col>
-    </v-row>
+    <div
+      id="topic-contents-column"
+      :class="{'post-mode': pageTo != 'topic', 'more-post-mode': showMorePosts}"
+    >
+      <v-row>
+        <v-col cols="8" class="nav-topic-box">
+          <v-btn text class="pr-0" @click="routeTo('/')">
+            Topics
+            <v-icon class="ml-2">mdi-arrow-up</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="8" class="title-box" :class="{'stop-ani': stopTitleAnimation}">
+          <h2>Inspired by</h2>
+          <h1 :class="{'minimize': pageTo == 'post'}">{{topic}}</h1>
+        </v-col>
+      </v-row>
 
-    <v-row class="event-row my-0">
-      <v-col cols="3" />
-      <v-col cols="7" class="event-box">
-        <h4>See Projects about {{topic}}</h4>
-      </v-col>
-      <v-col cols="2" />
-    </v-row>
+      <v-row class="event-row my-0" no gutters>
+        <v-col cols="2" />
+        <v-col cols="6" class="event-box">
+          <v-btn text @click="routeTo('/stopic/' + topic)">
+            <v-icon>mdi-arrow-left</v-icon>
+            <h3>오늘의 커버 이미지 보기</h3>
+          </v-btn>
+        </v-col>
+        <v-col cols="4" />
+        <v-col cols="2" />
+        <v-col cols="6" class="event-box">
+          <h4>See Projects about {{topic}}</h4>
+        </v-col>
+        <v-col cols="4" />
+      </v-row>
 
-    <v-row class="pa-0">
-      <v-col cols="10" />
-      <v-col cols="1" class="pa-0">
-        <canvas id="curved1" width="100" height="200" ref="curved1"></canvas>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="5" />
-      <v-col cols="6" class="article-box">
-        <custom-post-article :data="val" :key="key" v-for="(val, key) in posts.slice(0, 3)" />
-        <v-row>
-          <v-col cols="12">
-            <v-btn text @click="seePosts()">
-              See more posts
-              <v-icon class="ml-2">mdi-arrow-down</v-icon>
+      <v-row class="pa-0">
+        <v-col cols="8" />
+        <v-col cols="1" class="pa-0">
+          <canvas id="curved1" width="100" height="200" ref="curved1"></canvas>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="2" />
+        <v-col cols="7" class="article-box">
+          <custom-post-article :data="val" :key="key" v-for="(val, key) in posts.slice(0, 3)" />
+          <v-row>
+            <v-col cols="12">
+              <v-btn text @click="seePosts()">
+                See more posts
+                <v-icon class="ml-2">mdi-arrow-down</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col cols="8" />
+        <v-col cols="1" class="pa-0">
+          <canvas id="curved2" width="100" height="200" ref="curved2"></canvas>
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-col cols="8" class="blank-box" />
+      </v-row>
+
+      <v-row id="more-posts-box" class="pa-0 text-right">
+        <v-col cols="7" />
+        <v-col cols="1" class="pa-0">
+          <canvas id="curved3" width="100" height="200" ref="curved3"></canvas>
+        </v-col>
+        <v-col cols="4" />
+        <v-col cols="7" />
+        <v-col cols="4" id="more-posts">
+          <v-row class="text-left" no-gutters>
+            <v-btn text @click="routeTo('/')" color="grey">
+              <v-icon class="mr-2">mdi-arrow-up</v-icon>Other topics
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="10" />
-      <v-col cols="1" class="pa-0">
-        <canvas id="curved2" width="100" height="200" ref="curved2"></canvas>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="10" class="blank-box" />
-    </v-row>
-
-    <v-row class="pa-0" v-show="showMorePosts">
-      <v-col cols="9" />
-      <v-col cols="1" class="pa-0">
-        <canvas id="curved3" width="100" height="200" ref="curved3"></canvas>
-      </v-col>
-      <v-col id="posts-box" ref="posts-box" cols="9" class="blank-box" />
-      <v-col cols="9">
-        <v-row></v-row>
-        <v-row>
-          <v-col cols="12">
             <v-btn text @click="hidePosts()">
-              Go back
-              <v-icon class="ml-2">mdi-arrow-up</v-icon>
+              <v-icon class="mr-2">mdi-arrow-up</v-icon>Go back
             </v-btn>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col cols="1" class="pa-0">
-        <canvas id="curved4" width="100" height="200" ref="curved4"></canvas>
-      </v-col>
-    </v-row>
+          </v-row>
+          <v-row id="posts">
+            <custom-post-article :data="val" :key="key" v-for="(val, key) in posts" detail left />
+            <custom-post-article :data="sampleProjectPost" :key="1111" detail left />
+          </v-row>
+          <v-row class="text-left" no-gutters>
+            <v-btn text @click="routeTo('/admin/post')">
+              <v-icon class="mr-2">mdi-wrench</v-icon>Add a post
+            </v-btn>
+          </v-row>
+        </v-col>
+        <v-col cols="7"></v-col>
+        <v-col cols="1" class="pa-0">
+          <canvas id="curved4" width="100" height="200" ref="curved4"></canvas>
+        </v-col>
+      </v-row>
 
-    <v-row class="article-box"></v-row>
-
-    <v-row class="copyright-box align-center mb-3">
-      <v-card flat class="ma-0 pa-0">
-        <v-card-text class="px-3 py-1">2020 ⓒ KJHRicky</v-card-text>
-      </v-card>
-    </v-row>
+      <v-row class="copyright-box text-center mb-3" no-gutters>
+        <v-col cols="1" />
+        <v-col cols="3">
+          <v-card flat class="ma-0 pa-0">
+            <v-card-text class="px-3 py-1">2020 ⓒ KJHRicky</v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
+    <custom-post-loader :dense="!showMorePosts" />
   </v-container>
 </template>
 
@@ -108,7 +133,19 @@ export default {
     },
   },
   data: () => ({
-    showMorePosts: false
+    showMorePosts: false,
+    stopTitleAnimation: false,
+    isScrolling: false,
+    sampleProjectPost: {
+      title: "Sample git project",
+      category: "GIT",
+      summary: "Sample post",
+      coverImg: "",
+      series: "",
+      thumbnail: {
+        regular: ""
+      }
+    },
   }),
   computed: {
     topic () {
@@ -129,6 +166,12 @@ export default {
       'curved3': [1, 0, 1, 0.25, 0.5, 0.5, 0, 0.75, 0, 1],
       'curved4': [0, 0, 0, 0.25, 0.5, 0.5, 1, 0.75, 1, 1],
     });
+    setTimeout(() => {
+      window.addEventListener("scroll", this.handleScroll);
+    }, 1000);
+  },
+  beforeDestroy () {
+    window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
     drawCurve (drawer) {
@@ -159,24 +202,45 @@ export default {
     },
     seePosts () {
       this.showMorePosts = true;
+      this.stopTitleAnimation = true;
+      this.isScrolling = true;
       setTimeout(() => {
-        this.$scrollTo(document.getElementById("posts-box"), 1000, {
+        document.getElementsByTagName("html")[0].style.overflowY = "hidden";
+
+        this.$scrollTo(document.getElementById("more-posts"), 1000, {
           smooth: true,
-          offset: 100
         });
-      }, 100);
+        setTimeout(() => {
+          this.isScrolling = false;
+        }, 1000);
+      }, 500);
     },
     hidePosts () {
       this.showMorePosts = false;
+      this.isScrolling = true;
+      this.$scrollTo(document.getElementById("contents-box"), 1000, {
+        smooth: true,
+      });
       setTimeout(() => {
-        this.$scrollTo(document.getElementById("contents-box"), 1000, {
-          smooth: true,
-          offset: 100
-        });
-      }, 100);
+        this.isScrolling = false;
+        document.getElementsByTagName("html")[0].style.overflowY = "auto";
+      }, 1500);
     },
     routeTo (path) {
       this.$router.push({ path: path });
+    },
+    handleScroll (e) {
+      if (this.isScrolling) return;
+      // console.log(window.top.scrollY);
+      this.isScrolling = true;
+      const scrollY = window.top.scrollY;
+      if (scrollY > 940 && scrollY < 1000) {
+        console.warn('doing seePosts()')
+        this.seePosts();
+      }
+      setTimeout(() => {
+        this.isScrolling = true;
+      }, 500);
     }
   }
 };
@@ -190,69 +254,106 @@ export default {
 }
 
 #contents-box {
-  .nav-topic-box {
-    border-right: 2px solid rgba(255, 255, 255, 0.2);
-    text-align: right;
-  }
+  #topic-contents-column {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: -200vh;
+    margin-right: -10vw;
+    will-change: right;
+    width: 60vw;
+    min-height: 300vh;
+    overflow-x: visible;
+    overflow-y: auto;
+    transition: right 1s;
+    z-index: 500;
+    &:before {
+      content: "";
+      display: block;
+      width: 67%;
+      height: 200vh;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    &.post-mode {
+      right: 65vw;
+    }
+    &.more-post-mode {
+      right: 80vw;
+    }
 
-  .title-box {
-    text-align: right;
-    font-weight: 600;
-    padding-top: 200px;
-    padding-right: 1em;
-    border-right: 2px solid rgba(255, 255, 255, 0.2);
-    transition: padding-top 5s;
-    animation: title-box-shrinking 10s;
-    animation-delay: 3s;
-    animation-fill-mode: forwards;
-    h1 {
-      font-family: "Finger Paint";
-      font-size: 5em;
-      transition: font-size 0.5s;
-      will-change: font-size;
-      overflow: auto;
-      &.minimize {
-        font-size: 3em;
+    .nav-topic-box {
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      text-align: right;
+    }
+
+    .title-box {
+      text-align: right;
+      font-weight: 600;
+      padding-top: 200px;
+      padding-right: 1em;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      transition: padding-top 5s;
+      animation: title-box-shrinking 10s;
+      animation-delay: 3s;
+      animation-fill-mode: forwards;
+      &.stop-ani {
+        padding-top: 2em;
+        animation: none;
+      }
+      h1 {
+        font-family: "Finger Paint";
+        font-size: 5em;
+        transition: font-size 0.5s;
+        will-change: font-size;
+        overflow: auto;
+        &.minimize {
+          font-size: 3em;
+        }
+      }
+      h2 {
+        font-weight: 500;
       }
     }
-    h2 {
-      font-weight: 500;
+    canvas {
+      display: block;
+      width: 100%;
     }
-  }
-  canvas {
-    display: block;
-    width: 100%;
-  }
 
-  .event-row {
-    height: 0;
-    .event-box {
+    .event-row {
+      height: 0;
       text-align: right;
       margin-bottom: -2em;
-      h2 {
-        position: relative;
-        top: 1em;
+      position: relative;
+      top: 1em;
+    }
+
+    .article-box {
+      text-align: right;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .blank-box {
+      height: 20em;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      border-left: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #more-posts-box {
+      #more-posts {
+        border-left: 2px solid rgba(255, 255, 255, 0.2);
+        min-height: 85vh;
       }
     }
-  }
 
-  .article-box {
-    text-align: right;
-    border-right: 2px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .blank-box {
-    height: 20em;
-    border-right: 2px solid rgba(255, 255, 255, 0.2);
-  }
-  .copyright-box {
-    display: flex;
-    align-items: right;
-    flex-direction: row-reverse;
-    .v-card {
-      background: transparent !important;
-      border: 2px solid rgba(255, 255, 255, 0.22);
-      border-radius: 1em 0 1em 1em;
+    .copyright-box {
+      display: flex;
+      align-items: right;
+      flex-direction: row-reverse;
+      .v-card {
+        background: transparent !important;
+        border: 2px solid rgba(255, 255, 255, 0.22);
+        border-radius: 1em 0 1em 1em;
+      }
     }
   }
 }
