@@ -166,7 +166,7 @@
 
 <script>
 import gql from "graphql-tag";
-import { TestGitQuery, TestGitReadme } from '../queries/repo';
+import { TestGitRepository, TestGitReadme } from '../queries/repo';
 
 export default {
   name: "Project",
@@ -183,7 +183,7 @@ export default {
     },
     clients: {
       query () {
-        return TestGitQuery;
+        return TestGitRepository;
       },
       variables: {
         number_of_repos: 5,

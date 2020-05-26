@@ -204,7 +204,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   document.getElementsByTagName("html")[0].style.overflowX = "hidden";
-  document.getElementsByTagName("html")[0].style.overflowY = "auto";
+  // document.getElementsByTagName("html")[0].style.overflowY = "auto";
   // console.log(`route from ${from.name} to ${to.name}`)
   let animation = true;
 

@@ -342,6 +342,20 @@ export default {
   transition-property: opacity;
 }
 
+.add-post-fade-leave-to {
+  opacity: 0;
+}
+.add-post-fade-enter-active {
+  opacity: 1;
+}
+
+.add-post-fade-enter-active,
+.add-post-fade-leave-to {
+  // transition-delay: 2s;
+  transition-duration: 0.5s;
+  transition-property: opacity;
+}
+
 .left-edge {
   border-left: 2px solid rgba(255, 255, 255, 0.22);
 }

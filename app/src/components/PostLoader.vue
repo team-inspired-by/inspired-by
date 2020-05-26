@@ -11,13 +11,38 @@
       <custom-general-post :position="posListedPosts[2]" :post="loadedPosts[idxListedPosts[2]]" />
       <custom-general-post :position="posListedPosts[3]" :post="loadedPosts[idxListedPosts[3]]" />
       <custom-general-post :position="posListedPosts[4]" :post="loadedPosts[idxListedPosts[4]]" />-->
-      <custom-general-post
-        :key="i"
-        v-for="i in [0,1,2,3,4]"
-        :position="posListedPosts[i]"
-        :post="loadedPosts[idxListedPosts[i]]"
-        :intro="intro"
-      />
+      <div id="read-container" :key="i" v-for="i in [0,1,2,3,4]">
+        <template
+          v-if="loadedPosts[idxListedPosts[i]] && loadedPosts[idxListedPosts[i]].postType == 'GENERAL'"
+        >
+          <custom-general-post
+            :position="posListedPosts[i]"
+            :post="loadedPosts[idxListedPosts[i]]"
+            :intro="intro"
+            :hide="modeAdd"
+          />
+        </template>
+        <template
+          v-if="loadedPosts[idxListedPosts[i]] && loadedPosts[idxListedPosts[i]].postType == 'GIT'"
+        >
+          <custom-git-post
+            :position="posListedPosts[i]"
+            :post="loadedPosts[idxListedPosts[i]]"
+            :intro="intro"
+            :hide="modeAdd"
+          />
+        </template>
+      </div>
+      <transition name="add-post-fade">
+        <div id="add-container" v-show="modeAdd">
+          <custom-new-post
+            v-model="selectedAddPostBox"
+            :type="val"
+            v-for="val in writingTypes"
+            :key="val.key"
+          />
+        </div>
+      </transition>
       <!-- <custom-general-post
         v-for="(val, key) in idxListedPosts"
         :key="key"
@@ -30,14 +55,17 @@
 
 <script>
 import GeneralPost from "./GeneralPost";
+import GitPost from "./GitPost";
 
 export default {
   name: "custom-post-loader",
   components: {
-    GeneralPost
+    GeneralPost,
+    GitPost
   },
   props: {
-    dense: Boolean
+    dense: Boolean,
+    modeAdd: Boolean,
   },
   data () {
     return {
@@ -50,6 +78,33 @@ export default {
       idxListedPosts: [-1, -1, -1, -1, -1],
       loadedPosts: [],
       keyLoadedPosts: [],
+      selectedAddPostBox: '',
+      writingTypes: [
+        {
+          postType: "General Post",
+          key: "GENERAL",
+          icon: "newspaper",
+          description: "normal posts",
+        },
+        {
+          postType: "Git Post",
+          key: "GIT",
+          icon: "git",
+          description: "link your git project",
+        },
+        {
+          postType: "Book Post",
+          key: "BOOK",
+          icon: "book",
+          description: "for book review",
+        },
+        {
+          postType: "Series",
+          key: "SERIES",
+          icon: "ballot",
+          description: "sum up the posts",
+        },
+      ],
     }
   },
   mounted () {
@@ -74,39 +129,39 @@ export default {
         this.keyLoadedPosts.push(newVal.key);
         this.currentKey = newVal.key;
         this.currentIdx = 2;
-        this.idxListedPosts[this.currentIdx] = 1;
+        this.idxListedPosts[this.currentIdx] = 0;
       }
       if (newVal['post']) {
-        if (!(newVal.key in this.keyLoadedPosts)) {
+        if (this.keyLoadedPosts.indexOf(newVal.key) == -1) {
           console.debug("key: ", newVal.key)
           this.loadedPosts.push(newVal.post);
           this.keyLoadedPosts.push(newVal.key);
         }
-        console.debug((newVal.key in this.keyLoadedPosts));
+        // console.debug((newVal.key in this.keyLoadedPosts));
         const idxLoadedPost = this.keyLoadedPosts.indexOf(newVal.key);
         const movingStep = Math.min(2, Math.max(-2, this.currentKey - newVal.key));
 
         console.debug("idxLoadedPost: ", idxLoadedPost, "movingStep: ", movingStep, this.keyLoadedPosts);
+        console.debug("loadedPosts: ", this.loadedPosts);
 
         // if (movingStep <= -2 || movingStep >= 2) {
         //   this.idxListedPosts[2 + movingStep] = idxLoadedPost;
         // }
-        this.currentIdx = Math.min(4, Math.max(0, this.currentIdx - movingStep));
+        this.currentIdx = (this.currentIdx - movingStep + 5) % 5;
 
         this.idxListedPosts[this.currentIdx] = idxLoadedPost;
-        console.debug("idxListedPosts: ", this.idxListedPosts, this.currentIdx)
+        console.debug("idxListedPosts: ", this.idxListedPosts, "currentIdx: ", this.currentIdx)
 
         for (let i in this.posListedPosts) {
-          this.posListedPosts[i] += movingStep;
-          if (this.posListedPosts[i] > 4)
-            this.posListedPosts[i] -= 5;
-          else if (this.posListedPosts[i] < 0)
-            this.posListedPosts[i] += 5;
+          this.posListedPosts[i] = (this.posListedPosts[i] + movingStep + 5) % 5;
         }
         this.currentKey = newVal.key;
       }
+    },
+    modeAdd (newVal) {
+      console.debug("modeAdd on PostLoader: ", newVal)
     }
-  }
+  },
 }
 </script>
 
@@ -121,6 +176,14 @@ export default {
   transition: right 0.5s;
   &.dense {
     right: 1em;
+  }
+  #read-container {
+    z-index: 700;
+  }
+  #add-container {
+    * {
+      z-index: 710;
+    }
   }
 }
 </style>

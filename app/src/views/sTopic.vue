@@ -2,7 +2,7 @@
   <v-container id="contents-box" class="pt-0">
     <div
       id="topic-contents-column"
-      :class="{'post-mode': pageTo != 'topic', 'more-post-mode': showMorePosts}"
+      :class="{'post-mode': pageTo != 'topic' || modeMorePosts, 'more-post-mode': modeMorePosts}"
     >
       <v-row>
         <v-col cols="8" class="nav-topic-box">
@@ -13,7 +13,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="8" class="title-box" :class="{'stop-ani': stopTitleAnimation}">
+        <v-col cols="8" class="title-box" :class="{'animation': disableTitleAni}">
           <h2>Inspired by</h2>
           <h1 :class="{'minimize': pageTo == 'post'}">{{topic}}</h1>
         </v-col>
@@ -43,7 +43,7 @@
       </v-row>
       <v-row>
         <v-col cols="2" />
-        <v-col cols="7" class="article-box">
+        <v-col cols="7" class="article-box pr-0">
           <custom-post-article :data="val" :key="key" v-for="(val, key) in posts.slice(0, 3)" />
           <v-row>
             <v-col cols="12">
@@ -71,24 +71,28 @@
         </v-col>
         <v-col cols="4" />
         <v-col cols="7" />
-        <v-col cols="4" id="more-posts">
-          <v-row class="text-left" no-gutters>
-            <v-btn text @click="routeTo('/')" color="grey">
-              <v-icon class="mr-2">mdi-arrow-up</v-icon>Other topics
-            </v-btn>
-            <v-btn text @click="hidePosts()">
-              <v-icon class="mr-2">mdi-arrow-up</v-icon>Go back
-            </v-btn>
-          </v-row>
-          <v-row id="posts">
-            <custom-post-article :data="val" :key="key" v-for="(val, key) in posts" detail left />
-            <custom-post-article :data="sampleProjectPost" :key="1111" detail left />
-          </v-row>
-          <v-row class="text-left" no-gutters>
-            <v-btn text @click="routeTo('/admin/post')">
-              <v-icon class="mr-2">mdi-wrench</v-icon>Add a post
-            </v-btn>
-          </v-row>
+        <v-col cols="4" class="with-border text-left">
+          <v-btn text @click="routeTo('/')" color="grey">
+            <v-icon class="mr-2">mdi-arrow-up</v-icon>Other topics
+          </v-btn>
+          <v-btn text @click="hidePosts()">
+            <v-icon class="mr-2">mdi-arrow-up</v-icon>Go back
+          </v-btn>
+        </v-col>
+        <v-col cols="7" />
+        <v-col cols="4" id="more-posts" class="with-border text-left pl-0">
+          <custom-post-article :data="val" :key="key" v-for="(val, key) in posts" detail left />
+          <custom-post-article :data="sampleProjectPost" :key="1111" detail left />
+        </v-col>
+        <v-col cols="7" />
+        <v-col cols="4" class="with-border text-left pl-0">
+          <v-btn
+            @click="toggleModeAddPost()"
+            outlined
+            :color="modeAddPost ? 'white' : 'rgba(255,255,255,0.22)'"
+          >
+            <v-icon class="mr-2">mdi-post-outline</v-icon>Add a post
+          </v-btn>
         </v-col>
         <v-col cols="7"></v-col>
         <v-col cols="1" class="pa-0">
@@ -105,7 +109,7 @@
         </v-col>
       </v-row>
     </div>
-    <custom-post-loader :dense="!showMorePosts" />
+    <custom-post-loader :dense="!modeMorePosts" :modeAdd="modeAddPost" />
   </v-container>
 </template>
 
@@ -120,7 +124,6 @@ export default {
         return getTopic;
       },
       variables () {
-        console.warn("topic: ", this.$store.getters.getTopic)
         return {
           name: this.$store.getters.getTopic
         }
@@ -133,12 +136,14 @@ export default {
     },
   },
   data: () => ({
-    showMorePosts: false,
-    stopTitleAnimation: false,
+    modeMorePosts: false,
+    modeAddPost: false,
+    modePost: false,
+    disableTitleAni: true,
     isScrolling: false,
     sampleProjectPost: {
       title: "Sample git project",
-      category: "GIT",
+      postType: "GIT",
       summary: "Sample post",
       coverImg: "",
       series: "",
@@ -158,6 +163,23 @@ export default {
       if (!this.$apolloData.data["topic"]) return [];
       return this.$apolloData.data.topic.posts;
     },
+    selectedPost () {
+      return this.$store.getters.getSelectedPost;
+    }
+  },
+  watch: {
+    selectedPost () {
+      this.modeAddPost = false;
+    },
+    modeMorePosts (newVal, oldVal) {
+      if (!newVal && oldVal) {
+        setTimeout(() => {
+          window.addEventListener("scroll", this.handleScroll);
+        }, 1000);
+      } else if (newVal) {
+        window.removeEventListener("scroll", this.handleScroll);
+      }
+    }
   },
   mounted () {
     this.drawCurve({
@@ -201,22 +223,25 @@ export default {
       }
     },
     seePosts () {
-      this.showMorePosts = true;
-      this.stopTitleAnimation = true;
+      this.modeMorePosts = true;
+      this.disableTitleAni = false;
       this.isScrolling = true;
+      document.getElementsByTagName("html")[0].style.overflowY = "hidden";
+      console.log("selectedPost: ", this.selectedPost)
+      if (!this.selectedPost) this.$store.commit("setSelectedPost", posts[0])
+      this.$scrollTo(document.getElementById("more-posts-box"), 1000, {
+        smooth: true,
+        offset: 100,
+      });
       setTimeout(() => {
-        document.getElementsByTagName("html")[0].style.overflowY = "hidden";
-
-        this.$scrollTo(document.getElementById("more-posts"), 1000, {
-          smooth: true,
-        });
         setTimeout(() => {
           this.isScrolling = false;
         }, 1000);
       }, 500);
     },
     hidePosts () {
-      this.showMorePosts = false;
+      this.modeMorePosts = false;
+      this.modeAddPost = false;
       this.isScrolling = true;
       this.$scrollTo(document.getElementById("contents-box"), 1000, {
         smooth: true,
@@ -226,6 +251,9 @@ export default {
         document.getElementsByTagName("html")[0].style.overflowY = "auto";
       }, 1500);
     },
+    toggleModeAddPost () {
+      this.modeAddPost = !this.modeAddPost;
+    },
     routeTo (path) {
       this.$router.push({ path: path });
     },
@@ -233,14 +261,17 @@ export default {
       if (this.isScrolling) return;
       // console.log(window.top.scrollY);
       this.isScrolling = true;
+
       const scrollY = window.top.scrollY;
-      if (scrollY > 940 && scrollY < 1000) {
+      if (scrollY > 900) {
         console.warn('doing seePosts()')
+        // document.getElementsByTagName("html")[0].style.overflowY = "hidden";
+        window.removeEventListener("scroll", this.handleScroll);
         this.seePosts();
       }
       setTimeout(() => {
-        this.isScrolling = true;
-      }, 500);
+        this.isScrolling = false;
+      }, 1000);
     }
   }
 };
@@ -293,12 +324,11 @@ export default {
       padding-right: 1em;
       border-right: 2px solid rgba(255, 255, 255, 0.2);
       transition: padding-top 5s;
-      animation: title-box-shrinking 10s;
-      animation-delay: 3s;
-      animation-fill-mode: forwards;
-      &.stop-ani {
-        padding-top: 2em;
-        animation: none;
+      padding-top: 2em;
+      &.animation {
+        animation: title-box-shrinking 10s;
+        animation-delay: 3s;
+        animation-fill-mode: forwards;
       }
       h1 {
         font-family: "Finger Paint";
@@ -339,9 +369,31 @@ export default {
     }
 
     #more-posts-box {
-      #more-posts {
+      .with-border {
         border-left: 2px solid rgba(255, 255, 255, 0.2);
-        min-height: 85vh;
+      }
+      #more-posts {
+        min-height: calc(100vh - 15em);
+        max-height: calc(100vh - 15em);
+        overflow: auto;
+      }
+      .v-btn--outlined {
+        margin-left: 1em;
+        transition: color 0.5s;
+        &:hover {
+          color: #ddd !important;
+        }
+        &:before {
+          position: absolute;
+          display: block;
+          content: "";
+          margin-left: -1em;
+          width: 1em;
+          height: 50%;
+          background: none;
+          opacity: 1;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+        }
       }
     }
 
@@ -359,5 +411,11 @@ export default {
 }
 #skeleton-loader {
   position: relative;
+}
+</style>
+
+<style lang="scss">
+.v-btn--outlined {
+  border-radius: 2em;
 }
 </style>

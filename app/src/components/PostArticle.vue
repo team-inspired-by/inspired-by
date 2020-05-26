@@ -23,13 +23,23 @@ export default {
   data () {
     const postModel = Object.freeze({
       title: "",
-      category: "",
-      summary: "",
-      coverImg: "",
-      series: "",
+      subtitle: "",
+      postType: "",
+      languages: "",
+      author: {
+        name: "",
+      },
       thumbnail: {
-        regular: ""
-      }
+        regular: "",
+        thumb: "",
+      },
+      topics: {
+        name: ""
+      },
+      summary: "",
+      numLikes: 0,
+      createdAt: "",
+      updatedAt: ""
     })
     return {
       post: Object.assign({}, postModel),

@@ -1,12 +1,51 @@
 import gql from "graphql-tag";
 
-export const TestQuery = gql `
-  query {
-    posts {
-      id
-      category
+export const LoginStatus = gql `
+query {
+  viewer {
+    login
+  }
+}
+`;
+
+export const getRepositories = gql `
+query {
+  viewer {
+    login
+    repositories(first: 20) {
+      edges {
+        node {
+          id
+          name
+          nameWithOwner
+          description
+        }
+      }
     }
   }
+}
+`
+
+export const TestQuery = gql `
+query {
+  repository(owner: "octocat", name: "Hello-World") {
+    issues(last: 20, states: CLOSED) {
+      edges {
+        node {
+          title
+          url
+          labels(first: 5) {
+            edges {
+              node {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 `;
 
 // export const TestGitQuery = gql `
@@ -33,7 +72,7 @@ export const TestGitReadme = gql `
   }
 `;
 
-export const TestGitQuery = gql `
+export const TestGitRepository = gql `
   query($number_of_repos: Int!, $object_expression: String!) {
     repository(owner: "team-inspired-by", name: "inspired-by") {
       name

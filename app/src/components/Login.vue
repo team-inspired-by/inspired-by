@@ -333,7 +333,7 @@ export default {
         this.form.idType = "GITHUB";
         window.open(
           "https://github.com/login/oauth/authorize/?client_id=" +
-          process.env.VUE_APP_CLIENT_ID +
+          process.env.VUE_APP_GITHUB_APP_ID +
           "&state=" +
           stateString +
           "&scope=user",

@@ -32,7 +32,10 @@ import {
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql"
-})
+});
+const gitHttpLink = new HttpLink({
+  uri: "https://api.github.com/graphql"
+});
 
 const afterLink = new ApolloLink((operation, forward) => {
   return forward(operation).map(res => {
@@ -92,7 +95,17 @@ const AUTH_TOKEN = "apollo-token";
 // const httpEndpoint = 'http://34.64.74.193'
 
 const clientGithubOptions = {
-  httpEndpoint: process.env.GITHUB_API_HTTP || "https://api.github.com/graphql",
+  link: from([gitHttpLink]),
+  // httpEndpoint: 'https://api.github.com/graphql',
+  // Override the way the Authorization header is set
+  getAuth: () => {
+    const token = process.env.VUE_APP_GITHUB_ACCESS_TOKEN;
+    if (token) {
+      return "Bearer " + token;
+    } else {
+      return "";
+    }
+  },
 };
 
 const clientInspiredByOptions = {
@@ -135,15 +148,15 @@ const defaultOptions = {
   // Override default cache
   // cache: myCache
 
-  // Override the way the Authorization header is set
-  getAuth: () => {
-    const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN;
-    if (token) {
-      return "Bearer " + token;
-    } else {
-      return "";
-    }
-  },
+  // // Override the way the Authorization header is set
+  // getAuth: () => {
+  //   const token = process.env.VUE_APP_GITHUB_GRAPHQL_AUTH_TOKEN;
+  //   if (token) {
+  //     return "Bearer " + token;
+  //   } else {
+  //     return "";
+  //   }
+  // },
 
   // Additional ApolloClient options
   // apollo: { ... }

@@ -3,8 +3,9 @@
     <v-row
       v-if="loaded"
       id="general-post"
-      :class="[posName, intro ? 'intro' : '', 'detail']"
+      :class="[posName,hide? 'hide' : '', intro ? 'intro' : '', 'detail']"
       class="pb-0"
+      @mouseover="focus"
     >
       <v-col cols="12" class="pa-0 pr-3">
         <transition name="item-fade">
@@ -30,7 +31,7 @@
           <div
             v-if="images[key] && images[key]['id']"
             class="img-box"
-            :class="{'right': key % 2, 'left': !(key % 2)}"
+            :class="{'left': key % 2, 'right': !(key % 2)}"
           >
             <img :src="images[key].imageInfo.regular" />
           </div>
@@ -125,7 +126,7 @@
             <v-list-item v-else :light="true">
               <v-list-item-content>
                 <p>
-                  <v-btn class="mr-2" color="#eee" @click="login()">Login</v-btn>to add
+                  <v-btn class="mr-2" color="#ddd" @click="login()">Login</v-btn>to add
                   a comment.
                 </p>
               </v-list-item-content>
@@ -140,7 +141,6 @@
 <script>
 import {
   getGeneralPost,
-  getPostLists,
   getImage,
 } from "../queries/queryContents";
 import { addComment } from "../queries/mutateContents";
@@ -149,7 +149,8 @@ export default {
   props: {
     'position': Number,
     'post': Object,
-    'intro': Boolean
+    'intro': Boolean,
+    'hide': Boolean
   },
   data () {
     const commentModel = Object.freeze({
@@ -247,8 +248,15 @@ export default {
         console.warn("hidden position: ", newVal, oldVal);
         this.loaded = false;
       }
+      if (newVal == 2 && this.parsedContent) {
+        setTimeout(() => {
+          this.loaded = true;
+        }, 1000);
+      }
+    },
+    hide (newVal) {
+      console.debug("hide on GeneralPost:", newVal)
     }
-
   },
   methods: {
     async readGeneralPost (title) {
@@ -439,6 +447,9 @@ export default {
     login () {
       this.$store.commit("setPopupLogin", true);
     },
+    focus () {
+      document.getElementById("general-post").focus();
+    }
   }
 }
 </script>
@@ -511,52 +522,45 @@ export default {
       width: 20vw;
       max-width: 15em;
       height: 25rem;
+      transition: 0.5s;
+      &:hover {
+        box-shadow: 15px 15px 30px #d0d2d4, -15px -15px 30px #ffffff;
+      }
     }
   }
 
-  &.ttop {
-    // min-width: 60vw;
-    // max-width: 60vw;
+  &.ttop,
+  &.top,
+  &.bottom,
+  &.bbottom {
     transform: scale(0.9);
-    top: 0vh;
-    right: 1em;
     background: rgb(100, 100, 100);
     color: black;
-    opacity: 0;
     filter: blur(5px);
+    img {
+      opacity: 0.8;
+    }
+  }
+  &.ttop {
+    top: 0vh;
+    right: 1em;
+    opacity: 0;
     animation: fade-in 1s normal 2s;
     animation-fill-mode: forwards;
   }
   &.top {
-    // min-width: 60vw;
-    // max-width: 60vw;
-    transform: scale(0.9);
     top: 29vh;
     right: 1em;
-    background: rgb(100, 100, 100);
-    color: black;
     filter: blur(5px);
   }
   &.bottom {
-    // min-width: 60vw;
-    // max-width: 60vw;
-    transform: scale(0.9);
     top: 191vh;
     right: 1em;
-    background: rgb(100, 100, 100);
-    color: black;
-    filter: blur(5px);
   }
   &.bbottom {
-    // min-width: 60vw;
-    // max-width: 60vw;
-    transform: scale(0.9);
     top: 250vh;
     right: 2.5vw;
-    background: rgb(100, 100, 100);
-    color: black;
     opacity: 0;
-    filter: blur(5px);
     animation: fade-in 1s normal 1s;
     animation-fill-mode: forwards;
   }
@@ -571,6 +575,27 @@ export default {
       }
     }
     z-index: 450;
+  }
+
+  &.hide {
+    transition-duration: 1.5s;
+    &.center {
+      filter: blur(10px);
+      transform: scale(0.7);
+      background: rgb(100, 100, 100);
+    }
+    &.top,
+    &.bottom {
+      filter: blur(15px);
+      transform: scale(0.6);
+      right: 1.5em;
+    }
+    &.top {
+      top: 55vh;
+    }
+    &.bottom {
+      top: 165vh;
+    }
   }
 
   &.intro {
@@ -689,13 +714,31 @@ export default {
   .v-btn--contained {
     border-radius: 1em;
     box-shadow: none;
-    transition: box-shadow 1s;
+    transition: box-shadow 0.5s;
     &:hover {
       box-shadow: 4px 4px 12px #cfcdce, -4px -4px 12px #ffffff;
+      &:before {
+        opacity: 0;
+      }
     }
   }
   code {
     color: #556;
+    transition: color 1s, background 1s;
+  }
+  &.ttop,
+  &.top,
+  &.bottom,
+  &.bbottom,
+  &.center.hide {
+    a,
+    code {
+      background: rgb(100, 100, 100) !important;
+      caret-color: rgb(100, 100, 100) !important;
+    }
+    img {
+      opacity: 0.4 !important;
+    }
   }
   pre {
     code {
@@ -705,7 +748,7 @@ export default {
       background: #ddd;
       border-radius: 1em;
       box-shadow: none;
-      transition: box-shadow 0.5s;
+      transition: color 1s, background 1s, box-shadow 0.5s;
       &:after {
         display: none;
       }
