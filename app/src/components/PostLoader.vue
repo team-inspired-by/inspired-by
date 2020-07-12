@@ -3,7 +3,7 @@
     <div
       v-if="$route.name=='post' && active && isShowing"
       id="post-loader"
-      :class="{'dense': dense}"
+      :class="{'dense': dense, 'hide': hide, 'wide': $vuetify.breakpoint.name === 'lg'}"
       class="align-center"
     >
       <!-- <custom-general-post :position="posListedPosts[0]" :post="loadedPosts[idxListedPosts[0]]" />
@@ -19,7 +19,7 @@
             :position="posListedPosts[i]"
             :post="loadedPosts[idxListedPosts[i]]"
             :intro="intro"
-            :hide="modeAdd"
+            :hide="value"
           />
         </template>
         <template
@@ -29,12 +29,12 @@
             :position="posListedPosts[i]"
             :post="loadedPosts[idxListedPosts[i]]"
             :intro="intro"
-            :hide="modeAdd"
+            :hide="value"
           />
         </template>
       </div>
       <transition name="add-post-fade">
-        <div id="add-container" v-show="modeAdd">
+        <div id="add-container" v-show="value">
           <custom-new-post
             v-model="selectedAddPostBox"
             :type="val"
@@ -49,6 +49,11 @@
         :position="posListedPosts[key]"
         :post="loadedPosts[val]"
       />-->
+      <div
+        v-if="value"
+        id="scrim-transparent"
+        @click="selectedAddPostBox ? selectedAddPostBox = '' : $emit('input', false)"
+      />
     </div>
   </transition>
 </template>
@@ -65,7 +70,8 @@ export default {
   },
   props: {
     dense: Boolean,
-    modeAdd: Boolean,
+    hide: Boolean,
+    value: Boolean,
   },
   data () {
     return {
@@ -158,8 +164,8 @@ export default {
         this.currentKey = newVal.key;
       }
     },
-    modeAdd (newVal) {
-      console.debug("modeAdd on PostLoader: ", newVal)
+    value (newVal) {
+      console.debug("value on PostLoader: ", newVal)
     }
   },
 }
@@ -172,18 +178,34 @@ export default {
   right: 3em;
   width: 70vw;
   height: 200vh;
-  z-index: 600;
-  transition: right 0.5s;
+  transition: right 0.5s transform 1s;
+  &.wide {
+    right: calc(-5em + 15vw);
+  }
   &.dense {
     right: 1em;
   }
+  &.wide.dense {
+    right: calc(-5em + 10vw);
+  }
+  &.hide {
+    transform: translateY(200vh);
+  }
   #read-container {
-    z-index: 700;
+    z-index: 110;
   }
   #add-container {
     * {
-      z-index: 710;
+      z-index: 71;
     }
+  }
+  #scrim-transparent {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 99;
   }
 }
 </style>

@@ -6,6 +6,8 @@
       :class="[posName,hide? 'hide' : '', intro ? 'intro' : '', 'detail']"
       class="pb-0"
       @mouseover="focus"
+      @mouseleave="leave"
+      v-on:scroll.prevent
     >
       <v-col cols="12" class="pa-0 pr-3">
         <transition name="item-fade">
@@ -29,7 +31,7 @@
         <div v-for="(val, key) in parsedContent" :key="key">
           <vue-markdown :watches="['source']" :source="val" class="px-3 pt-5 mt-5" />
           <div
-            v-if="images[key] && images[key]['id']"
+            v-if="images[key] && images[key]['id'] && (images[key]['id'] != post['thumbnail'])"
             class="img-box"
             :class="{'left': key % 2, 'right': !(key % 2)}"
           >
@@ -230,12 +232,12 @@ export default {
     },
   },
   watch: {
-    pageTo: (newVal, oldVal) => {
-      if (oldVal == 'post' && newVal != 'post') {
-        this.showDetail = false;
-        this.$store.commit('setSelectedPost', {});
-      }
-    },
+    // pageTo: (newVal, oldVal) => {
+    //   // if (oldVal == 'post' && newVal != 'post') {
+    //   //   this.showDetail = false;
+    //   //   this.$store.commit('setSelectedPost', {});
+    //   // }
+    // },
     post (newVal) {
       console.debug("post: ", newVal);
       this.readGeneralPost(newVal.title)
@@ -449,6 +451,10 @@ export default {
     },
     focus () {
       document.getElementById("general-post").focus();
+      document.body.style.overflow = "hidden";
+    },
+    leave () {
+      document.body.style.overflow = "scroll";
     }
   }
 }
@@ -511,7 +517,7 @@ export default {
   will-change: top, transform;
   backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
-  z-index: 400;
+  z-index: 100;
 
   &.detail {
     min-width: 45vw;
@@ -574,19 +580,19 @@ export default {
         opacity: 1;
       }
     }
-    z-index: 450;
+    z-index: 105;
   }
 
   &.hide {
     transition-duration: 1.5s;
     &.center {
-      filter: blur(10px);
+      filter: blur(10px) brightness(50%);
       transform: scale(0.7);
       background: rgb(100, 100, 100);
     }
     &.top,
     &.bottom {
-      filter: blur(15px);
+      filter: blur(15px) brightness(60%);
       transform: scale(0.6);
       right: 1.5em;
     }
@@ -674,6 +680,10 @@ export default {
     margin-top: 5em;
   }
 
+  .post-header + div > div {
+    min-height: 10em;
+  }
+
   .post-namecard {
     background: #ddd;
     border-radius: 0 2em 2em 0;
@@ -741,9 +751,12 @@ export default {
     }
   }
   pre {
+    margin-top: 2em;
+    margin-bottom: 2em;
     code {
-      display: inline-block;
-      width: 100%;
+      display: inline;
+      // display: inline-block;
+      // width: 100%;
       padding: 1em;
       background: #ddd;
       border-radius: 1em;

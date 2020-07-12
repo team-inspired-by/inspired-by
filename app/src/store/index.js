@@ -104,7 +104,7 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       // if (!state.pageFrom) state.pageFrom = val.to
       state.pagePosition[val.from] = window.scrollY;
       if (val.routingAnimation) {
-        Vue.set(state, 'show', false);
+        // Vue.set(state, 'show', false);
         state.show = false;
         window.scrollTo({
           top: 0,
@@ -116,10 +116,11 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
       console.info("page: ", val.from + "-" + val.to);
       const timing = state.pageTiming[val.from + "-" + val.to];
       setTimeout(() => {
+        // Vue.set(state, 'show', true);
         state.show = true;
       }, timing | 1000);
 
-      if (val.to != "post")
+      if ((val.to != "post") && (val.to != "topic"))
         setTimeout(() => {
           window.scrollTo({
             top: state.pagePosition[val.to] | 0,
@@ -309,7 +310,8 @@ consequatur perspiciatis delectus quidem. Repudiandae saepe deleniti possimus iu
     },
     setSelectedPost(state, val) {
       // console.debug('setSelectedPost: ', val);
-      if (!val['post']) return;
+      if (!val['post'])
+        state.selectedPost = {};
       state.selectedPost = val;
     }
   },

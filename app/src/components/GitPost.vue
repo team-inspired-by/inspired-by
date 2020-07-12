@@ -210,12 +210,12 @@ export default {
     }
   },
   watch: {
-    pageTo: (newVal, oldVal) => {
-      if (oldVal == 'post' && newVal != 'post') {
-        this.showDetail = false;
-        this.$store.commit('setSelectedPost', {});
-      }
-    },
+    // pageTo: (newVal, oldVal) => {
+    //   // if (oldVal == 'post' && newVal != 'post') {
+    //   //   this.showDetail = false;
+    //   //   this.$store.commit('setSelectedPost', {});
+    //   // }
+    // },
     post (newVal) {
       console.debug("post: ", newVal);
       this.readGeneralPost(newVal.title)
@@ -377,7 +377,7 @@ export default {
   will-change: top, transform;
   backface-visibility: hidden;
   -webkit-font-smoothing: subpixel-antialiased;
-  z-index: 400;
+  z-index: 100;
 
   &.detail {
     // min-width: 45vw;
@@ -448,14 +448,27 @@ export default {
         opacity: 1;
       }
     }
-    z-index: 450;
+    z-index: 101;
   }
 
   &.hide {
-    &.center,
+    transition-duration: 1.5s;
+    &.center {
+      filter: blur(10px) brightness(50%);
+      transform: scale(0.7);
+      background: rgb(100, 100, 100);
+    }
     &.top,
     &.bottom {
-      top: 250vh;
+      filter: blur(15px) brightness(60%);
+      transform: scale(0.6);
+      right: 1.5em;
+    }
+    &.top {
+      top: 55vh;
+    }
+    &.bottom {
+      top: 165vh;
     }
   }
 
@@ -477,7 +490,7 @@ export default {
     height: 100%;
     background: rgb(56, 50, 43);
     overflow: hidden;
-    z-index: 300;
+    z-index: 30;
     #cover-bg {
       position: absolute;
       width: 100%;
@@ -487,7 +500,7 @@ export default {
       object-position: 100%;
       mix-blend-mode: luminosity;
       transition: object-position 2s 0.5s;
-      z-index: 500;
+      z-index: 50;
     }
     &.page-0 #cover-bg {
       object-position: 0%;
@@ -503,14 +516,14 @@ export default {
       object-fit: cover;
       object-position: 100% 0%;
       transition: margin 2s;
-      z-index: 510;
+      z-index: 51;
     }
     &.page-1 #cover-fg {
       margin-left: -40%;
     }
   }
   .v-carousel {
-    z-index: 600;
+    z-index: 60;
     padding: 1em;
     &.page-0,
     &.page-1 {

@@ -30,7 +30,7 @@
             <v-divider />
           </v-list-item-group>
 
-          <div v-if="editType && !reviewing">
+          <div v-if="editType && !reviewingMode">
             <v-subheader>Attached images</v-subheader>
             <v-row class="px-4">
               <v-col
@@ -110,7 +110,7 @@
       <v-col id="col-content" cols="12" sm="9" class="d-flex flex-column" :class="{ xs: isXs }">
         <transition name="item-fade" mode="out-in">
           <custom-writer
-            v-if="editType == 'GENERAL' && !reviewing"
+            v-if="editType == 'GENERAL' && !reviewingMode"
             v-model="writingModel.GENERAL"
             fillHeight
           />
@@ -162,7 +162,7 @@
         </transition>
         <v-row class="mx-0 flex-0 flex-grow-0">
           <transition name="item-fade" mode="in-out">
-            <v-col class="text-right" v-if="editType && !reviewing">
+            <v-col class="text-right" v-if="editType && !reviewingMode">
               <v-btn class="mr-2" outlined color="grey" @click="viewType = 'Select'">
                 <v-icon class="mr-2">mdi-cancel</v-icon>Discard
               </v-btn>
@@ -180,7 +180,7 @@
                 <v-icon class="mr-2">mdi-check</v-icon>Review post & publish
               </v-btn>
             </v-col>
-            <v-col class="text-right" v-if="editType && editType != 'Success' && reviewing">
+            <v-col class="text-right" v-if="editType && editType != 'Success' && reviewingMode">
               <v-btn class="mr-2" outlined color="grey" @click="review(false)">
                 <v-icon class="mr-2">mdi-chevron-left</v-icon>Edit
               </v-btn>
@@ -313,7 +313,7 @@ export default {
       mode: "",
       editType: "",
       viewType: "Select",
-      reviewing: false,
+      reviewingMode: false,
       selectedContentsEditorTopic: 0,
       titleToSearch: "",
       isPostLoaded: false, // set true when editing existing content
@@ -364,16 +364,16 @@ export default {
     // const savedImagesToUpload = JSON.parse(
     //   sessionStorage.getItem("imagesToUpload")
     // );
-    const savedAttachImages = JSON.parse(
+    const savedAttachedImages = JSON.parse(
       sessionStorage.getItem("inspired-by-attached-images")
     );
     console.debug("loaded generalPost: ", savedGeneral);
     if (savedGeneral != undefined) {
       this.writingModel.GENERAL = savedGeneral;
     }
-    console.debug("loaded savedAttachImages: ", savedAttachImages);
-    if (savedAttachImages != undefined) {
-      this.$store.commit("loadImages", savedAttachImages);
+    console.debug("loaded savedAttachedImages: ", savedAttachedImages);
+    if (savedAttachedImages != undefined) {
+      this.$store.commit("loadImages", savedAttachedImages);
     }
   },
   methods: {
@@ -405,7 +405,7 @@ export default {
             const content = await this.parseContent(res.data.getGeneralPost.post.lastContent.content);
             // console.debug(`parsedContent: ${content}`);
             post.content = content;
-            this.reviewing = false;
+            this.reviewingMode = false;
             this.editType = post.postType;
             for (let i in this.writingModel[post.postType]) {
               this.writingModel[post.postType][i] = post[i];
@@ -438,12 +438,13 @@ export default {
         this.loading.checkPostTitle = true;
         this.titleToSearch = this.writingModel[this.editType].title
           .replace(/\./gi, "")
-          .replace(/[ ]/gi, "-");
+          .replace(/[ ]/gi, "-")
+          .toLowerCase();
         console.debug("titleToSearch: ", this.titleToSearch);
 
         if (this.isPostLoaded) {
           this.loading.checkPostTitle = false;
-          this.reviewing = true;
+          this.reviewingMode = true;
           return;
         }
         else {
@@ -464,19 +465,19 @@ export default {
             console.debug("received checkPostTitle: ", res.data.checkPostTitle);
             this.loading.checkPostTitle = false;
             if (res.data.checkPostTitle.available) {
-              this.reviewing = true;
+              this.reviewingMode = true;
             } else {
               this.snackbar.checkPostTitle = true;
             }
             // this.loading = false;
             // if (data.checkPostTitle.success) {
             // return data.checkPostTitle
-            // this.reviewing = true;
+            // this.reviewingMode = true;
             // }
           })
       } else {
         this.loading.checkPostTitle = false;
-        this.reviewing = false;
+        this.reviewingMode = false;
       }
       // console.log('value: ', this.writingModel.GENERAL);
     },
@@ -634,7 +635,7 @@ export default {
     resetForm (type = "GENERAL") {
       if (type = "GENERAL") {
         this.writingModel.GENERAL = {};
-        this.reviewing = false;
+        this.reviewingMode = false;
         for (let i in this.loading) {
           this.loading[i] = false;
         }

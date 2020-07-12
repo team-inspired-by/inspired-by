@@ -5,7 +5,7 @@
     @click="focus"
     :class="{
       isFocused: isFocused || isSelected || isIntro,
-      isSelected: isSelected || isIntro,
+      isSelected: isSelected,
       isIntro: isIntro
     }"
   >
@@ -74,18 +74,37 @@ export default {
   //   opacity: 1;
   // }
   0% {
-    top: 45vh;
+    top: 45vh !important;
+    opacity: 0 !important;
+  }
+  49% {
+    opacity: 0 !important;
+  }
+  50% {
+    top: 45vh !important;
+    opacity: 1 !important;
+  }
+  100% {
+    top: -15em !important;
+  }
+}
+
+@keyframes star-out {
+  0% {
     opacity: 0;
   }
   49% {
     opacity: 0;
   }
   50% {
-    top: 45vh;
+    margin-top: 0;
     opacity: 1;
   }
+  90% {
+    margin-top: -100vh;
+  }
   100% {
-    top: -15em;
+    margin-top: -100vh;
   }
 }
 .star {
@@ -154,12 +173,14 @@ export default {
     // opacity: 0;
   }
   &.isIntro {
-    transition: opacity 0s;
-    animation-name: slideout;
-    animation-delay: 0s;
-    animation-duration: 2s;
-    animation-timing-function: ease-in;
-    animation-fill-mode: forwards;
+    // background: red;
+    // opacity: 0;
+    transition: opacity 0s, all 1s;
+    animation-name: star-out !important;
+    animation-delay: 0s !important;
+    animation-duration: 2s !important;
+    animation-timing-function: ease-in !important;
+    animation-fill-mode: forwards !important;
   }
   // &.blowing {
   //   top: 45vh !important;

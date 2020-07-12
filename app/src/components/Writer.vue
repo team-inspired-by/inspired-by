@@ -127,39 +127,39 @@ export default {
     for (let i in this.value) {
       this.form[i] = this.value[i];
     }
-    this.keyListener = window.addEventListener("keyup", (ev) => {
-      // console.log(ev.target.tagName, ev.target.id, ev);
-      // console.log(ev.keyCode);
-      if (ev.target.id == "contents-manager-box") {
-      } else if (ev.keyCode == 51) {
-        if (!this.form.title) {
-          ev.preventDefault();
-          this.$refs["titleInput"].focus();
-          return;
-        }
-        // } else if (ev.ctrlKey && ev.keyCode == 74) {
-        //   console.log('j pressed');
-        //   this.$refs["markdownEditor"].simplemde.codemirror.$el.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
-        //   ev.preventDefault();
+    // this.keyListener = window.addEventListener("keyup", (ev) => {
+    //   // console.log(ev.target.tagName, ev.target.id, ev);
+    //   // console.log(ev.keyCode);
+    //   if (ev.target.id == "contents-manager-box") {
+    //   } else if (ev.keyCode == 51) {
+    //     if (!this.form.title) {
+    //       ev.preventDefault();
+    //       this.$refs["titleInput"].focus();
+    //       return;
+    //     }
+    //     // } else if (ev.ctrlKey && ev.keyCode == 74) {
+    //     //   console.log('j pressed');
+    //     //   this.$refs["markdownEditor"].simplemde.codemirror.$el.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
+    //     //   ev.preventDefault();
 
-        // } else if (ev.ctrlKey && ev.keyCode == 75) {
-        //   ev.preventDefault();
-        //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
+    //     // } else if (ev.ctrlKey && ev.keyCode == 75) {
+    //     //   ev.preventDefault();
+    //     //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
 
-        // } else if (ev.ctrlKey && ev.keyCode == 76) {
-        //   ev.preventDefault();
-        //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
+    //     // } else if (ev.ctrlKey && ev.keyCode == 76) {
+    //     //   ev.preventDefault();
+    //     //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
 
-        // } else if (ev.ctrlKey && ev.keyCode == 186) {
-        //   ev.preventDefault();
-        //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
-      } else if (ev.target.tagName == "BODY") {
-        // NOTE: .simplemde.toTextArea() seemed to not working.
-        ev.preventDefault();
-        this.$refs["markdownEditor"].simplemde.codemirror.focus();
-        return;
-      }
-    });
+    //     // } else if (ev.ctrlKey && ev.keyCode == 186) {
+    //     //   ev.preventDefault();
+    //     //   document.dispatchEvent(new KeyboardEvent('keydown', { 'key': 'a' }))
+    //   } else if (ev.target.tagName == "BODY") {
+    //     // NOTE: .simplemde.toTextArea() seemed to not working.
+    //     ev.preventDefault();
+    //     this.$refs["markdownEditor"].simplemde.codemirror.focus();
+    //     return;
+    //   }
+    // });
   },
   beforeDestroy () {
     // this.$store.unsubscribe();

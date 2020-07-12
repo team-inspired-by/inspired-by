@@ -3,9 +3,7 @@
   <div v-show="popupStatus">
     <div id="profile-avatar">
       <v-avatar size="10em" color="indigo darken-2">
-        <v-icon size="10em" color="grey lighten-4" dark
-          >mdi-account-circle</v-icon
-        >
+        <v-icon size="10em" color="grey lighten-4" dark>mdi-account-circle</v-icon>
       </v-avatar>
     </div>
     <div id="profile-box" class="pa-5">
@@ -34,24 +32,24 @@ export default {
     user: {},
   }),
   methods: {
-    test() {
+    test () {
       //   console.log(this.$refs)
     },
-    logout() {
+    logout () {
       this.$store.commit("logout");
       this.$store.commit("setPopupProfile", false);
     },
   },
   computed: {
-    popupStatus() {
+    popupStatus () {
       return this.$store.getters.getPopupProfile;
     },
-    _user() {
+    _user () {
       return this.$store.getters.getUser;
     },
   },
   watch: {
-    popupStatus(newVal, oldVal) {
+    popupStatus (newVal, oldVal) {
       if (newVal && !oldVal) {
         this.hasLocked = document.getElementsByTagName(
           "html"
@@ -65,7 +63,7 @@ export default {
     },
     _user: {
       deep: true,
-      handler() {
+      handler () {
         this.user = this.$store.getters.getUser;
       },
     },
@@ -119,7 +117,7 @@ export default {
   animation-duration: 1s;
   animation-fill-mode: forwards;
   opacity: 0;
-  z-index: 450;
+  z-index: 45;
   transition: right 0.5s, transform 0.5s;
   //   &:hover {
   //     right: calc(10vw + 12em);
@@ -142,7 +140,7 @@ export default {
   font-size: smaller;
   animation-name: intro-box;
   animation-duration: 2s;
-  z-index: 500;
+  z-index: 50;
 }
 #profile-cover {
   position: fixed;
@@ -154,7 +152,7 @@ export default {
   border: 1px solid transparent;
   opacity: 0;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0), rgb(0, 0, 255, 0.4));
-  z-index: 510;
+  z-index: 51;
   animation-name: intro-cover;
   animation-duration: 0.5s;
   animation-delay: 1s;

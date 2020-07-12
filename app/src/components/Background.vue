@@ -15,14 +15,12 @@
         <!-- <div id="video-container" :class="viewpoint"> -->
         <!-- <video ref="video" src="../assets/mv-bg-teal.mp4" loop muted="muted"></video> -->
         <!-- </div> -->
-        <transition name="item-fade">
-          <div
-            id="topic-intro-bg-column"
-            v-show="loaded['bg'] && currentPage == 'topic' && isShowing"
-          >
-            <img id="bg" @load="loaded.bg = true;" src="../assets/topic_opencv_bg.jpg" />
-          </div>
-        </transition>
+        <div
+          id="topic-intro-bg-column"
+          v-show="loaded['bg'] && currentPage == 'topic' && isShowing"
+        >
+          <img id="bg" @load="loaded.bg = true;" src="../assets/topic_opencv_bg.jpg" />
+        </div>
       </div>
     </transition>
   </div>
@@ -49,7 +47,9 @@ export default {
   mounted () {
     // this.handleDebouncedScroll = debounce(this.handleScroll, 30);
     // window.addEventListener("scroll", this.handleDebouncedScroll);
-    this.currentPage = this.$route.name;
+    setTimeout(() => {
+      this.currentPage = this.$route.name;
+    }, 1000);
   },
   methods: {
     // handleScroll (e) {

@@ -27,10 +27,13 @@ export default {
       },
       update: data => {
         if (data["getTopicList"] && data.getTopicList.success) {
+          const positions = [[10, 12], [25, 32], [30, 10], [35, 50], [42, 20], [49, 41], [53, 14]]
           const topics = data.getTopicList.topics;
           for (let i in topics) {
-            topics[i]['y'] = Math.floor(Math.random() * 60, 60) + "vh";
-            topics[i]['x'] = Math.floor(Math.random() * 90, 90) + 5 + "vw";
+            // topics[i]['y'] = Math.floor(Math.random() * 60, 60) + "vh";
+            // topics[i]['x'] = Math.floor(Math.random() * 90, 90) + 5 + "vw";
+            topics[i]['x'] = positions[i][0] + "vw";
+            topics[i]['y'] = positions[i][1] + "vh";
           }
           console.debug(topics);
           return topics;

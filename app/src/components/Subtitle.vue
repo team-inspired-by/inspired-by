@@ -150,6 +150,9 @@ export default {
           ctx.stroke();
         }, 1000);
       }
+    },
+    title (newVal) {
+      console.log("newVal: ", newVal);
     }
   },
 };

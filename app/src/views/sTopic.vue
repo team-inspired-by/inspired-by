@@ -6,14 +6,14 @@
     >
       <v-row>
         <v-col cols="8" class="nav-topic-box">
-          <v-btn text class="pr-0" @click="routeTo('/')">
+          <v-btn text class="mt-5 pr-2 mr-0" @click="routeTo('/')">
             Topics
             <v-icon class="ml-2">mdi-arrow-up</v-icon>
           </v-btn>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="8" class="title-box" :class="{'animation': disableTitleAni}">
+        <v-col cols="8" class="title-box" :class="{'animation': titleAnimation}">
           <h2>Inspired by</h2>
           <h1 :class="{'minimize': pageTo == 'post'}">{{topic}}</h1>
         </v-col>
@@ -87,11 +87,20 @@
         <v-col cols="7" />
         <v-col cols="4" class="with-border text-left pl-0">
           <v-btn
+            v-if="isLoggedIn"
             @click="toggleModeAddPost()"
             outlined
             :color="modeAddPost ? 'white' : 'rgba(255,255,255,0.22)'"
           >
             <v-icon class="mr-2">mdi-post-outline</v-icon>Add a post
+          </v-btn>
+          <v-btn
+            v-else
+            @click="$store.commit('setPopupLogin', true)"
+            outlined
+            :color="modeAddPost ? 'white' : 'rgba(255,255,255,0.22)'"
+          >
+            <v-icon class="mr-2">mdi-account-circle-outline</v-icon>Login
           </v-btn>
         </v-col>
         <v-col cols="7"></v-col>
@@ -109,7 +118,7 @@
         </v-col>
       </v-row>
     </div>
-    <custom-post-loader :dense="!modeMorePosts" :modeAdd="modeAddPost" />
+    <custom-post-loader v-model="modeAddPost" :dense="!modeMorePosts" :hide="leaveToHome" />
   </v-container>
 </template>
 
@@ -138,9 +147,10 @@ export default {
   data: () => ({
     modeMorePosts: false,
     modeAddPost: false,
-    modePost: false,
-    disableTitleAni: true,
+    // modePost: false,
+    titleAnimation: true,
     isScrolling: false,
+    leaveToHome: false,
     sampleProjectPost: {
       title: "Sample git project",
       postType: "GIT",
@@ -165,21 +175,24 @@ export default {
     },
     selectedPost () {
       return this.$store.getters.getSelectedPost;
+    },
+    isLoggedIn () {
+      return this.$store.getters.getIsLoggedIn;
     }
   },
   watch: {
     selectedPost () {
       this.modeAddPost = false;
     },
-    modeMorePosts (newVal, oldVal) {
-      if (!newVal && oldVal) {
-        setTimeout(() => {
-          window.addEventListener("scroll", this.handleScroll);
-        }, 1000);
-      } else if (newVal) {
-        window.removeEventListener("scroll", this.handleScroll);
-      }
-    }
+    // modeMorePosts (newVal, oldVal) {
+    //   if (!newVal && oldVal) {
+    //     setTimeout(() => {
+    //       window.addEventListener("scroll", this.handleScroll);
+    //     }, 1000);
+    //   } else if (newVal) {
+    //     window.removeEventListener("scroll", this.handleScroll);
+    //   }
+    // }
   },
   mounted () {
     this.drawCurve({
@@ -193,7 +206,7 @@ export default {
     }, 1000);
   },
   beforeDestroy () {
-    window.removeEventListener("scroll", this.handleScroll);
+    // window.removeEventListener("scroll", this.handleScroll);
   },
   methods: {
     drawCurve (drawer) {
@@ -223,23 +236,25 @@ export default {
       }
     },
     seePosts () {
+      if (this.isScrolling) return;
       this.modeMorePosts = true;
-      this.disableTitleAni = false;
+      this.titleAnimation = false;
       this.isScrolling = true;
-      document.getElementsByTagName("html")[0].style.overflowY = "hidden";
+      // document.getElementsByTagName("html")[0].style.overflowY = "hidden";
       console.log("selectedPost: ", this.selectedPost)
-      if (!this.selectedPost) this.$store.commit("setSelectedPost", posts[0])
+      if (!this.selectedPost) this.$store.commit("setSelectedPost", { post: this.posts[0], key: 0 });
       this.$scrollTo(document.getElementById("more-posts-box"), 1000, {
         smooth: true,
         offset: 100,
       });
+      // if (this.$route.name != "post")
+      //   this.$router.push({ name: "post", params: { post: this.posts[0]['title'] } });
       setTimeout(() => {
-        setTimeout(() => {
-          this.isScrolling = false;
-        }, 1000);
-      }, 500);
+        this.isScrolling = false;
+      }, 1500);
     },
     hidePosts () {
+      if (this.isScrolling) return;
       this.modeMorePosts = false;
       this.modeAddPost = false;
       this.isScrolling = true;
@@ -248,30 +263,39 @@ export default {
       });
       setTimeout(() => {
         this.isScrolling = false;
-        document.getElementsByTagName("html")[0].style.overflowY = "auto";
+        // document.getElementsByTagName("html")[0].style.overflowY = "auto";
       }, 1500);
     },
     toggleModeAddPost () {
       this.modeAddPost = !this.modeAddPost;
     },
     routeTo (path) {
+      if (path === '/') {
+        this.leaveToHome = true;
+      }
       this.$router.push({ path: path });
     },
     handleScroll (e) {
+      console.warn('doing handleScroll()', this.isScrolling);
+
       if (this.isScrolling) return;
       // console.log(window.top.scrollY);
-      this.isScrolling = true;
+      // this.isScrolling = true;
 
       const scrollY = window.top.scrollY;
       if (scrollY > 900) {
-        console.warn('doing seePosts()')
         // document.getElementsByTagName("html")[0].style.overflowY = "hidden";
-        window.removeEventListener("scroll", this.handleScroll);
-        this.seePosts();
+        // window.removeEventListener("scroll", this.handleScroll);
+        // this.modeMorePosts = true;
+        if (!this.modeMorePosts)
+          this.seePosts();
       }
-      setTimeout(() => {
-        this.isScrolling = false;
-      }, 1000);
+      else {
+        this.modeMorePosts = false;
+      }
+      // setTimeout(() => {
+      //   this.isScrolling = false;
+      // }, 1000);
     }
   }
 };
@@ -297,7 +321,7 @@ export default {
     overflow-x: visible;
     overflow-y: auto;
     transition: right 1s;
-    z-index: 500;
+    z-index: 50;
     &:before {
       content: "";
       display: block;
@@ -415,6 +439,15 @@ export default {
 </style>
 
 <style lang="scss">
+#post-loader {
+  transition: all 1s;
+}
+#post-loader.leaveToHome {
+  // transform: translateY(200vh);
+  opacity: 0;
+}
+// NOTE: replaced from .v-btn--outlined
+.v-btn--text,
 .v-btn--outlined {
   border-radius: 2em;
 }

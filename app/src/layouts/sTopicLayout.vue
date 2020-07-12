@@ -104,7 +104,7 @@ export default {
   //   min-height: 100vh;
   //   overflow: auto;
   //   transition: right 1s;
-  //   z-index: 500;
+  //   z-index: 50;
   //   &.post-mode {
   //     right: 70vw;
   //   }
@@ -119,7 +119,7 @@ export default {
     // animation-fill-mode: forwards;
     opacity: 1;
     transition: opacity 0.5s;
-    z-index: 100;
+    z-index: 10;
     background: linear-gradient(0 deg, 0%#000, 10% #333, 100% #fff);
     #fg {
       position: absolute;
@@ -130,7 +130,7 @@ export default {
       margin-bottom: 10vh;
       mix-blend-mode: overlay;
       object-fit: contain;
-      z-index: 200;
+      z-index: 20;
     }
     #shade {
       position: absolute;
@@ -139,7 +139,7 @@ export default {
       margin-left: 5vw;
       margin-bottom: -5vh;
       object-fit: cover;
-      z-index: 610;
+      z-index: 61;
     }
   }
 
